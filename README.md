@@ -5,3 +5,13 @@ Python3-module for crystallographic calculations.
 
 
 # Links
+
+# Contribute
+
+Setup Zim
+
+* Open Zim
+* File -> open another Notebook -> Add -> select path to this Zim-Notebook.
+
+
+

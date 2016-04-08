@@ -1,0 +1,7 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-04-08T14:38:11+02:00
+
+====== Manual ======
+Created Friday 08 April 2016
+

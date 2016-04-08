@@ -1,0 +1,51 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-04-08T14:39:26+02:00
+
+====== Wish List ======
+Created Friday 08 April 2016
+
+===== Objects =====
+* Position-Vector
+* Difference-Vector
+* Wave-Vector
+* Metric
+* Transformation
+* Atom
+* Asymmetric Unit
+* Symmetry
+* Cell
+* finite Factor-Group (in symmorphic case equivalent to point group)
+* Set of translation generators
+* Space group
+
+===== Mathematical features =====
+
+==== Numbers ====
+Maybe we can calculate with exact rational numbers.
+Is this usefull with respect to Transformations with diagonals?
+
+==== Vectorspace operations ====
+* Position-Vector - Position-Vector = Difference-Vector
+* Position-Vector + Difference-Vector = Difference-Vector + Position-Vector = Position-Vector
+* float * Difference-Vector = Difference-Vector * float = Difference-Vector
+* Wave-Vector - Wave-Vector = Wave-Vector
+* Wave-Vector + Wave-Vector = Wave-Vector
+* float * Wave-Vector = Wave-Vector * float = Wave-Vector
+
+==== Transformations ====
+* Transformation * Metric = Metric
+* Transformation * Position-Vector = Position-Vector
+* Transformation * Wave-Vector = Wave-Vector
+* Transformation * Symmetry = Symmetry
+
+==== Scalar-Products ====
+* Difference-Vector *(Metric) Difference-Vector = float
+* Wave-Vector *(Metric) Wave-Vector = float
+* Wave-Vector * Difference-Vector = float (independent from Metric!!!)
+
+==== Symmetry ====
+
+===== Input/Read-in features =====
+
+===== Plotting features =====
