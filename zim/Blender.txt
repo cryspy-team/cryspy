@@ -1,0 +1,22 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-04-10T13:14:58+02:00
+
+====== Blender ======
+Created Sunday 10 April 2016
+
+
+===== Similar import filters =====
+
+=== Blender Tutorial - Importing a Molecule Using the Protein Data Bank Add On, Making a DNA Animation ===
+https://www.youtube.com/watch?v=RUiFgI1Vbh4&nohtml5=False
+
+=== Blender precision modelling guide (PDF) ===
+http://homepage.ntlworld.com/r.burke2/precision_modelling1.html
+
+=== Draws chemicals in Blender using common input formats (smiles, molfiles, cif files, etc.) ===
+https://github.com/patrickfuller/blender-chemicals
+
+=== How to print a crystal structure model in 3D ===
+DOI: 10.1039/C4CE00371C 
+http://pubs.rsc.org/en/Content/ArticleLanding/2014/CE/c4ce00371c#!divAbstract
