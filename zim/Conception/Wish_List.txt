@@ -22,8 +22,12 @@ Created Friday 08 April 2016
 ===== Mathematical features =====
 
 ==== Numbers ====
-Maybe we can calculate with exact rational numbers.
-Is this usefull with respect to Transformations with diagonals?
+
+=== Coordinates, Wave-Vectors, ... ===
+Floats with errors.
+
+=== Symmetrie-Operations, Transformations ===
+Exact Rational numbers.
 
 ==== Vectorspace operations ====
 * Position-Vector - Position-Vector = Difference-Vector

@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-04-10T13:45:23+02:00
+
+====== Literature ======
+Created Sonntag 10 April 2016
+
+
+**[hubertz2016]**
+ Johannes Hubertz: "Softwaretests mit Python", Springer  Vieweg
+
+
