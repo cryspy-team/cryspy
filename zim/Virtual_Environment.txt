@@ -33,6 +33,7 @@ deactivate
 
 
 ===== Installing Python-Modules =====
+The necessary module list is stored in requirements.txt.
 Modules are installed using
 '''
 pip install -r requirements.txt

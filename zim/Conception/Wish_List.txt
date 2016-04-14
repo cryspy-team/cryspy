@@ -24,7 +24,9 @@ Created Friday 08 April 2016
 ==== Numbers ====
 
 === Coordinates, Wave-Vectors, ... ===
-Floats with errors.
+**General:** Floats with errors.
+**Special:** Exact Rational numbers.
+=> It must be possible to build a vector from two different data types, e.g. (0, 0.372(5), 1/4) .
 
 === Symmetrie-Operations, Transformations ===
 Exact Rational numbers.
