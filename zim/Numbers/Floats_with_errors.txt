@@ -1,0 +1,20 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-04-10T17:55:25+02:00
+
+====== Floats with errors ======
+Created Sonntag 10 April 2016
+
+There exists the python-module uncertainties.
+
+Usage:
+
+'''
+import uncertainties as uc
+from uncertainties import umath as um
+a = uc.ufloat(1.5, 0.3)
+b = uc.sin(a)
+'''
+
+
+Then a is the number 1.5 +/- 0.3, end b is the sinus of this (with appropriate error).
