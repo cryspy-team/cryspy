@@ -1,0 +1,31 @@
+""" Declaration of number and vector types for cryspy.
+"""
+
+import quicktions as fr
+import uncertainties as uc
+
+
+class Frac(object):
+    """ Exact rational number, handled as fraction.
+    """
+    def __init__(self, numerator, denominator):
+        assert isinstance(numerator, int) \
+            and isinstance(denominator, int), \
+            "Object of type frac must be created via 2 integers."
+        self.value = fr.Fraction(numerator, denominator)
+
+    def __str__(self):
+        return self.value.__str__()
+
+
+class Ernu(object):
+    """ Error-Number (float with an error).
+    """
+    def __init__(self, nominal, error):
+        assert isinstance(nominal, float) \
+            and isinstance(error, float), \
+            "Object of type ernu must be created via 2 floats."
+        self.value = uc.ufloat(nominal, error)
+
+    def __str__(self):
+        return self.value.__str__()

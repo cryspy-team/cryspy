@@ -7,6 +7,12 @@ Created Sonntag 10 April 2016
 
 In order to get sure that the same python is running on every machine, we work with a virtual python-environment ("virtuelle Werkbank", [hubertz2016 S19ff]).
 
+===== Installation =====
+
+''sudo aptitude install python-virtualenv''
+
+===== Start =====
+
 If
 '''
 pyvenv

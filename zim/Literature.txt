@@ -13,5 +13,3 @@ Created Sonntag 10 April 2016
 This might be interesting (though its Python2):
 http://www.greenteapress.com/thinkpython/thinkpython.pdf
 Ab chapter 10 wirds interessant.
-
-
