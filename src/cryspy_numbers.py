@@ -158,7 +158,8 @@ class Matrix(object):
         for row in liste:
             assert isinstance(row, list), \
              "Object of type Matrix must be created by a list of lists"
-        rowlength = len(liste[0])
+        if len(liste) > 0:
+            rowlength = len(liste[0])
         for row in liste:
             assert (len(row) == rowlength), \
               "Object of type Matrix must be created by a list of lists"\
@@ -187,29 +188,39 @@ class Matrix(object):
              /  1/3          1/4          2/5              3/4  \ 
             |   1/3          3/4  1.20+/-0.10  1.0030+/-0.0010   |
              \  1/4  1.20+/-0.10          3/4      1.20+/-0.10  / 
+            >>> P = Matrix([[a, b]])
+            >>> print(P)
+            (  1/3  1/4  )
         """
         str = ''
         length = [0]*len(self.liste[0])
         for row in self.liste:
             for (i, item) in zip(range(len(row)), row):
                 length[i] = max(length[i], len(item.__str__()))
-
+        
+        (numrow, numcol) = self.shape()
         for (i, row) in zip(range(len(self.liste)), self.liste):
-            if i == 0:
-                str += ' /  '
-            elif i == len(self.liste) - 1:
-                str += ' \\  '
+            if (numrow == 1):
+                str += '(  '
             else:
-                str += '|   '
+                if i == 0:
+                    str += ' /  '
+                elif i == len(self.liste) - 1:
+                    str += ' \\  '
+                else:
+                    str += '|   '
             for (j, item) in zip(range(len(row)), row):
                 codestr = '%' + '%i'%(length[j]) + 's  '
                 str += codestr%(item.__str__())
-            if i == 0:
-                str += '\\ '
-            elif i == len(self.liste) - 1:
-                str += '/ '
+            if (numrow == 1):
+                str += ')'
             else:
-                str += ' |'
+                if i == 0:
+                    str += '\\ '
+                elif i == len(self.liste) - 1:
+                    str += '/ '
+                else:
+                    str += ' |'
             str += '\n'
         str = str[:-1]
         return str
@@ -317,4 +328,102 @@ class Matrix(object):
                 ] \
             )
 
+    def onematrix(self):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> d = Mixed(fr.Fraction(4, 5))
+            >>> M = Matrix([[a, b], [c, d]])
+            >>> print(M.onematrix())
+             /  1  0  \ 
+             \  0  1  / 
+        """
+        (numrows, numcols) = self.shape()
+        def kronecker(i, j):
+            if (i == j):
+                return Mixed(fr.Fraction(1, 1))
+            else:
+                return Mixed(fr.Fraction(0, 1))
+        return Matrix([ \
+                          [kronecker(i, j) for j in range(numcols)] \
+                          for i in range(numrows) \
+                      ])
 
+    def block(self, fromrow, torow, fromcol, tocol):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> d = Mixed(fr.Fraction(4, 5))
+            >>> M = Matrix([[a, b, c], [c, d, a], [b, a, b]])
+            >>> print(M.block(1,2,0,2))
+            (  3/7  4/5  )
+        """
+        assert isinstance(fromrow, int) and isinstance(torow, int) \
+            and isinstance(fromcol, int) and isinstance(tocol, int), \
+            "Attribute block needs indexes of type int."
+        (numrows, numcols) = self.shape()
+        return Matrix([\
+                          [self.liste[i][j] for j in range(fromcol, tocol)] \
+                          for i in range(fromrow, torow) \
+                      ])
+
+    def append_below(self, lower):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> d = Mixed(fr.Fraction(4, 5))
+            >>> M = Matrix([[a, b], [c, d]])
+            >>> N = Matrix([[a, b]])
+            >>> print(M.append_below(N))
+             /  1/4  1/5  \ 
+            |   3/7  4/5   |
+             \  1/4  1/5  / 
+        """
+        assert isinstance(lower, Matrix), \
+            "Only a Matrix can be appended below a Matrix."
+        (numrows1, numcols1) = self.shape()
+        (numrows2, numcols2) = self.shape()
+        assert (numcols1 == numcols2), \
+            "Matrix to be appended below has to be the same number of "\
+            "columns."
+        return Matrix(self.liste + lower.liste)
+
+    def swap_rows(self, rowindex1, rowindex2):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> d = Mixed(fr.Fraction(4, 5))
+            >>> M = Matrix([[a, b], [c, d]])
+            >>> print(M.swap_rows(0, 1))
+             /  3/7  4/5  \ 
+             \  1/4  1/5  / 
+            >>> print(M)
+             /  1/4  1/5  \ 
+             \  3/7  4/5  / 
+        """
+        (numrows, numcols) = self.shape()
+        new = deepcopy(self)
+        row1 = new.liste[rowindex1]
+        new.liste[rowindex1] = new.liste[rowindex2]
+        new.liste[rowindex2] = row1
+        return new
+
+    def inv(self):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> d = Mixed(fr.Fraction(4, 5))
+            >>> M = Matrix([[a, b], [c, d]])
+            >>> print(M.inv())
+             /      7  -7/4  \ 
+             \  -15/4  2.1875 / 
+        """
+        L = deepcopy(self)
+        R = self.onematrix()
+        
+        return 0
