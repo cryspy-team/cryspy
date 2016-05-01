@@ -22,11 +22,17 @@ class Mixed(object):
 
     def __init__(self, value):
         assert isinstance(value, fr.Fraction) or \
-            isinstance(value, uc.UFloat),\
+            isinstance(value, uc.UFloat) or \
+            isinstance(value, float) or \
+            isinstance(value, int), \
             "Instance of Mixed must be created either by a "\
-            "qicktion.Fraction or an uncertainties.core.Variable."
-
-        self.value = value
+            "qicktion.Fraction or an uncertainties.core.Variable or float or int."
+        if isinstance(value, int):
+            self.value = fr.Fraction(value, 1)
+        elif isinstance(value, float):
+            self.value = uc.ufloat(value, 0.0)
+        else:
+            self.value = value
 
     def __str__(self):
         return self.value.__str__()
@@ -141,6 +147,95 @@ class Mixed(object):
             if isinstance(right.value, uc.UFloat):
                 return Mixed(self.value / right.value)
 
+class Row(object):
+    """
+        >>> A = Row([Mixed(fr.Fraction(2, 3)), Mixed(fr.Fraction(3, 4))])
+        >>> print(A)
+        (  2/3  3/4  )
+    """
+    def __init__(self, liste):
+        assert isinstance(liste, list), \
+            "Object of type Row must be created by a list."
+        length = len(liste)
+        assert (length > 0), \
+            "Object of type Row must be created by a non-empty list."
+        for item in liste:
+            assert isinstance(item, Mixed), \
+                "Object of type Row must be created by a list of objects of" \
+                "type Mixed."
+        self.liste = deepcopy(liste)
+    
+    def len(self):
+        return len(self.liste)
+    
+    def __str__(self):
+        str = "(  "
+        for item in self.liste:
+            str += item.__str__()
+            str += "  "
+        str += ")"
+        return str
+    
+    def canonical(dim, i):
+        """
+            >>> print(Row.canonical(5, 3))
+            (  0  0  0  1  0  )
+        """
+        assert isinstance(dim, int), \
+            "Canonical Row must be created by a dimension of type int."
+        assert isinstance(i, int), \
+            "Canonical Row must be cretated by an index of type int."
+        assert (dim > 0), \
+            "Canonical Row must be cretated by a dimension > 0."
+        assert (i >= 0) and (i < dim), \
+            "Canonical Row must be created by an index i with 0 <= i < dim."
+        def kronecker(i, j):
+            if (i == j):
+                return Mixed(fr.Fraction(1, 1))
+            else:
+                return Mixed(fr.Fraction(0, 1))
+        return Row([kronecker(i, j) for j in range(dim)])
+    
+    def block(self, i1, i2):
+        """
+            >>> a = Mixed(fr.Fraction(1, 3))
+            >>> b = Mixed(fr.Fraction(1, 4))
+            >>> c = Mixed(fr.Fraction(2, 5))
+            >>> d = Mixed(uc.ufloat(1.2, 0.1))
+            >>> R = Row([a, b, c, d])
+            >>> print(R.block(1, 3))
+            (  1/4  2/5  )
+        """
+        length = self.len()
+        assert isinstance(i1, int) and isinstance(i2, int), \
+            "For cutting a block out of a Row, use integers of type int!"
+        assert (i1 >= 0) and (i2 >= 0) and (i1 <= length) and (i2 <= length), \
+            "For cutting a block out of a Row, use integers between "\
+            "0 and the length of the Row!"
+        assert (i1 < i2), \
+            "For cutting a block out of a Row, use integers (i1, i2) with "\
+            "i1 < i2 !"
+        return Row([self.liste[i] for i in range(i1, i2)])
+
+    def __add__(self, right):
+        """
+            >>> A = Row([Mixed(fr.Fraction(1, 2)), Mixed(fr.Fraction(2, 3))])
+            >>> B = Row([Mixed(fr.Fraction(3, 4)), Mixed(fr.Fraction(4, 5))])
+            >>> print(A + B)
+            (  5/4  22/15  )
+        """
+        assert isinstance(right, Row), \
+            "Only object of type Row can be added to object of type Row."
+        assert (self.len() == right.len()), \
+            "Two rows must have the same length to be added."
+        return Row([self.liste[i] + right.liste[i] for i in range(self.len())])
+
+    def __mul__(self, right):
+        assert isinstance(right, Mixed), \
+            "Onlay object of type Mixed can be multiplied with object of type Row."
+        
+        return Row([self.liste[i] * right for i in range(self.len())])
+
 
 class Matrix(object):
     def __init__(self, liste):
@@ -149,25 +244,21 @@ class Matrix(object):
             >>> b = Mixed(fr.Fraction(1, 4))
             >>> c = Mixed(fr.Fraction(2, 5))
             >>> x = Mixed(uc.ufloat(1.2, 0.1))
-            >>> M = Matrix([[a, b], [c, x]])
+            >>> M = Matrix([Row([a, b]), Row([c, x])])
             >>> type(M)
             <class 'cryspy_numbers.Matrix'>
         """
         assert isinstance(liste, list), \
             "Object of type Matrix must be created by a list."
         for row in liste:
-            assert isinstance(row, list), \
-             "Object of type Matrix must be created by a list of lists"
-        rowlength = len(liste[0])
+            assert isinstance(row, Row), \
+             "Object of type Matrix must be created by a list of objects of type " \
+             "Row."
+        rowlength = liste[0].len()
         for row in liste:
-            assert (len(row) == rowlength), \
-              "Object of type Matrix must be created by a list of lists"\
-              " of the same length each."
-        for row in liste:
-            for item in row:
-                assert isinstance(item, Mixed), \
-                    "Object of type Matrix must be created by a list "\
-                    "of lists of objects of type Mixed."
+            assert (row.len() == rowlength), \
+              "Object of type Matrix must be created by a list of objects of type "\
+              "Row of the same length each."
         self.liste = deepcopy(liste)
 
     def __str__(self):
@@ -178,20 +269,20 @@ class Matrix(object):
             >>> d = Mixed(fr.Fraction(3, 4))
             >>> x = Mixed(uc.ufloat(1.2, 0.1))
             >>> y = Mixed(uc.ufloat(1.003, 0.001))
-            >>> M = Matrix([[a, b], [c, d]])
+            >>> M = Matrix([Row([a, b]), Row([c, d])])
             >>> print(M)
              /  1/3  1/4  \ 
              \  2/5  3/4  / 
-            >>> N = Matrix([[a, b, c, d], [a, d, x, y], [b, x, d, x]])
+            >>> N = Matrix([Row([a, b, c, d]), Row([a, d, x, y]), Row([b, x, d, x])])
             >>> print(N)
              /  1/3          1/4          2/5              3/4  \ 
             |   1/3          3/4  1.20+/-0.10  1.0030+/-0.0010   |
              \  1/4  1.20+/-0.10          3/4      1.20+/-0.10  / 
         """
         str = ''
-        length = [0]*len(self.liste[0])
+        length = [0]*self.shape()[1]
         for row in self.liste:
-            for (i, item) in zip(range(len(row)), row):
+            for (i, item) in zip(range(row.len()), row.liste):
                 length[i] = max(length[i], len(item.__str__()))
 
         for (i, row) in zip(range(len(self.liste)), self.liste):
@@ -201,7 +292,7 @@ class Matrix(object):
                 str += ' \\  '
             else:
                 str += '|   '
-            for (j, item) in zip(range(len(row)), row):
+            for (j, item) in zip(range(row.len()), row.liste):
                 codestr = '%' + '%i'%(length[j]) + 's  '
                 str += codestr%(item.__str__())
             if i == 0:
@@ -222,11 +313,11 @@ class Matrix(object):
             >>> d = Mixed(fr.Fraction(3, 4))
             >>> x = Mixed(uc.ufloat(1.2, 0.1))
             >>> y = Mixed(uc.ufloat(1.003, 0.001))
-            >>> N = Matrix([[a, b, c, d], [a, d, x, y], [b, x, d, x]])
+            >>> N = Matrix([Row([a, b, c, d]), Row([a, d, x, y]), Row([b, x, d, x])])
             >>> N.shape()
             (3, 4)
         """
-        return (len(self.liste), len(self.liste[0]))
+        return (len(self.liste), self.liste[0].len())
 
     def __add__(self, right):
         """
@@ -236,8 +327,8 @@ class Matrix(object):
             >>> d = Mixed(fr.Fraction(4, 5))
             >>> x = Mixed(uc.ufloat(3.75, 0.23))
             >>> y = Mixed(uc.ufloat(4.25, 0.10))
-            >>> M1 = Matrix([[a, b], [x, y]])
-            >>> M2 = Matrix([[c, x], [d, y]])
+            >>> M1 = Matrix([Row([a, b]), Row([x, y])])
+            >>> M2 = Matrix([Row([c, x]), Row([d, y])])
             >>> print(M1)
              /          1/4          1/5  \ 
              \  3.75+/-0.23  4.25+/-0.10  / 
@@ -254,8 +345,8 @@ class Matrix(object):
             "Two Matrices must have the same shape for Operator +"
         (numrows, numcolumns) = self.shape()
         return Matrix([\
-            [self.liste[i][j] + right.liste[i][j] \
-            for j in range(numcolumns)] \
+            Row([self.liste[i].liste[j] + right.liste[i].liste[j] \
+            for j in range(numcolumns)]) \
             for i in range(numrows)])
 
     def __mul__(self, right):
@@ -267,21 +358,21 @@ class Matrix(object):
             >>> null = Mixed(fr.Fraction(0, 1))
             >>> x = Mixed(uc.ufloat(3.75, 0.23))
             >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M = Matrix([[a, b], [c, x]])
+            >>> M = Matrix([Row([a, b]), Row([c, x])])
             >>> print(M)
              /  1/4          1/5  \ 
              \  3/7  3.75+/-0.23  / 
             >>> print(M * z)
              /   5/4           1  \ 
              \  15/7  18.8+/-1.2  / 
-            >>> I = Matrix([[eins, null], [null, eins]])
+            >>> I = Matrix([Row([eins, null]), Row([null, eins])])
             >>> print(I)
              /  1  0  \ 
              \  0  1  / 
             >>> print(I * M)
              /  1/4          1/5  \ 
              \  3/7  3.75+/-0.23  / 
-            >>> N = Matrix([[a, b], [a, c]])
+            >>> N = Matrix([Row([a, b]), Row([a, c])])
             >>> print(M * N)
              /         9/80       19/140  \ 
              \  1.04+/-0.06  1.69+/-0.10  / 
@@ -289,32 +380,181 @@ class Matrix(object):
         assert isinstance(right, Mixed) or isinstance(right, Matrix), \
             "A Matrix can be multiplied only by a Mixed or a Matrix."
         if isinstance(right, Mixed):
-            numrows = len(self.liste)
-            numcols = len(self.liste[0])
+            (numrows, numcols) = self.shape()
             return Matrix( \
                 [ \
-                    [self.liste[i][j] * right for j in range(numcols)] \
+                    Row([self.liste[i].liste[j] * right for j in range(numcols)]) \
                     for i in range(numrows) \
                 ] \
             )
         if isinstance(right, Matrix):
             numrows1 = len(self.liste)
-            numcols1 = len(self.liste[0])
+            numcols1 = self.liste[0].len()
             numrows2 = len(right.liste)
-            numcols2 = len(right.liste[0])
+            numcols2 = right.liste[0].len()
             assert (numcols1 == numrows2), \
                 "Matrix-Multiplication needs two matrices, with "\
                 " width of first matrix equals height of second matrix."
             def matrixitem(i, j):
                 s = Mixed(fr.Fraction(0, 1))
                 for k in range(numcols1):
-                    s += self.liste[i][k] * right.liste[k][j]
+                    s += self.liste[i].liste[k] * right.liste[k].liste[j]
                 return s
             return Matrix( \
                 [ \
-                   [matrixitem(i, j) for j in range(numcols2)] \
+                   Row([matrixitem(i, j) for j in range(numcols2)]) \
                    for i in range(numrows1) \
                 ] \
             )
 
+    def onematrix(dim):
+        """
+            >>> A = Matrix.onematrix(2)
+            >>> print(A)
+             /  1  0  \ 
+             \  0  1  / 
+        """
+        assert isinstance(dim, int), \
+            "Onematrix must be created via a dimension of type int."
+        assert (dim > 0), \
+            "Dimension for creating onematrix must be > 0."
+        return Matrix([Row.canonical(dim, i) for i in range(dim)])
+        def inv(self):
+            return 0
+
+    def block(self, i1, i2, j1, j2):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> eins = Mixed(fr.Fraction(1, 1))
+            >>> null = Mixed(fr.Fraction(0, 1))
+            >>> x = Mixed(uc.ufloat(3.75, 0.23))
+            >>> z = Mixed(fr.Fraction(5, 1))
+            >>> M = Matrix([Row([a, b]), Row([c, x]), Row([eins, z])])
+            >>> print(M.block(0, 2, 0, 1))
+             /  1/4  \ 
+             \  3/7  / 
+        """
+        assert isinstance(i1, int) and isinstance(i2, int) \
+            and isinstance(j1, int) and isinstance(j2, int), \
+            "For cutting a block out of a matrix, use indexes of type integer!"
+        (numrows, numcols) = self.shape()
+        assert (i1 <= numrows) and (i2 <= numrows)\
+            and (j1 <= numcols) and (j2 <= numrows), \
+            "For cutting a block out of a matrix, use integers, which are between "\
+            "0 and num of rows / num of cols"
+        assert (i1 < i2) and (j1 < j2), \
+            "For cutting a block out of a matrix, use integers (i1, i2, j1, j2) "\
+            "with i1 < i2 and j1 < j2."
+        return Matrix([self.liste[i].block(j1, j2) for i in range(i1, i2)])
+
+    def swap_rows(self, i, j):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> eins = Mixed(fr.Fraction(1, 1))
+            >>> x = Mixed(uc.ufloat(3.75, 0.23))
+            >>> z = Mixed(fr.Fraction(5, 1))
+            >>> M = Matrix([Row([a, b]), Row([c, x]), Row([eins, z])])
+            >>> print(M)
+             /  1/4          1/5  \ 
+            |   3/7  3.75+/-0.23   |
+             \    1            5  / 
+            >>> print(M.swap_rows(0, 1))
+             /  3/7  3.75+/-0.23  \ 
+            |   1/4          1/5   |
+             \    1            5  / 
+        """
+        assert isinstance(i, int) and isinstance(j, int), \
+            "The indices for swapping rows must be of type integer."
+        (numrows, numcols) = self.shape()
+        assert (i >= 0) and (i < numrows) and (j >= 0) and (j < numrows), \
+            "The index for swapping rows must be >= 0 and < num of rows."
+        if (i == j):
+            return self
+        else:
+            indexes = list(range(numrows))
+            (indexes[i], indexes[j]) = (j, i)
+            return Matrix([self.liste[index] for index in indexes])
+
+    def vglue(left, right):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(3, 7))
+            >>> eins = Mixed(fr.Fraction(1, 1))
+            >>> x = Mixed(uc.ufloat(3.75, 0.23))
+            >>> z = Mixed(fr.Fraction(5, 1))
+            >>> M = Matrix([Row([a, b]), Row([c, x])])
+            >>> N = Matrix([Row([eins, z])])
+            >>> print(Matrix.vglue(M, N))
+             /  1/4          1/5  \ 
+            |   3/7  3.75+/-0.23   |
+             \    1            5  / 
+        """
+        (numrows1, numcols1) = left.shape()
+        (numrows2, numcols2) = right.shape()
+        assert (numcols1 == numcols2), \
+            "I cannot vglue (vertical glue) Matrices with different numbers " \
+            "of cols."
+        def row(i):
+            if i < numrows1:
+                return left.liste[i]
+            else:
+                return right.liste[i - numrows1]
+        return Matrix([row(i) for i in range(numrows1 + numrows2)])
+
+
+    def subtract_x_times_rowj_from_rowi(self, x, i, j):
+        """
+            >>> a = Mixed(fr.Fraction(1, 4))
+            >>> b = Mixed(fr.Fraction(1, 5))
+            >>> c = Mixed(fr.Fraction(1, 2))
+            >>> eins = Mixed(fr.Fraction(1, 1))
+            >>> x = Mixed(uc.ufloat(3.75, 0.23))
+            >>> z = Mixed(fr.Fraction(5, 1))
+            >>> M = Matrix([Row([a, b]), Row([c, x])])
+            >>> print(M.subtract_x_times_rowj_from_rowi(Mixed(2.0), 1, 0))
+             /      1/4          1/5  \ 
+             \  0.0+/-0  3.35+/-0.23  / 
+        """
+        new = deepcopy(self)
+        new.liste[i] = self.liste[i] + self.liste[j] * (Mixed(-1) * x)
+        return new
+
+    def inv(self):
+        """
+            >>> M = Matrix([Row([Mixed(2), Mixed(3)]), Row([Mixed(4), Mixed(5)])])
+            >>> print(M.inv()[0])
+            >>> print(M.inv()[1])
+        """
+        (numrows, numcols) = self.shape()
+        assert (numrows == numcols), \
+            "I can invert square matrices only (num of rows == num of cols)."
+        dim = numrows
+        right = Matrix.onematrix(dim)
+            
+        def make_triangle(self, right):
+            (dim, dim) = self.shape()
+            for rownumber in range(dim - 1):
+                i = rownumber
+                while (self.liste[rownumber].liste[rownumber] == Mixed(0)) and (i < dim):
+                    i += 1
+                    self = self.swap_rows(0, i)
+                    right = right.swap_rows(0, i)
+
+                if i == dim:
+                    return (0, 0)
+                else:
+                    for i in range(rownumber + 1, dim):
+                        x = self.liste[i].liste[rownumber] / self.liste[rownumber].liste[rownumber]
+                        self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+                        right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+            return (self, right)
+        (self, right) = make_triangle(self, right)
+         
+
+        return (self, right)   
 
