@@ -527,34 +527,60 @@ class Matrix(object):
     def inv(self):
         """
             >>> M = Matrix([Row([Mixed(2), Mixed(3)]), Row([Mixed(4), Mixed(5)])])
-            >>> print(M.inv()[0])
-            >>> print(M.inv()[1])
+            >>> print(M)
+             /  2  3  \ 
+             \  4  5  / 
+            >>> Minv = M.inv()
+            >>> print(Minv)
+             /  -5/2  3/2  \ 
+             \     2   -1  / 
+            >>> print(M * Minv)
+             /  1  0  \ 
+             \  0  1  / 
         """
         (numrows, numcols) = self.shape()
         assert (numrows == numcols), \
             "I can invert square matrices only (num of rows == num of cols)."
         dim = numrows
-        right = Matrix.onematrix(dim)
-            
+        right = Matrix.onematrix(dim) 
         def make_triangle(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(dim - 1):
                 i = rownumber
-                while (self.liste[rownumber].liste[rownumber] == Mixed(0)) and (i < dim):
+                while (self.liste[rownumber].liste[rownumber] == Mixed(0)) \
+                    and (i < dim):
                     i += 1
                     self = self.swap_rows(0, i)
-                    right = right.swap_rows(0, i)
+                    right = right.swap_row(0, i)
 
                 if i == dim:
                     return (0, 0)
                 else:
                     for i in range(rownumber + 1, dim):
-                        x = self.liste[i].liste[rownumber] / self.liste[rownumber].liste[rownumber]
+                        x = self.liste[i].liste[rownumber] \
+                        / self.liste[rownumber].liste[rownumber]
                         self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
                         right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return (self, right)
+        def make_diagonal(self, right):
+            (dim, dim) = self.shape()
+            for rownumber in range(1, dim):
+                for i in range(0, rownumber):
+                    x = self.liste[i].liste[rownumber] \
+                    / self.liste[rownumber].liste[rownumber]
+                    self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+                    right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+            return(self, right)
+        def make_one(self, right):
+            new = deepcopy(self)
+            (dim, dim) = self.shape()
+            for rownumber in range(0, dim):
+                x = self.liste[rownumber].liste[rownumber]
+                new.liste[rownumber] = self.liste[rownumber] * (Mixed(1) / x)
+                right.liste[rownumber] = right.liste[rownumber] * (Mixed(1) / x)
+            return (new, right)
         (self, right) = make_triangle(self, right)
-         
-
-        return (self, right)   
+        (self, right) = make_diagonal(self, right)
+        (self, right) = make_one(self, right)
+        return right   
 
