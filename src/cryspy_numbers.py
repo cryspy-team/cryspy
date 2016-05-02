@@ -17,7 +17,7 @@ class Mixed(object):
        >>> type(b)
        <class 'cryspy_numbers.Mixed'>
        >>> print(b)
-       1.20+/-0.10
+       1.20(10)
     """
 
     def __init__(self, value):
@@ -35,7 +35,13 @@ class Mixed(object):
             self.value = value
 
     def __str__(self):
-        return self.value.__str__()
+        if isinstance(self.value, fr.Fraction):
+            return self.value.__str__()
+        elif isinstance(self.value, uc.UFloat):
+            return self.value.format('S')
+        else:
+            raise(BaseException("Something is wrong with value of Mixed."))
+            return ''
 
     def __add__(self, right):
         """
@@ -46,11 +52,11 @@ class Mixed(object):
             >>> print(a + b)
             3/4
             >>> print(c + d)
-            2.0+/-0.5
+            2.0(5)
             >>> print(a + c)
-            1.25+/-0.30
+            1.25(30)
             >>> print(c + a)
-            1.25+/-0.30
+            1.25(30)
         """
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -72,11 +78,11 @@ class Mixed(object):
             >>> print(a - b)
             -1/4
             >>> print(c - d)
-            0.0+/-0.5
+            0.0(5)
             >>> print(a - c)
-            -0.75+/-0.30
+            -0.75(30)
             >>> print(c - a)
-            0.75+/-0.30
+            0.75(30)
         """
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -98,11 +104,11 @@ class Mixed(object):
             >>> print(a * b)
             1/2
             >>> print(c * d)
-            3.0+/-0.9
+            3.0(9)
             >>> print(b * c)
-            2.0+/-0.6
+            2.0(6)
             >>> print(c * b)
-            2.0+/-0.6
+            2.0(6)
         """
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -130,11 +136,11 @@ class Mixed(object):
             >>> print(a / b)
             3/4
             >>> print(c / d)
-            0.50+/-0.15
+            0.50(15)
             >>> print(a / d)
-            0.125+/-0
+            0.125(0)
             >>> print(c / a)
-            4.0+/-1.2
+            4.0(1.2)
         """
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -275,18 +281,22 @@ class Matrix(object):
              \  2/5  3/4  / 
             >>> N = Matrix([Row([a, b, c, d]), Row([a, d, x, y]), Row([b, x, d, x])])
             >>> print(N)
-             /  1/3          1/4          2/5              3/4  \ 
-            |   1/3          3/4  1.20+/-0.10  1.0030+/-0.0010   |
-             \  1/4  1.20+/-0.10          3/4      1.20+/-0.10  / 
+             /  1/3       1/4       2/5         3/4  \ 
+            |   1/3       3/4  1.20(10)  1.0030(10)   |
+             \  1/4  1.20(10)       3/4    1.20(10)  / 
+            >>> P = Matrix([Row([Mixed(1), Mixed(2), Mixed(3)])])
+            >>> print(P)
+             <  1  2  3  > 
         """
         str = ''
         length = [0]*self.shape()[1]
         for row in self.liste:
             for (i, item) in zip(range(row.len()), row.liste):
                 length[i] = max(length[i], len(item.__str__()))
-
         for (i, row) in zip(range(len(self.liste)), self.liste):
-            if i == 0:
+            if self.shape()[0] == 1:
+                str += ' <  '
+            elif i == 0:
                 str += ' /  '
             elif i == len(self.liste) - 1:
                 str += ' \\  '
@@ -295,7 +305,9 @@ class Matrix(object):
             for (j, item) in zip(range(row.len()), row.liste):
                 codestr = '%' + '%i'%(length[j]) + 's  '
                 str += codestr%(item.__str__())
-            if i == 0:
+            if self.shape()[0] == 1:
+                str += '> '
+            elif i == 0:
                 str += '\\ '
             elif i == len(self.liste) - 1:
                 str += '/ '
@@ -330,14 +342,14 @@ class Matrix(object):
             >>> M1 = Matrix([Row([a, b]), Row([x, y])])
             >>> M2 = Matrix([Row([c, x]), Row([d, y])])
             >>> print(M1)
-             /          1/4          1/5  \ 
-             \  3.75+/-0.23  4.25+/-0.10  / 
+             /       1/4       1/5  \ 
+             \  3.75(23)  4.25(10)  / 
             >>> print(M2)
-             /  3/7  3.75+/-0.23  \ 
-             \  4/5  4.25+/-0.10  / 
+             /  3/7  3.75(23)  \ 
+             \  4/5  4.25(10)  / 
             >>> print(M1 + M2)
-             /        19/28  3.95+/-0.23  \ 
-             \  4.55+/-0.23  8.50+/-0.14  / 
+             /     19/28  3.95(23)  \ 
+             \  4.55(23)  8.50(14)  / 
         """
         assert isinstance(right, Matrix), \
             "Unknown Operator %s + %s"%(type(self), type(right))
@@ -360,22 +372,22 @@ class Matrix(object):
             >>> z = Mixed(fr.Fraction(5, 1))
             >>> M = Matrix([Row([a, b]), Row([c, x])])
             >>> print(M)
-             /  1/4          1/5  \ 
-             \  3/7  3.75+/-0.23  / 
+             /  1/4       1/5  \ 
+             \  3/7  3.75(23)  / 
             >>> print(M * z)
-             /   5/4           1  \ 
-             \  15/7  18.8+/-1.2  / 
+             /   5/4          1  \ 
+             \  15/7  18.8(1.2)  / 
             >>> I = Matrix([Row([eins, null]), Row([null, eins])])
             >>> print(I)
              /  1  0  \ 
              \  0  1  / 
             >>> print(I * M)
-             /  1/4          1/5  \ 
-             \  3/7  3.75+/-0.23  / 
+             /  1/4       1/5  \ 
+             \  3/7  3.75(23)  / 
             >>> N = Matrix([Row([a, b]), Row([a, c])])
             >>> print(M * N)
-             /         9/80       19/140  \ 
-             \  1.04+/-0.06  1.69+/-0.10  / 
+             /     9/80    19/140  \ 
+             \  1.04(6)  1.69(10)  / 
         """
         assert isinstance(right, Mixed) or isinstance(right, Matrix), \
             "A Matrix can be multiplied only by a Mixed or a Matrix."
@@ -459,13 +471,13 @@ class Matrix(object):
             >>> z = Mixed(fr.Fraction(5, 1))
             >>> M = Matrix([Row([a, b]), Row([c, x]), Row([eins, z])])
             >>> print(M)
-             /  1/4          1/5  \ 
-            |   3/7  3.75+/-0.23   |
-             \    1            5  / 
+             /  1/4       1/5  \ 
+            |   3/7  3.75(23)   |
+             \    1         5  / 
             >>> print(M.swap_rows(0, 1))
-             /  3/7  3.75+/-0.23  \ 
-            |   1/4          1/5   |
-             \    1            5  / 
+             /  3/7  3.75(23)  \ 
+            |   1/4       1/5   |
+             \    1         5  / 
         """
         assert isinstance(i, int) and isinstance(j, int), \
             "The indices for swapping rows must be of type integer."
@@ -490,9 +502,9 @@ class Matrix(object):
             >>> M = Matrix([Row([a, b]), Row([c, x])])
             >>> N = Matrix([Row([eins, z])])
             >>> print(Matrix.vglue(M, N))
-             /  1/4          1/5  \ 
-            |   3/7  3.75+/-0.23   |
-             \    1            5  / 
+             /  1/4       1/5  \ 
+            |   3/7  3.75(23)   |
+             \    1         5  / 
         """
         (numrows1, numcols1) = left.shape()
         (numrows2, numcols2) = right.shape()
@@ -517,8 +529,8 @@ class Matrix(object):
             >>> z = Mixed(fr.Fraction(5, 1))
             >>> M = Matrix([Row([a, b]), Row([c, x])])
             >>> print(M.subtract_x_times_rowj_from_rowi(Mixed(2.0), 1, 0))
-             /      1/4          1/5  \ 
-             \  0.0+/-0  3.35+/-0.23  / 
+             /     1/4       1/5  \ 
+             \  0.0(0)  3.35(23)  / 
         """
         new = deepcopy(self)
         new.liste[i] = self.liste[i] + self.liste[j] * (Mixed(-1) * x)
