@@ -153,6 +153,33 @@ class Mixed(object):
             if isinstance(right.value, uc.UFloat):
                 return Mixed(self.value / right.value)
 
+    def __eq__(self, right):
+        """
+            >>> a = Mixed(fr.Fraction(1,2))
+            >>> b = Mixed(uc.ufloat(1.2, 0.1))
+            >>> a == b
+            False
+            >>> a == a
+            True
+            >>> b == b
+            True
+            >>> a == 0.5
+            True
+            >>> b == 1.2
+            False
+            >>> 0.5 == a
+            True
+        """
+        if isinstance(right, Mixed):
+            return (self.value == right.value)
+        else:
+            try:
+                return (self.value == right)
+            except:
+                raise(BaseException("Object of this type cannot"\
+                                    "be compared with object of tpye"\
+                                    "Mixed."))
+
 class Row(object):
     """
         >>> A = Row([Mixed(fr.Fraction(2, 3)), Mixed(fr.Fraction(3, 4))])

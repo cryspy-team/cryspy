@@ -1,0 +1,8 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2016-05-18T13:16:38+02:00
+
+====== Mixed ======
+Created Wednesday 18 May 2016
+
+We define a number type called "Mixed", which can be either an exact rational fraction or a float with error.

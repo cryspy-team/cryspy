@@ -22,15 +22,19 @@ def fromstr(string):
     typ = typefromstr(string)
     if typ == nb.Mixed:
         try:
-            return mixedfromstr(string)
+            result = mixedfromstr(string)
+            assert (result != None), \
+                "The following string looks like a number, but I "\
+                "cannot convert it: %s"%(string)
+            return result
         except:
             pass
     elif typ == nb.Matrix:
         try:
             return matrixfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Matrix, but "\
-                            "I can't convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Matrix, "\
+                            "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
     """
@@ -76,8 +80,8 @@ def mixedfromstr(string):
         try:
             return nb.Mixed(uc.ufloat_fromstr(string))
         except ValueError:
-            raise(Exception("The following string looks like a number, but "\
-                            "I can't convert it: %s"%(string)))
+            raise(Exception("The following string looks like a number, "\
+                            "but I can't convert it: %s"%(string)))
 
 def matrixfromstr(string):
      string = string.replace('|', '\\')
@@ -85,7 +89,7 @@ def matrixfromstr(string):
      string = string.replace('<', ' ')
      string = string.replace('>', ' ')
      string = string.replace(' /', ' ')
-     string = string.replace('\\n', '\\')
+     string = string.replace('\n', '\\')
      for i in range(4):
         string = string.replace('\\ \\', '\\')
         string = string.replace('\\  \\', '\\')
