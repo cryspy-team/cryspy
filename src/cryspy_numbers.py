@@ -596,3 +596,22 @@ class Matrix(object):
         (self, right) = make_one(self, right)
         return right   
 
+    def transpose(self):
+        """
+            >>> a = Mixed(fr.Fraction(1, 2))
+            >>> b = Mixed(fr.Fraction(3, 4))
+            >>> c = Mixed(uc.ufloat(1.2, 0.1))
+            >>> d = Mixed(uc.ufloat(2.5, 0.3))
+            >>> M = Matrix([Row([a, b]), Row([c, d]), Row([a, d])])
+            >>> print(M.transpose())
+             /  1/2  1.20(10)       1/2  \ 
+             \  3/4  2.50(30)  2.50(30)  / 
+        """
+        shape = self.shape()
+        return Matrix([ \
+                   Row([ \
+                       self.liste[j].liste[i] \
+                       for j in range(shape[0]) \
+                   ]) \
+                   for i in range(shape[1]) \
+               ])
