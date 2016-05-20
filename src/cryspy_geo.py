@@ -1,4 +1,5 @@
 import cryspy_numbers as nb
+import cryspy_fromstr as fs
 import blockprint as bp
 
 class Pos:
@@ -101,7 +102,7 @@ class Operator:
         if isinstance(right, Pos):
             return Pos(self.value * right.value)
         elif isinstance(right, Dif):
-            return Pos(self.value * right.value)
+            return Dif(self.value * right.value)
         elif isinstance(right, Operator):
             return Operator(self.value * right.value * self.value.inv())
         else:
@@ -109,38 +110,92 @@ class Operator:
                 " to object of type %s."%(type(right))))
 
 
+def linearterm2str(liste_numbers, liste_variables):
+    assert isinstance(liste_numbers, list), \
+        "Argument must be of type list."
+    for item in liste_numbers:
+        assert isinstance(item, nb.Mixed) or \
+            isinstance(item, int) or \
+            isinstance(item, float), \
+            "Argument must be a list of Mixed, int or flot." 
+    assert isinstance(liste_variables, list), \
+        "Argument must be of type list."
+    for item in liste_variables:
+        assert isinstance(item, str), \
+            "Argument must be a list of str."
+    assert len(liste_numbers) == len(liste_variables), \
+        "Arguments must have the same length."
+    def prefactor(number, variablestr):
+        assert isinstance(number, nb.Mixed), \
+            "Argument must be of type Mixed."
+        if (number == 0):
+            return ''
+        elif (number.value > 0):
+            if (number == 1) and (variablestr != ''):
+                return '+' + variablestr
+            else:
+                return '+' + number.__str__() + variablestr
+        elif (number.value < 0):
+            if (number == -1) and (variablestr != ''):
+                return '-' + variablestr
+            else:
+                return '-' + (-number).__str__() + variablestr
+    result =  ''
+    for i in range(len(liste_numbers)):
+        result += prefactor(liste_numbers[i], liste_variables[i])
+    if result[0] == '+':
+        result = result[1:]
+    return result
+
+
+def str2linearterm(string, liste_variables):
+    assert isinstance(string, str), \
+        "Argument must be of type str."
+    assert isinstance(liste_variables, list), \
+        "Argument must be of type list."
+    for item in liste_variables:
+        assert isinstance(item, str), \
+            "Argument must be a list of objects of type str."
+    string = string.replace('-', '+-')
+    string = string.replace(' ', '')
+    words = string.split('+')
+    liste_numbers = [0 for i in range(len(liste_variables) + 1)]
+    for word in words:
+        print("word : %s"%(word))
+        has_variable = False
+        index = -1
+        for a in word:
+            print("buchstabe: %s"%(a))
+            if a.isalpha():
+                word = word.replace(a, '')
+                index = liste_variables.index(a)
+                has_variable = True
+        if word == '' or word == '-':
+            if has_variable:
+                word += '1'
+            else:
+                word += '0'
+        print("soll zahl sein: %s"%(word))
+        liste_numbers[index] += fs.fromstr(word)
+    return liste_numbers
 
 
 class Symmetry(Operator):
     def __str__(self):
-        def row2term(row):
-            assert isinstance(row, nb.Row), \
-                "Argument must be of type Row."
-            def prefactor(number, variablestr):
-                assert isinstance(number, nb.Mixed), \
-                    "Argument must be of type Mixed."
-                if (number == 0):
-                    return ''
-                elif (number.value > 0):
-                    if (number == 1) and (variablestr != ''):
-                        return '+' + variablestr
-                    else:
-                        return '+' + number.__str__() + variablestr
-                elif (number.value < 0):
-                    if (number == -1) and (variablestr != ''):
-                        return '-' + variablestr
-                    else:
-                        return '-' + (-number).__str__() + variablestr
-            result =  prefactor(row.liste[0], 'x') \
-                    + prefactor(row.liste[1], 'y') \
-                    + prefactor(row.liste[2], 'z') \
-                    + prefactor(row.liste[3], '')
-            if result[0] == '+':
-                result = result[1:]
-            return result
-        result =  row2term(self.value.liste[0]) + ',' \
-                + row2term(self.value.liste[1]) + ',' \
-                + row2term(self.value.liste[2])
+        result = ''
+        for i in range(3):
+            result +=  linearterm2str(self.value.liste[i].liste,
+                ["x", "y", "z", '']) + ','
+        result = result[:-1]
         return result
             
+
+class Transformation(Operator):
+    def __str__(self):
+        result = ''
+        for i in range(3):
+            result += linearterm2str(self.value.liste[i].liste, 
+                ["a", "b", "c", '']) + "\n"
+        result = result[:-1]
+        return bp.block([["Transformation ", "a' = \nb' = \nc' = ", result],])
 

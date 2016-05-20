@@ -1,6 +1,7 @@
 import cryspy_numbers as nb
 import quicktions as fr
 import uncertainties as uc
+import cryspy_geo as geo
 
 def fromstr(string):
     """
@@ -35,6 +36,12 @@ def fromstr(string):
         except ValueError:
             raise(Exception("The following string looks like a Matrix, "\
                             "but I cannot convert it: %s"%(string)))
+    elif typ == geo.Symmetry:
+       try:
+           return symmetryfromstr(string)
+       except ValueError:
+           raise(Exception("The following string looks like a Symmetry, "\
+                           "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
     """
@@ -70,6 +77,8 @@ def typefromstr(string):
         return nb.Matrix
     elif ('\n' in string) or ('\\' in string):
         return nb.Matrix
+    elif ('x' in string) or ('y' in string) or ('z' in string):
+        return geo.Symmetry
     else:
         return nb.Mixed
 
@@ -103,3 +112,16 @@ def matrixfromstr(string):
              liste.append(mixedfromstr(word))
          rowliste.append(nb.Row(liste))
      return nb.Matrix(rowliste)
+
+def symmetryfromstr(string):
+    words = string.split(',')
+    assert len(words) == 3, \
+        "The following string looks like a Symmetry, but it has not "\
+        "three comma-separated terms: %s"%(string)
+    liste = []
+    for word in words:
+        row = nb.Row(geo.str2linearterm(word, ["x", "y", "z"]))
+        liste.append(row)
+    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+        fromstr("1")]))
+    return geo.Symmetry(nb.Matrix(liste))

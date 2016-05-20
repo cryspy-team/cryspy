@@ -304,6 +304,9 @@ class Row(object):
         >>> A = Row([Mixed(fr.Fraction(2, 3)), Mixed(fr.Fraction(3, 4))])
         >>> print(A)
         (  2/3  3/4  )
+        >>> A = Row([0.1, 5])
+        >>> print(A)
+        (  0.1(0)  5  )
     """
     def __init__(self, liste):
         assert isinstance(liste, list), \
@@ -318,6 +321,11 @@ class Row(object):
                 "Object of type Row must be created by a list of " \
                 "objects of type Mixed or int or float."
         self.liste = deepcopy(liste)
+        for i in range(len(self.liste)):
+            if isinstance(self.liste[i], int):
+                self.liste[i] = Mixed(fr.Fraction(self.liste[i]))
+            if isinstance(self.liste[i], float):
+                self.liste[i] = Mixed(uc.ufloat(self.liste[i], 0.0))
     
     def len(self):
         return len(self.liste)
@@ -399,7 +407,7 @@ class Row(object):
 
     def __mul__(self, right):
         assert isinstance(right, Mixed), \
-            "Onlay object of type Mixed can be multiplied with object of type Row."
+            "Only object of type Mixed can be multiplied with object of type Row."
         
         return Row([self.liste[i] * right for i in range(self.len())])
 
