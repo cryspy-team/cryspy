@@ -46,14 +46,18 @@ def block(liste):
     string = ''
     for i in range(numrows):
         for line in range(maxheights[i]):
-            for j in range(len(liste[i])):
-                if height_of_block(liste[i][j]) > line:
-                    stringpart = liste[i][j].split('\n')[line]
+            for j in range(numcols):
+                if j < len(liste[i]):
+                    if (height_of_block(liste[i][j]) > line):
+                        stringpart = liste[i][j].split('\n')[line]
+                    else:
+                        stringpart = ''
+                    code = '%'
+                    code += "%i"%(maxwidths[j])
+                    code += 's'
+                    string += code%stringpart
                 else:
-                    stringpart = ''
-                code = '%'
-                code += "%i"%(maxwidths[j])
-                code += 's'
-                string += code%stringpart
+                    string += maxwidths[j] * ' '
             string += '\n'
+    string = string[:-1]
     return string

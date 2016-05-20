@@ -299,6 +299,46 @@ class Mixed(object):
                                     "be compared with object of tpye"\
                                     "Mixed."))
 
+    def __mod__(self, right):
+        """
+           >>> a = Mixed(fr.Fraction(5, 2))
+           >>> b = Mixed(fr.Fraction(9, 4))
+           >>> c = Mixed(uc.ufloat(1.2, 0.1))
+           >>> d = Mixed(uc.ufloat(2.5, 0.3))
+           >>> print(a % b)
+           1/4
+           >>> print("%8f"%((a % c).value.n))
+           0.100000
+           >>> print(c % a)
+           1.2(0)
+           >>> print(c % d)
+           1.20(10)
+           >>> print(a % 1)
+           1/2
+           >>> print(a % 0.5)
+           0.0(0)
+           >>> print(c % 1)
+           0.20(10)
+           >>> print(c % 0.5)
+           0.20(10)
+        """    
+        assert isinstance(right, Mixed) \
+            or isinstance(right, int) \
+            or isinstance(right, float), \
+            "Cannot calculate modulo of objects of type %s and %s"%\
+            (type(self), type(right))
+        if isinstance(right, Mixed):
+            if isinstance(self.value, uc.UFloat) \
+                and isinstance(right.value, fr.Fraction):
+                return Mixed(self.value.n % float(right.value))
+            elif isinstance(self.value, fr.Fraction) \
+                and isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) % right.value.n)
+            else:
+                return Mixed(self.value % right.value)
+        elif isinstance(right, int) or isinstance(right, float):
+            return Mixed(self.value % right)
+
 class Row(object):
     """
         >>> A = Row([Mixed(fr.Fraction(2, 3)), Mixed(fr.Fraction(3, 4))])

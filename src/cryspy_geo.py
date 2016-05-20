@@ -103,11 +103,19 @@ class Operator:
             return Pos(self.value * right.value)
         elif isinstance(right, Dif):
             return Dif(self.value * right.value)
+        elif isinstance(right, Symmetry):
+            return Symmetry(self.value * right.value * self.value.inv())
+        elif isinstance(right, Transformation):
+            return Transformation(self.value * right.value * \
+                self.value.inv())
         elif isinstance(right, Operator):
             return Operator(self.value * right.value * self.value.inv())
         else:
             raise(BaseException("I cannot apply object of type Operator"\
                 " to object of type %s."%(type(right))))
+
+    def inv(self):
+        return Operator(self.value.inv())
 
 
 def linearterm2str(liste_numbers, liste_variables):
@@ -161,11 +169,9 @@ def str2linearterm(string, liste_variables):
     words = string.split('+')
     liste_numbers = [0 for i in range(len(liste_variables) + 1)]
     for word in words:
-        print("word : %s"%(word))
         has_variable = False
         index = -1
         for a in word:
-            print("buchstabe: %s"%(a))
             if a.isalpha():
                 word = word.replace(a, '')
                 index = liste_variables.index(a)
@@ -175,7 +181,6 @@ def str2linearterm(string, liste_variables):
                 word += '1'
             else:
                 word += '0'
-        print("soll zahl sein: %s"%(word))
         liste_numbers[index] += fs.fromstr(word)
     return liste_numbers
 
@@ -199,3 +204,51 @@ class Transformation(Operator):
         result = result[:-1]
         return bp.block([["Transformation ", "a' = \nb' = \nc' = ", result],])
 
+class Transgen(Operator):
+    def __init__(self, value):
+        assert isinstance(value, nb.Matrix), \
+            "Must be created by an object of type Matrix."
+        assert value.shape() == (4, 4), \
+            "Must be created by a 4x4-Matrix."
+        assert value.liste[3] == nb.Row([0, 0, 0, 1]), \
+            "Must be created by a 4x4-Matrix of this shape: \n"\
+            "   * * * * \n"\
+            "   * * * * \n"\
+            "   * * * * \n"\
+            "   0 0 0 1 \n"
+        assert  (value.liste[0].liste[3] == 0) \
+            and (value.liste[1].liste[3] == 0) \
+            and (value.liste[2].liste[3] == 0), \
+            "Must be created by a 4x4-Matrix without translation part."
+        self.value = value
+        
+    def __str__(self):
+        return bp.block([["Transgen", \
+            self.value.block(0, 3, 0, 1).__str__(), ' ', \
+            self.value.block(0, 3, 1, 2).__str__(), ' ', \
+            self.value.block(0, 3, 2, 3).__str__()],])
+         
+
+class Coset():
+    def __init__(self, symmetry, transgen):
+        assert isinstance(symmetry, Symmetry), \
+            "First argument must be of type Symmetry."
+        assert isinstance(transgen, Transgen), \
+            "Second argument must be of type Transgen."
+        self.symmetry = symmetry
+        self.transgen = transgen
+        self.gohome()
+    
+    def __str__(self):
+        transgenblock = bp.block( \
+            [[self.transgen.value.liste[i].liste[j].__str__() + "  " \
+                for j in range(3)] for i in range(3)])
+        return bp.block([[self.symmetry.__str__(),],[transgenblock,]])
+
+    def gohome(self):
+       self.symmetry = self.transgen.inv() ** self.symmetry
+       self.symmetry.value.liste[0].liste[3] %= 1
+       self.symmetry.value.liste[1].liste[3] %= 1
+       self.symmetry.value.liste[2].liste[3] %= 1
+       self.symmetry = self.transgen ** self.symmetry
+           

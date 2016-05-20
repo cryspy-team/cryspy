@@ -22,5 +22,9 @@ def test_maxsizes():
 
 def test_block():
     liste = [["a",], ["a\nb", "aaa"], ["aa\naa", "b"]]
-    assert bp.block(liste) == " a\n aaaa\n b\naa  b\naa\n"
+    assert bp.block(liste) == " a   \n"\
+                              " aaaa\n"\
+                              " b   \n"\
+                              "aa  b\n"\
+                              "aa   "
 

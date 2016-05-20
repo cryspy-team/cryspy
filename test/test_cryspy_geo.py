@@ -7,12 +7,12 @@ import cryspy_fromstr as fs
 def test_Pos():
     v = fs.fromstr('/ 1 \n 2 \n 3 \n 1 /')
     x = geo.Pos(v)
-    assert x.__str__() == "Pos /  1  \ \n   |   2   |\n    \  3  / \n"
+    assert x.__str__() == "Pos /  1  \ \n   |   2   |\n    \  3  / "
 
 def test_Dif():
     v = fs.fromstr('/ 1 \n 2 \n 3 \n 0 /')
     x = geo.Dif(v)
-    assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / \n"
+    assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / "
 
 def test_eq():
     r1 = geo.Pos(fs.fromstr('/ 1 \n 2 \n 3 \n 1 /'))
@@ -57,7 +57,7 @@ def test_Operator():
     assert g.__str__() == "Operator /  -1   0  0  0  \ \n"\
                           "        |    0  -1  0  0   |\n"\
                           "        |    0   0  1  0   |\n"\
-                          "         \   0   0  0  1  / \n"
+                          "         \   0   0  0  1  / "
     assert g == g1
 
 def test_apply_Operator():
@@ -94,4 +94,30 @@ def test_Transformation():
     g = geo.Transformation(M)
     assert g.__str__() == "Transformation a' =   a+c\n"\
                           "               b' = b+1/2\n"\
-                          "               c' =  -a+c\n"
+                          "               c' =  -a+c"
+
+def test_Transgen():
+    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
+                                "0 1 0 0 \n"\
+                                "0 0 1 0 \n"\
+                                "0 0 0 1"))
+    assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
+                           "        |   0   | |   1   | |   0   |\n"\
+                           "         \  0  /   \  0  /   \  1  / "
+
+
+def test_Coset():
+    g = geo.Symmetry( \
+        fs.fromstr("/ 1 0 2 -1 \n 0 -2 0 0 \n 0 0 1 1 \n 0 0 0 1 /"))
+    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
+                                 "0 1 0 0 \n"\
+                                 "0 0 2 0 \n"\
+                                 "0 0 0 1"))
+    c = geo.Coset(g, tg)
+    assert c.__str__() == \
+        "x+2z,-2y,z+1\n"\
+        "   1  0  0  \n"\
+        "   0  1  0  \n"\
+        "   0  0  2  "
+
+   
