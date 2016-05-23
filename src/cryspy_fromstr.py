@@ -37,38 +37,26 @@ def fromstr(string):
             raise(Exception("The following string looks like a Matrix, "\
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Symmetry:
-       try:
-           return symmetryfromstr(string)
-       except ValueError:
-           raise(Exception("The following string looks like a Symmetry, "\
-                           "but I cannot convert it: %s"%(string)))
+        try:
+            return symmetryfromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a Symmetry, "\
+                            "but I cannot convert it: %s"%(string)))
+    elif typ == geo.Transformation:
+        try:
+            return transformationfromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a "\
+                            "Transformation, but I cannot convert it: %s"\
+                            %(string)))
+    elif typ == geo.Coset:
+        try:
+            return cosetfromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a Coset "\
+                            "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
-    """
-        >>> string = "/ 1 2 \ \\n\ 3 4 /"
-        >>> print(string)
-        / 1 2 \ 
-        \ 3 4 /
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Matrix'>
-        >>> string = "< 1 2 3>"
-        >>> print(string)
-        < 1 2 3>
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Matrix'>
-        >>> string = '1/2'
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Mixed'>
-        >>> string = '1.2+/-0.1'
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Mixed'>
-        >>> string = '1.2(1)'
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Mixed'>
-        >>> string = '4'
-        >>> typefromstr(string)
-        <class 'cryspy_numbers.Mixed'>
-    """
     words = string.split()
 
     if (words[0][0] == '/') and words[-1][-1] == '/':
@@ -77,8 +65,12 @@ def typefromstr(string):
         return nb.Matrix
     elif ('\n' in string) or ('\\' in string):
         return nb.Matrix
+    elif ('{' in string) and ('}' in string):
+        return geo.Coset
     elif ('x' in string) or ('y' in string) or ('z' in string):
         return geo.Symmetry
+    elif ('a' in string) or ('b' in string) or ('c' in string):
+        return geo.Transformation
     else:
         return nb.Mixed
 
@@ -91,6 +83,7 @@ def mixedfromstr(string):
         except ValueError:
             raise(Exception("The following string looks like a number, "\
                             "but I can't convert it: %s"%(string)))
+
 
 def matrixfromstr(string):
      string = string.replace('|', '\\')
@@ -113,6 +106,7 @@ def matrixfromstr(string):
          rowliste.append(nb.Row(liste))
      return nb.Matrix(rowliste)
 
+
 def symmetryfromstr(string):
     words = string.split(',')
     assert len(words) == 3, \
@@ -120,8 +114,28 @@ def symmetryfromstr(string):
         "three comma-separated terms: %s"%(string)
     liste = []
     for word in words:
-        row = nb.Row(geo.str2linearterm(word, ["x", "y", "z"]))
+        row = nb.Row(geo.str2linearterm(word, ['x', 'y', 'z']))
         liste.append(row)
     liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
         fromstr("1")]))
     return geo.Symmetry(nb.Matrix(liste))
+
+
+def transformationfromstr(string):
+    words = string.split(',')
+    assert len(words) == 3, \
+        "The following string looks like a Symmetry, but it has not "\
+        "three comma-seperated terms: %s"%(string)
+    liste = []
+    for word in words:
+        row = nb.Row(geo.str2linearterm(word, ['a', 'b', 'c']))
+        liste.append(row)
+    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+        fromstr("1")]))
+    return geo.Transformation(nb.Matrix(liste))
+
+
+def cosetfromstr(string):
+    if '\n' in string:
+        lines = string.split('\n')
+        

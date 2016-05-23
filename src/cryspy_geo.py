@@ -227,7 +227,9 @@ class Transgen(Operator):
             self.value.block(0, 3, 0, 1).__str__(), ' ', \
             self.value.block(0, 3, 1, 2).__str__(), ' ', \
             self.value.block(0, 3, 2, 3).__str__()],])
-         
+
+
+CanonicalTransgen = Transgen(nb.Matrix.onematrix(4))
 
 class Coset():
     def __init__(self, symmetry, transgen):
@@ -240,10 +242,14 @@ class Coset():
         self.gohome()
     
     def __str__(self):
-        transgenblock = bp.block( \
-            [[self.transgen.value.liste[i].liste[j].__str__() + "  " \
-                for j in range(3)] for i in range(3)])
-        return bp.block([[self.symmetry.__str__(),],[transgenblock,]])
+        if self.transgen == CanonicalTransgen:
+            return "{"+self.symmetry.__str__()+"}"
+        else:
+            transgenblock = bp.block( \
+                [[self.transgen.value.liste[i].liste[j].__str__() + "  " \
+                    for j in range(3)] for i in range(3)])
+            return bp.block([["{"+self.symmetry.__str__()+"}",],\
+                             [transgenblock,]])
 
     def gohome(self):
        self.symmetry = self.transgen.inv() ** self.symmetry

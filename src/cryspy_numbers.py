@@ -725,8 +725,6 @@ class Matrix(object):
         assert (dim > 0), \
             "Dimension for creating onematrix must be > 0."
         return Matrix([Row.canonical(dim, i) for i in range(dim)])
-        def inv(self):
-            return 0
 
     def block(self, i1, i2, j1, j2):
         """
@@ -843,6 +841,11 @@ class Matrix(object):
             >>> print(M * Minv)
              /  1  0  \ 
              \  0  1  / 
+            >>> N = Matrix([Row([Mixed(0), Mixed(1), Mixed(1)]), Row([Mixed(1), Mixed(0), Mixed(0)]), Row([Mixed(0), Mixed(0), Mixed(-1)])])
+            >>> print(N.inv())
+             /  0  1   0  \ 
+            |   1  0   1   |
+             \  0  0  -1  / 
         """
         (numrows, numcols) = self.shape()
         assert (numrows == numcols), \
@@ -857,7 +860,7 @@ class Matrix(object):
                     and (i < dim):
                     i += 1
                     self = self.swap_rows(0, i)
-                    right = right.swap_row(0, i)
+                    right = right.swap_rows(0, i)
 
                 if i == dim:
                     return (0, 0)

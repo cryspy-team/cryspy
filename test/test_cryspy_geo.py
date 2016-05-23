@@ -98,9 +98,15 @@ def test_Transformation():
 
 def test_Transgen():
     tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
-                                "0 1 0 0 \n"\
-                                "0 0 1 0 \n"\
-                                "0 0 0 1"))
+                                 "0 0 3 0 \n"\
+                                 "0 2 0 0 \n"\
+                                 "0 0 0 1"))
+    assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
+                           "        |   0   | |   0   | |   3   |\n"\
+                           "         \  0  /   \  2  /   \  0  / "
+
+def test_CanonicalTransgen():
+    tg = geo.CanonicalTransgen
     assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
                            "        |   0   | |   1   | |   0   |\n"\
                            "         \  0  /   \  0  /   \  1  / "
@@ -113,11 +119,20 @@ def test_Coset():
                                  "0 1 0 0 \n"\
                                  "0 0 2 0 \n"\
                                  "0 0 0 1"))
+    tg1 = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
+                                 "0 1 0 0 \n"\
+                                 "0 0 2 0 \n"\
+                                 "0 0 0 1"))
+    assert tg == tg1
     c = geo.Coset(g, tg)
     assert c.__str__() == \
-        "x+2z,-2y,z+1\n"\
-        "   1  0  0  \n"\
-        "   0  1  0  \n"\
-        "   0  0  2  "
+        "{x+2z,-2y,z+1}\n"\
+        "     1  0  0  \n"\
+        "     0  1  0  \n"\
+        "     0  0  2  "
+
+    c = geo.Coset(g, geo.CanonicalTransgen)
+    assert c.__str__() == "{x+2z,-2y,z}"
+    
 
    
