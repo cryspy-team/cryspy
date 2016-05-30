@@ -55,6 +55,12 @@ def fromstr(string):
         except ValueError:
             raise(Exception("The following string looks like a Coset "\
                             "but I cannot convert it: %s"%(string)))
+    elif typ == geo.Pos:
+        try:
+            return posfromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a Pos "\
+                            "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
     words = string.split()
@@ -71,6 +77,8 @@ def typefromstr(string):
         return geo.Symmetry
     elif ('a' in string) or ('b' in string) or ('c' in string):
         return geo.Transformation
+    elif ('p' in string) or ('P' in str) or ('r' in str) or ('R' in str):
+        return geo.Pos
     else:
         return nb.Mixed
 
@@ -138,4 +146,6 @@ def transformationfromstr(string):
 def cosetfromstr(string):
     if '\n' in string:
         lines = string.split('\n')
-        
+
+
+    
