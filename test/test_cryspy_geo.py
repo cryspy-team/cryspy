@@ -89,12 +89,43 @@ def test_Symmetry():
     g = geo.Symmetry(M)
     assert g.__str__() == "x+2z-1,-2y,z+1/3"
 
+
 def test_Transformation():
     M = fs.fromstr("/ 1 0 1 0 \n 0 1 0 1/2 \n -1 0 1 0 \n 0 0 0 1 /")
     g = geo.Transformation(M)
     assert g.__str__() == "Transformation a' =   a+c\n"\
                           "               b' = b+1/2\n"\
                           "               c' =  -a+c"
+
+
+def test_Metric():
+    M = fs.fromstr("9 0 0 0 \n" \
+                   "0 4 0 0 \n" \
+                   "0 0 1 0 \n" \
+                   "0 0 0 1")
+    metric = geo.Metric(M)
+    assert metric.__str__() == "Metric /  9  0  0  0  \ \n" \
+                               "      |   0  4  0  0   |\n" \
+                               "      |   0  0  1  0   |\n" \
+                               "       \  0  0  0  1  / "
+    o =  geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))
+    p1 = geo.Pos(fs.fromstr("1 \n 0 \n 0 \n 1"))
+    p2 = geo.Pos(fs.fromstr("0 \n 1 \n 0 \n 1"))
+    assert metric.dot(p1 - o, p1 - o).__str__() == "9"
+    assert metric.dot(p1 - o, p2 - o).__str__() == "0"
+    cell = metric.to_Cellparameters()
+    neunzig = fs.fromstr("90(0)")
+    assert cell.__str__() == \
+        geo.Cellparameters(3, 2, 1, neunzig, neunzig, neunzig).__str__()
+
+
+def test_Cellparameters():
+    cell = geo.Cellparameters(2, 3, 4, 90, 90, 90)
+#    assert cell.to_Metric().__str__() == "Metric /             4  0.4(3.0)e-15  0(4)e-15  0  \ \n" \
+#                                         "      |   0.4(3.0)e-15             9  1(6)e-15  0   |\n" \
+#                                         "      |       0(4)e-15      1(6)e-15        16  0   |\n"\
+#                                         "       \             0             0         0  1  / "
+
 
 def test_Transgen():
     tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
@@ -105,11 +136,9 @@ def test_Transgen():
                            "        |   0   | |   0   | |   3   |\n"\
                            "         \  0  /   \  2  /   \  0  / "
 
-def test_CanonicalTransgen():
-    tg = geo.CanonicalTransgen
-    assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
-                           "        |   0   | |   1   | |   0   |\n"\
-                           "         \  0  /   \  0  /   \  1  / "
+def test_canonical():
+    tg = geo.canonical
+    assert tg.__str__() == "canonical"
 
 
 def test_Coset():
@@ -131,8 +160,53 @@ def test_Coset():
         "     0  1  0  \n"\
         "     0  0  2  "
 
-    c = geo.Coset(g, geo.CanonicalTransgen)
+    c = geo.Coset(g, geo.canonical)
     assert c.__str__() == "{x+2z,-2y,z}"
-    
-
    
+def test_Spacegroup():
+    transgen = geo.canonical
+    c1 = geo.Coset(geo.Symmetry(\
+                   fs.fromstr("1 0 0 0\n"\
+                              "0 1 0 0\n"\
+                              "0 0 1 0\n"\
+                              "0 0 0 1")), \
+                   transgen)
+    c2 = geo.Coset(geo.Symmetry(\
+                   fs.fromstr("-1 0 0 0\n"\
+                              "0 -1 0 0\n"\
+                              "0 0 -1 0\n"\
+                              "0 0 0 1")), \
+                   transgen)
+    sg = geo.Spacegroup(transgen, [c1, c2])
+    assert sg.__str__() == \
+    "Spacegroup        \n"\
+    "----------        \n"\
+    " canonical        \n"\
+    "             x,y,z\n"\
+    "          -x,-y,-z"
+    transgen = geo.Transgen(fs.fromstr("1 0 0 0\n"\
+                                       "0 1 0 0\n"\
+                                       "0 0 2 0\n"\
+                                       "0 0 0 1"))
+    c1 = geo.Coset(geo.Symmetry(\
+                   fs.fromstr("1 0 0 0\n"\
+                              "0 1 0 0\n"\
+                              "0 0 1 0\n"\
+                              "0 0 0 1")), \
+                   transgen)
+    c2 = geo.Coset(geo.Symmetry(\
+                   fs.fromstr("-1 0 0 0\n"\
+                              "0 -1 0 0\n"\
+                              "0 0 -1 0\n"\
+                              "0 0 0 1")), \
+                   transgen)
+    sg = geo.Spacegroup(transgen, [c1, c2])
+    assert sg.__str__() == \
+    "                           Spacegroup        \n"\
+    "                           ----------        \n"\
+    "Transgen /  1  \   /  0  \   /  0  \         \n"\
+    "        |   0   | |   1   | |   0   |        \n"\
+    "         \  0  /   \  0  /   \  2  /         \n"\
+    "                                        x,y,z\n"\
+    "                                     -x,-y,-z"
+

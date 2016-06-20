@@ -39,6 +39,7 @@ def test_fromstr():
                                              " 0 0 2 0 \n"\
                                              " 0 0 0 1"))
 
+
 def test_typefromstr():
   string = "/ 1 2 \ \\n\ 3 4/"
   assert fs.typefromstr(string) == nb.Matrix

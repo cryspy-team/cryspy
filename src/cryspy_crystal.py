@@ -10,5 +10,5 @@ class Atom():
             "Second argument must be of type str."
         assert isinstance(pos, geo.Pos), \
             "Third argument must be of type Pos."
-
+    return 0
 

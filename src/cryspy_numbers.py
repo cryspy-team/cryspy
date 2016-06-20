@@ -1,6 +1,8 @@
 from copy import deepcopy
 import quicktions as fr
 import uncertainties as uc
+from uncertainties import unumpy
+import numpy as np
 
 
 class Mixed(object):
@@ -18,19 +20,27 @@ class Mixed(object):
        <class 'cryspy_numbers.Mixed'>
        >>> print(b)
        1.20(10)
+       >>> c = Mixed(b)
+       >>> print(c)
+       1.20(10)
     """
 
     def __init__(self, value):
         assert isinstance(value, fr.Fraction) or \
             isinstance(value, uc.UFloat) or \
             isinstance(value, float) or \
-            isinstance(value, int), \
+            isinstance(value, int) or \
+            isinstance(value, Mixed), \
             "Instance of Mixed must be created either by a "\
-            "qicktion.Fraction or an uncertainties.core.Variable or float or int."
+            "quicktion.Fraction or "\
+            "an uncertainties.core.Variable "\
+            "or float or int or Mixed."
         if isinstance(value, int):
             self.value = fr.Fraction(value, 1)
         elif isinstance(value, float):
             self.value = uc.ufloat(value, 0.0)
+        elif isinstance(value, Mixed):
+            self.value = value.value
         else:
             self.value = value
 
@@ -338,6 +348,129 @@ class Mixed(object):
                 return Mixed(self.value % right.value)
         elif isinstance(right, int) or isinstance(right, float):
             return Mixed(self.value % right)
+
+
+pi = Mixed(uc.ufloat(3.141592653589793, \
+                     0))
+
+
+def deg2rad(number):
+    """
+        >>> x = Mixed(fr.Fraction(1, 2))
+        >>> print(deg2rad(x))
+        0.0087266462599716477(28)
+        >>> y = Mixed(uc.ufloat(1.2, 0.1))
+        >>> print(deg2rad(y))
+        0.0209(17)
+    """
+    assert isinstance(number, Mixed) \
+        or isinstance(number, int) \
+        or isinstance(number, float), \
+        "Argument must be of type Mixed, int or float."
+    return number * pi / 180
+
+    
+def rad2deg(number):
+    """
+        >>> x = Mixed(fr.Fraction(1, 2))
+        >>> print(rad2deg(x))
+        28.647889756541161(9)
+        >>> y = Mixed(uc.ufloat(1.2, 0.1))
+        >>> print(rad2deg(y))
+        69(6)
+    """
+    assert isinstance(number, Mixed) \
+        or isinstance(number, int) \
+        or isinstance(number, float), \
+        "Argument must be of type Mixed, int or float."
+    return number / pi * 180
+
+
+def cos(number):
+    """
+        >>> x = Mixed(fr.Fraction(1, 2))
+        >>> print(cos(x))
+        0.8775825618903728(0)
+        >>> x = Mixed(uc.ufloat(1.2, 0.1))
+        >>> print(cos(x))
+        0.36(9)
+    """
+    assert isinstance(number, Mixed) \
+        or isinstance(number, int) \
+        or isinstance(number, float), \
+        "Argument must be of type Mixed, int or float."
+    if     isinstance(number, float) \
+        or isinstance(number, int):
+        return Mixed(np.cos(number))
+    if isinstance(number, Mixed):
+        if isinstance(number.value, uc.UFloat):
+            # I don't exactly understand, 
+            # whats happening here with
+            # the types :-)
+            return Mixed(unumpy.cos(number.value).item())
+        if isinstance(number.value, fr.Fraction):
+            return Mixed(np.cos(float(number.value)))
+
+
+def sqrt(number):
+    """
+        >>> x = Mixed(uc.ufloat(4.0, 0.1))
+        >>> print(sqrt(x))
+        2.000(25)
+        >>> x = 16
+        >>> print(sqrt(x))
+        4.0(0)
+        >>> x = 16.0
+        >>> print(sqrt(x))
+        4.0(0)
+        >>> x = Mixed(fr.Fraction(1/3))
+        >>> print(sqrt(x))
+        0.5773502691896257(0)
+        >>> x = Mixed(fr.Fraction(9/4))
+        >>> print(sqrt(x))
+        3/2
+    """
+    assert isinstance(number, Mixed) \
+        or isinstance(number, int) \
+        or isinstance(number, float), \
+        "Argument must be of type Mixed, int or float."
+    if isinstance(number, int) \
+        or isinstance(number, float):
+        return Mixed(np.sqrt(number))
+    if isinstance(number, Mixed):
+        if isinstance(number.value, uc.UFloat):
+            return Mixed(unumpy.sqrt(number.value).item())
+        if isinstance(number.value, fr.Fraction):
+            p = np.sqrt(number.value.numerator)
+            q = np.sqrt(number.value.denominator)
+            if     (p % 1 == 0) and (q % 1 == 0):
+                return Mixed(fr.Fraction(int(p), int(q)))
+            else:
+                return Mixed(np.sqrt(float(number.value)))
+
+
+def arccos(number):
+    """
+        >>> x = Mixed(fr.Fraction(1, 2))
+        >>> print(arccos(x))
+        1.0471975511965979(0)
+        >>> y = Mixed(uc.ufloat(0.5, 0.1))
+        >>> print(arccos(y))
+        1.05(12)
+    """
+    assert isinstance(number, Mixed) \
+        or isinstance(number, int) \
+        or isinstance(number, float), \
+        "Argument must be of type Mixed, int or float."
+    if     isinstance(number, float) \
+        or isinstance(number, int):
+        return Mixed(np.arccos(number))
+    if isinstance(number, Mixed):
+        if isinstance(number.value, uc.UFloat):
+            return Mixed(unumpy.arccos(number.value).item())
+        if isinstance(number.value, fr.Fraction):
+            return Mixed(np.arccos(float(number.value)))
+
 
 class Row(object):
     """

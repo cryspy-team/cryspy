@@ -204,6 +204,105 @@ class Transformation(Operator):
         result = result[:-1]
         return bp.block([["Transformation ", "a' = \nb' = \nc' = ", result],])
 
+
+class Metric(Operator):
+    def __init__(self, value):
+        assert isinstance(value, nb.Matrix), \
+            "Must be created by an object of type Matrix."
+        assert value.shape() == (4, 4), \
+            "Must be created by a 4x4-Matrix."
+        assert  (value.liste[3] == nb.Row([0, 0, 0, 1])) \
+            and (value.liste[0].liste[3] == 0) \
+            and (value.liste[1].liste[3] == 0) \
+            and (value.liste[2].liste[3] == 0), \
+            "Argument must be a Matrix of this shape:\n" \
+            "     * * * 0\n" \
+            "     * * * 0\n" \
+            "     * * * 0\n" \
+            "     0 0 0 1"
+        self.value = value
+
+    
+    def dot(self, vector1, vector2):
+        assert  isinstance(vector1, Dif) \
+            and isinstance(vector2, Dif), \
+            "Arguments must be both of type Dif."
+        if (isinstance(vector1, Pos) or isinstance(vector1, Dif)):
+            matrix = vector1.value.transpose() * self.value * vector2.value
+            return matrix.liste[0].liste[0]
+
+    def length(self, vector):
+        assert isinstance(vector, Dif), \
+            "Argument must be of type Dif."
+        return nb.sqrt(self.dot(vector, vector))
+
+    def angle(self, vector1, vector2):
+        assert  isinstance(vector1, Dif) \
+            and isinstance(vector2, Dif), \
+            "Both arguments must be of type Dif."
+        len1 = self.length(vector1)
+        len2 = self.length(vector2)
+        return nb.arccos(self.dot(vector1, vector2) \
+            / (len1 * len2))
+
+    def to_Cellparameters(self):
+        e1 = Dif(fs.fromstr("1 \n 0 \n 0 \n 0"))
+        e2 = Dif(fs.fromstr("0 \n 1 \n 0 \n 0"))
+        e3 = Dif(fs.fromstr("0 \n 0 \n 1 \n 0"))
+        a = self.length(e1)
+        b = self.length(e2)
+        c = self.length(e3)
+        alpha = nb.rad2deg(self.angle(e2, e3))
+        beta  = nb.rad2deg(self.angle(e3, e1))
+        gamma = nb.rad2deg(self.angle(e1, e2))
+        return Cellparameters(a, b, c, alpha, beta, gamma)
+
+    def __str__(self):
+        return bp.block([["Metric", self.value.__str__()]])
+
+
+class Cellparameters():
+    def __init__(self, a, b, c, alpha, beta, gamma):
+        for number in [a, b, c, alpha, beta, gamma]:
+            assert isinstance(number, nb.Mixed) \
+                or isinstance(number, int) \
+                or isinstance(number, float), \
+                "Arguments must be of type Mixed, int or float."
+        self.a = nb.Mixed(a)
+        self.b = nb.Mixed(b)
+        self.c = nb.Mixed(c)
+        self.alpha = nb.Mixed(alpha)
+        self.beta = nb.Mixed(beta)
+        self.gamma = nb.Mixed(gamma)
+
+    def to_Metric(self):
+        a = self.a
+        b = self.b
+        c = self.c
+        alpha = self.alpha
+        beta  = self.beta
+        gamma = self.gamma
+        aa = a*a
+        bb = b*b
+        cc = c*c
+        ab = a * b * nb.cos(nb.deg2rad(gamma))
+        ac = a * c * nb.cos(nb.deg2rad(beta))
+        bc = b * c * nb.cos(nb.deg2rad(alpha))
+        return Metric(nb.Matrix([nb.Row([aa, ab, ac, 0]), \
+                                 nb.Row([ab, bb, bc, 0]), \
+                                 nb.Row([ac, bc, cc, 0]), \
+                                 nb.Row([0,  0,  0,  1])]))
+
+    def __str__(self):
+        return "Cellparameters\n" + \
+               bp.block([["a", " b", " c", " alpha", " beta", " gamma"], \
+                         [self.a.__str__(), \
+                          " " + self.b.__str__(), \
+                          " " + self.c.__str__(), \
+                          " " + self.alpha.__str__(), \
+                          " " + self.beta.__str__(), \
+                          " " + self.gamma.__str__()]])
+
 class Transgen(Operator):
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -223,13 +322,16 @@ class Transgen(Operator):
         self.value = value
         
     def __str__(self):
-        return bp.block([["Transgen", \
-            self.value.block(0, 3, 0, 1).__str__(), ' ', \
-            self.value.block(0, 3, 1, 2).__str__(), ' ', \
-            self.value.block(0, 3, 2, 3).__str__()],])
+        if self == canonical:
+            return "canonical"
+        else:
+            return bp.block([["Transgen", \
+                self.value.block(0, 3, 0, 1).__str__(), ' ', \
+                self.value.block(0, 3, 1, 2).__str__(), ' ', \
+                self.value.block(0, 3, 2, 3).__str__()],])
 
 
-CanonicalTransgen = Transgen(nb.Matrix.onematrix(4))
+canonical = Transgen(nb.Matrix.onematrix(4))
 
 class Coset():
     def __init__(self, symmetry, transgen):
@@ -242,7 +344,7 @@ class Coset():
         self.gohome()
     
     def __str__(self):
-        if self.transgen == CanonicalTransgen:
+        if self.transgen == canonical:
             return "{"+self.symmetry.__str__()+"}"
         else:
             transgenblock = bp.block( \
@@ -257,4 +359,30 @@ class Coset():
        self.symmetry.value.liste[1].liste[3] %= 1
        self.symmetry.value.liste[2].liste[3] %= 1
        self.symmetry = self.transgen ** self.symmetry
-           
+
+
+class Spacegroup():
+    def __init__(self, transgen, liste_cosets):
+        assert isinstance(transgen, Transgen), \
+            "First argument must be of type Transgen."
+        assert type(liste_cosets) == list, \
+            "Second argument must be a list."
+        for coset in liste_cosets:
+            assert isinstance(coset, Coset), \
+                "Second argument must be a list " \
+                "of objects of type Coset."
+            assert transgen == coset.transgen, \
+                "All cosets must have the same transgen "\
+                "as the Spacegroup."
+        self.transgen = transgen
+        self.liste_cosets = liste_cosets
+
+    def __str__(self):
+        liste_strings = [["Spacegroup", ''], \
+                         ["----------", ''], \
+                         [self.transgen.__str__(), '']]
+        for coset in self.liste_cosets:
+            liste_strings.append(['', coset.symmetry.__str__()])
+
+        return bp.block(liste_strings) 
+    

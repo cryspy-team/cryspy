@@ -61,6 +61,12 @@ def fromstr(string):
         except ValueError:
             raise(Exception("The following string looks like a Pos "\
                             "but I cannot convert it: %s"%(string)))
+    elif typ == geo.Dif:
+        try:
+            return diffromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a Dif "\
+                            "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
     words = string.split()
@@ -77,8 +83,10 @@ def typefromstr(string):
         return geo.Symmetry
     elif ('a' in string) or ('b' in string) or ('c' in string):
         return geo.Transformation
-    elif ('p' in string) or ('P' in str) or ('r' in str) or ('R' in str):
+    elif ('p' in string) or ('P' in string) or ('r' in string) or ('R' in string):
         return geo.Pos
+    elif ('d' in string) or ('D' in string):
+        return geo.Dif
     else:
         return nb.Mixed
 
