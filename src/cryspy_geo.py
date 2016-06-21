@@ -111,8 +111,9 @@ class Operator:
         elif isinstance(right, Operator):
             return Operator(self.value * right.value * self.value.inv())
         else:
-            raise(BaseException("I cannot apply object of type Operator"\
-                " to object of type %s."%(type(right))))
+            return NotImplemented
+            #"I cannot apply object of type Operator"\
+            #    " to object of type %s."%(type(right))))
 
     def inv(self):
         return Operator(self.value.inv())
@@ -198,8 +199,9 @@ class Symmetry(Operator):
 class Transformation(Operator):
     def __str__(self):
         result = ''
+        matrix = self.value.inv()
         for i in range(3):
-            result += linearterm2str(self.value.liste[i].liste, 
+            result += linearterm2str(matrix.liste[i].liste, 
                 ["a", "b", "c", '']) + "\n"
         result = result[:-1]
         return bp.block([["Transformation ", "a' = \nb' = \nc' = ", result],])

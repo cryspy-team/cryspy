@@ -84,6 +84,7 @@ def test_str2linearterm():
         [fs.fromstr('3'), fs.fromstr('1'), fs.fromstr('-1/3'), \
          fs.fromstr('1/2')]
 
+
 def test_Symmetry():
     M = fs.fromstr("/ 1 0 2 -1 \n 0 -2 0 0 \n 0 0 1 1/3 \n 0 0 0 1 /")
     g = geo.Symmetry(M)
@@ -91,11 +92,11 @@ def test_Symmetry():
 
 
 def test_Transformation():
-    M = fs.fromstr("/ 1 0 1 0 \n 0 1 0 1/2 \n -1 0 1 0 \n 0 0 0 1 /")
+    M = fs.fromstr("/ 1/2 0 -1/2 1/4 \n 0 1 0 -1/2 \n 1/2 0 1/2 0 \n 0 0 0 1 /")
     g = geo.Transformation(M)
-    assert g.__str__() == "Transformation a' =   a+c\n"\
-                          "               b' = b+1/2\n"\
-                          "               c' =  -a+c"
+    assert g.__str__() == "Transformation a' =  a+c-1/4\n"\
+                          "               b' =    b+1/2\n"\
+                          "               c' = -a+c+1/4"
 
 
 def test_Metric():

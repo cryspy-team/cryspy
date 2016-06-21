@@ -3,6 +3,21 @@ import quicktions as fr
 import uncertainties as uc
 import cryspy_geo as geo
 
+
+def removeletters(string):
+    assert isinstance(string, str), \
+        "Argument must be of type str."
+    for character in ["a", "b", "c", "d", "e", "f", "g", \
+                      "h", "i", "j", "k", "l", "m", "n", \
+                      "o", "p", "q", "r", "s", "t", "u", \
+                      "v", "w", "x", "y", "z", \
+                      "A", "B", "C", "D", "E", "F", "G", \
+                      "H", "I", "J", "K", "L", "M", "N", \
+                      "O", "P", "Q", "R", "S", "T", "U", \
+                      "V", "W", "X", "Y", "Z"]:
+        string =  string.replace(character, " ")
+    return string
+
 def fromstr(string):
     """
         >>> print(fromstr("1/2"))
@@ -75,6 +90,10 @@ def typefromstr(string):
         return nb.Matrix
     elif (words[0][0] == '<') and (words[-1][-1] == '>'):
         return nb.Matrix
+    elif ('p' in string) or ('P' in string) or ('r' in string) or ('R' in string):
+        return geo.Pos
+    elif ('d' in string) or ('D' in string):
+        return geo.Dif
     elif ('\n' in string) or ('\\' in string):
         return nb.Matrix
     elif ('{' in string) and ('}' in string):
@@ -83,10 +102,6 @@ def typefromstr(string):
         return geo.Symmetry
     elif ('a' in string) or ('b' in string) or ('c' in string):
         return geo.Transformation
-    elif ('p' in string) or ('P' in string) or ('r' in string) or ('R' in string):
-        return geo.Pos
-    elif ('d' in string) or ('D' in string):
-        return geo.Dif
     else:
         return nb.Mixed
 
@@ -148,7 +163,7 @@ def transformationfromstr(string):
         liste.append(row)
     liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
         fromstr("1")]))
-    return geo.Transformation(nb.Matrix(liste))
+    return geo.Transformation(nb.Matrix(liste).inv())
 
 
 def cosetfromstr(string):
@@ -156,4 +171,16 @@ def cosetfromstr(string):
         lines = string.split('\n')
 
 
-    
+
+
+def posfromstr(string):
+    string = string.replace('\n', ' ')
+    string = string.replace('\\', ' ')
+    string = string.replace('/ ', ' ')
+    string = string.replace(' /', ' ')
+    string = string.replace('|', ' ')
+    string = removeletters(string)
+    words = string.split()
+    string = '\n'.join(words)
+    string += "\n 1"
+    return geo.Pos(matrixfromstr(string))

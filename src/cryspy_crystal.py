@@ -1,3 +1,4 @@
+import hashlib
 import cryspy_numbers as nb
 import cryspy_geo as geo
 import blockprint as bp
@@ -10,5 +11,48 @@ class Atom():
             "Second argument must be of type str."
         assert isinstance(pos, geo.Pos), \
             "Third argument must be of type Pos."
-    return 0
+        self.name = name
+        self.typ = typ
+        self.pos = pos
+    
+    def __str__(self):
+        return bp.block([["Atom", " " + self.name, \
+                          " " + self.typ, " " +  self.pos.__str__()],])
 
+    def __eq__(self, right):
+        if (self.typ == right.typ) and (self.pos == right.pos):
+            return True
+        else:
+            return False
+
+    def __rpow__(self, left):
+        assert isinstance(left, geo.Operator), \
+            "I cannot apply an object of type %s " \
+            "to an object of type Atom."%(type(left))
+        return Atom(self.name, self.typ, left ** self.pos)
+
+    def __hash__(self):
+        return int(hashlib.sha1(self.__str__().encode()).hexdigest(), 16)
+
+
+class Atomset():
+    def __init__(self, menge):
+        assert isinstance(menge, set), \
+            "Argument must be of type set."
+        for item in menge:
+            assert isinstance(item, Atom), \
+                "Argument must be a set of "\
+                "objects of type Atom"
+        self.menge = menge
+
+    
+    def __str__(self):
+        strings = [["Atomset\n" \
+                    "-------"],]
+        for atom in self.menge:
+            strings.append(["", atom.__str__() + "\n "])
+        return bp.block(strings)
+
+
+    def __rmul__(self, left):
+        pass 
