@@ -358,7 +358,7 @@ def deg2rad(number):
     """
         >>> x = Mixed(fr.Fraction(1, 2))
         >>> print(deg2rad(x))
-        0.0087266462599716477(28)
+        0.008726646259971648(0)
         >>> y = Mixed(uc.ufloat(1.2, 0.1))
         >>> print(deg2rad(y))
         0.0209(17)
@@ -374,7 +374,7 @@ def rad2deg(number):
     """
         >>> x = Mixed(fr.Fraction(1, 2))
         >>> print(rad2deg(x))
-        28.647889756541161(9)
+        28.64788975654116(0)
         >>> y = Mixed(uc.ufloat(1.2, 0.1))
         >>> print(rad2deg(y))
         69(6)
@@ -979,6 +979,18 @@ class Matrix(object):
              /  0  1   0  \ 
             |   1  0   1   |
              \  0  0  -1  / 
+            >>> M = Matrix([Row([Mixed(0), Mixed(0), Mixed(1), Mixed(0)]), Row([Mixed(1), Mixed(0), Mixed(0), Mixed(0)]), Row([Mixed(0), Mixed(1), Mixed(0), Mixed(0)]),  Row([Mixed(0), Mixed(0), Mixed(0), Mixed(1)])])
+            >>> print(M)
+             /  0  0  1  0  \ 
+            |   1  0  0  0   |
+            |   0  1  0  0   |
+             \  0  0  0  1  / 
+            >>> Minv = M.inv()
+            >>> print(Minv)
+             /  0  1  0  0  \ 
+            |   0  0  1  0   |
+            |   1  0  0  0   |
+             \  0  0  0  1  / 
         """
         (numrows, numcols) = self.shape()
         assert (numrows == numcols), \
@@ -989,20 +1001,22 @@ class Matrix(object):
             (dim, dim) = self.shape()
             for rownumber in range(dim - 1):
                 i = rownumber
-                while (self.liste[rownumber].liste[rownumber] == Mixed(0)) \
+                while (self.liste[i].liste[rownumber] == Mixed(0)) \
                     and (i < dim):
                     i += 1
-                    self = self.swap_rows(0, i)
-                    right = right.swap_rows(0, i)
+                
+                assert (i < dim), \
+                    "Cannot transform matrix to triangle matrix."
+                
+                self = self.swap_rows(rownumber, i)
+                right = right.swap_rows(rownumber, i)
 
-                if i == dim:
-                    return (0, 0)
-                else:
-                    for i in range(rownumber + 1, dim):
-                        x = self.liste[i].liste[rownumber] \
-                        / self.liste[rownumber].liste[rownumber]
-                        self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
-                        right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+                
+                for i in range(rownumber + 1, dim):
+                    x = self.liste[i].liste[rownumber] \
+                    / self.liste[rownumber].liste[rownumber]
+                    self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
+                    right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return (self, right)
         def make_diagonal(self, right):
             (dim, dim) = self.shape()

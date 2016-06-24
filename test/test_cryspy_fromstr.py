@@ -45,6 +45,14 @@ def test_fromstr():
                                               " 0 0 2 0 \n"\
                                               " 0 0 0 1").inv())
 
+    string = "c,a,b"
+    g = fs.fromstr(string)
+    assert g == geo.Transformation(fs.fromstr("0 0 1 0 \n" \
+                                              "1 0 0 0 \n" \
+                                              "0 1 0 0 \n" \
+                                              "0 0 0 1").inv())
+
+
     string = "p0 0 0"
     p = fs.fromstr(string)
     assert p == geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))

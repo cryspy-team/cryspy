@@ -26,7 +26,8 @@ class Atom():
             return False
 
     def __rpow__(self, left):
-        assert isinstance(left, geo.Operator), \
+        assert isinstance(left, geo.Operator) \
+            or isinstance(left, geo.Coset), \
             "I cannot apply an object of type %s " \
             "to an object of type Atom."%(type(left))
         return Atom(self.name, self.typ, left ** self.pos)
@@ -45,7 +46,13 @@ class Atomset():
                 "objects of type Atom"
         self.menge = menge
 
-    
+
+    def __eq__(self, right):
+        if isinstance(right, Atomset):
+            return (self.menge == right.menge)
+        else:
+            return False
+
     def __str__(self):
         strings = [["Atomset\n" \
                     "-------"],]
@@ -54,5 +61,18 @@ class Atomset():
         return bp.block(strings)
 
 
-    def __rmul__(self, left):
-        pass 
+    def __rpow__(self, left):
+        assert isinstance(left, geo.Operator) \
+            or isinstance(left, geo.Spacegroup), \
+            "Argument must be of type Operator."
+        if isinstance(left, geo.Operator):
+            return Atomset({left**atom for atom in self.menge})
+        if isinstance(left, geo.Spacegroup):
+            atoms = set([])
+            for atom in self.menge:
+                for coset in left.liste_cosets:
+                    atoms |= set([coset ** atom])
+            return Atomset(atoms)
+
+
+

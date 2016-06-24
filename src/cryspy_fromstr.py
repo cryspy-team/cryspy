@@ -167,9 +167,9 @@ def transformationfromstr(string):
 
 
 def cosetfromstr(string):
-    if '\n' in string:
-        lines = string.split('\n')
-
+    string = string.replace('{', ' ')
+    string = string.replace('}', ' ')
+    return geo.Coset(fromstr(string), geo.canonical)
 
 
 

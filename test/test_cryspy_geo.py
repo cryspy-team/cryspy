@@ -8,6 +8,9 @@ def test_Pos():
     v = fs.fromstr('/ 1 \n 2 \n 3 \n 1 /')
     x = geo.Pos(v)
     assert x.__str__() == "Pos /  1  \ \n   |   2   |\n    \  3  / "
+    assert x.x() == 1
+    assert x.y() == 2
+    assert x.z() == 3
 
 def test_Dif():
     v = fs.fromstr('/ 1 \n 2 \n 3 \n 0 /')
@@ -136,6 +139,17 @@ def test_Transgen():
     assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
                            "        |   0   | |   0   | |   3   |\n"\
                            "         \  0  /   \  2  /   \  0  / "
+    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n" \
+                                 "0 1 0 0 \n" \
+                                 "0 0 2 0 \n" \
+                                 "0 0 0 1 "))
+
+    pos = geo.Pos(fs.fromstr(" 0.5 \n -0.5 \n -0.5 \n 1"))
+    pos1 = pos % tg
+    pos2 = geo.Pos(fs.fromstr("0.5 \n 0.5  \n  1.5 \n 1"))
+    assert pos1 == pos2
+    
+
 
 def test_canonical():
     tg = geo.canonical
@@ -163,6 +177,11 @@ def test_Coset():
 
     c = geo.Coset(g, geo.canonical)
     assert c.__str__() == "{x+2z,-2y,z}"
+
+    pos = geo.Pos(fs.fromstr("0.5 \n 0.25 \n 0 \n 1"))
+    pos1 = c ** pos
+    pos2 = geo.Pos(fs.fromstr("0.5 \n 0.5 \n 0 \n 1"))
+    assert pos1 == pos2
    
 def test_Spacegroup():
     transgen = geo.canonical
@@ -211,3 +230,10 @@ def test_Spacegroup():
     "                                        x,y,z\n"\
     "                                     -x,-y,-z"
 
+    sg = geo.Spacegroup(geo.canonical, [fs.fromstr("{x, y, z}"), \
+                                        fs.fromstr("{x, -y,z}")])
+    transformation = fs.fromstr("b, a, c")
+    sg1 = transformation ** sg
+    sg2 = geo.Spacegroup(geo.canonical, [fs.fromstr("{x, y, z}"), \
+                                         fs.fromstr("{-x, y, z}")])
+    assert sg1 == sg2

@@ -15,6 +15,15 @@ class Pos:
     def __str__(self):
         return bp.block([["Pos", self.value.block(0, 3, 0, 1).__str__()],])
 
+    def x(self):
+        return self.value.liste[0].liste[0]
+
+    def y(self):
+        return self.value.liste[1].liste[0]
+
+    def z(self):
+        return self.value.liste[2].liste[0]
+
     def __eq__(self, right):
         if isinstance(right, Pos):
             return (self.value == right.value)
@@ -332,6 +341,17 @@ class Transgen(Operator):
                 self.value.block(0, 3, 1, 2).__str__(), ' ', \
                 self.value.block(0, 3, 2, 3).__str__()],])
 
+    def __rmod__(self, left):
+        assert isinstance(left, Pos), \
+            "Argument must be of type Pos."
+        left = Pos(self.value.inv() * left.value)
+        left.value.liste[0].liste[0] %= 1
+        left.value.liste[1].liste[0] %= 1
+        left.value.liste[2].liste[0] %= 1
+        return Pos(self.value * left.value)
+
+
+
 
 canonical = Transgen(nb.Matrix.onematrix(4))
 
@@ -362,6 +382,17 @@ class Coset():
        self.symmetry.value.liste[2].liste[3] %= 1
        self.symmetry = self.transgen ** self.symmetry
 
+    def __pow__(self, right):
+        if isinstance(right, Pos):
+            return (self.symmetry ** right) % self.transgen
+        else:
+            return NotImplemented
+
+    def __rpow__(self, left):
+        if isinstance(left, Operator):
+            return ( 
+        else:
+            return NotImplemented
 
 class Spacegroup():
     def __init__(self, transgen, liste_cosets):
@@ -387,4 +418,10 @@ class Spacegroup():
             liste_strings.append(['', coset.symmetry.__str__()])
 
         return bp.block(liste_strings) 
+
+    def __rpow__(self, left):
+        assert isinstance(left, Transformation), \
+            "Argument must be of type Transformation."
+        return Spacegroup(left ** self.transgen, \
+                          [left ** coset for coset in self.liste_cosets])
     

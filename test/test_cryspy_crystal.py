@@ -44,3 +44,17 @@ def test_Atomset():
         "                      |   1/4   |\n" \
         "                       \    0  / \n" \
         "                                 "
+
+    transformation = fs("a+c, 2b+1/4, c")
+    atomset1 = transformation**atomset
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 -1/8 0")), \
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 0"))})
+    assert atomset1.__str__() == atomset2.__str__()
+
+    spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"), \
+                                                fs("{-x, -y, -z}")])
+    atomset1 = spacegroup ** atomset
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
+                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0"))})
+    assert atomset1 == atomset2
