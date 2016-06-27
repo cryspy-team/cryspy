@@ -163,7 +163,14 @@ def transformationfromstr(string):
         liste.append(row)
     liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
         fromstr("1")]))
-    return geo.Transformation(nb.Matrix(liste).inv())
+    m = nb.Matrix(liste)
+    matrix = nb.Matrix( \
+        [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], m.liste[0].liste[3]]), \
+         nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], m.liste[1].liste[3]]), \
+         nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], m.liste[2].liste[3]]), \
+         nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], m.liste[3].liste[3]])])
+
+    return geo.Transformation(matrix.inv())
 
 
 def cosetfromstr(string):

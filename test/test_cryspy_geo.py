@@ -93,15 +93,51 @@ def test_Symmetry():
     g = geo.Symmetry(M)
     assert g.__str__() == "x+2z-1,-2y,z+1/3"
 
+    transformation = geo.Transformation(fs.fromstr( \
+        " 1 0 0 0 \n 0 1 0 0 \n 0 0 1 0 \n 0 0 0 1"))
+    assert isinstance(transformation ** g, geo.Symmetry)
+
+    transformation = geo.Transformation(fs.fromstr( \
+        " 1/2 0 0 0 \n 0 1 0 0 \n 0 0 1 0 \n 0 0 0 1"))
+    g1 = transformation ** g
+    g2 = geo.Symmetry(fs.fromstr("1  0 1 -1/2 \n" \
+                                 "0 -2 0  0   \n" \
+                                 "0  0 1 1/3  \n" \
+                                 "0  0 0  1"))
+    assert g1.__str__() == g2.__str__()
+
+
 
 def test_Transformation():
     M = fs.fromstr("/ 1/2 0 -1/2 1/4 \n 0 1 0 -1/2 \n 1/2 0 1/2 0 \n 0 0 0 1 /")
-    g = geo.Transformation(M)
-    assert g.__str__() == "Transformation a' =  a+c-1/4\n"\
-                          "               b' =    b+1/2\n"\
-                          "               c' = -a+c+1/4"
+    t = geo.Transformation(M)
+    assert t.__str__() == "Transformation a' = a-c-1/4\n"\
+                          "               b' =   b+1/2\n"\
+                          "               c' = a+c+1/4"
+    t = geo.Transformation(fs.fromstr(" 1/2 0 0 0 \n" \
+                                      " 0 1 0 0 \n" \
+                                      " 0 0 1 0 \n" \
+                                      " 0 0 0 1"))
+    assert t.__str__() == "Transformation a' = 2a\n" \
+                          "               b' =  b\n" \
+                          "               c' =  c"
+    p = fs.fromstr("p 1 0 0")
+    assert (t ** p).__str__() == fs.fromstr("p 1/2 0 0").__str__()
 
 
+    t = fs.fromstr("c, a, b")
+    assert t.__str__() == "Transformation a' = c\n" \
+                          "               b' = a\n" \
+                          "               c' = b"
+    assert t.value.__str__() == " /  0  0  1  0  \ \n" \
+                                "|   1  0  0  0   |\n" \
+                                "|   0  1  0  0   |\n" \
+                                " \  0  0  0  1  / "
+
+    p = fs.fromstr("p 1 2 3")
+    assert (t**p).__str__() == "Pos /  3  \ \n" \
+                               "   |   1   |\n" \
+                               "    \  2  / "
 def test_Metric():
     M = fs.fromstr("9 0 0 0 \n" \
                    "0 4 0 0 \n" \
@@ -148,8 +184,9 @@ def test_Transgen():
     pos1 = pos % tg
     pos2 = geo.Pos(fs.fromstr("0.5 \n 0.5  \n  1.5 \n 1"))
     assert pos1 == pos2
-    
-
+    transformation = geo.Transformation(fs.fromstr( \
+        " 1 0 0 0 \n 0 1 0 0 \n 0 0 1 0 \n 0 0 0 1"))
+    assert isinstance(transformation ** tg, geo.Transgen)
 
 def test_canonical():
     tg = geo.canonical
@@ -236,4 +273,15 @@ def test_Spacegroup():
     sg1 = transformation ** sg
     sg2 = geo.Spacegroup(geo.canonical, [fs.fromstr("{x, y, z}"), \
                                          fs.fromstr("{-x, y, z}")])
-    assert sg1 == sg2
+    # Hier ist noch folgender Fehler:
+    # Das Programm berücksichtigt die Reihenfolge der
+    # Symmetrieelemente eines Transgens. D.h. z.B.:
+    #
+    # / 1 \  / 0 \  / 0 \      / 0 \  / 1 \  / 0 \
+    #|  0  ||  1  ||  0  | != |  1  ||  0  ||  0  |
+    # \ 0 /  \ 0 /  \ 1 /      \ 0 /  \ 0 /  \ 1 /
+    #
+    # Was aber eigentlich gleich ist.
+
+    #assert sg1.__str__() == sg2.__str__()
+

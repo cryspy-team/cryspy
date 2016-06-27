@@ -117,6 +117,8 @@ class Operator:
         elif isinstance(right, Transformation):
             return Transformation(self.value * right.value * \
                 self.value.inv())
+        elif isinstance(right, Transgen):
+            return Transgen(self.value * right.value)
         elif isinstance(right, Operator):
             return Operator(self.value * right.value * self.value.inv())
         else:
@@ -208,7 +210,12 @@ class Symmetry(Operator):
 class Transformation(Operator):
     def __str__(self):
         result = ''
-        matrix = self.value.inv()
+        m = self.value.inv()
+        matrix = nb.Matrix( \
+            [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], m.liste[0].liste[3]]), \
+             nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], m.liste[1].liste[3]]), \
+             nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], m.liste[2].liste[3]]), \
+             nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], m.liste[3].liste[3]])])
         for i in range(3):
             result += linearterm2str(matrix.liste[i].liste, 
                 ["a", "b", "c", '']) + "\n"
@@ -351,8 +358,6 @@ class Transgen(Operator):
         return Pos(self.value * left.value)
 
 
-
-
 canonical = Transgen(nb.Matrix.onematrix(4))
 
 class Coset():
@@ -390,7 +395,7 @@ class Coset():
 
     def __rpow__(self, left):
         if isinstance(left, Operator):
-            return ( 
+            return Coset(left ** self.symmetry, left ** self.transgen)
         else:
             return NotImplemented
 
@@ -418,6 +423,13 @@ class Spacegroup():
             liste_strings.append(['', coset.symmetry.__str__()])
 
         return bp.block(liste_strings) 
+
+    def __eq__(self, right):
+        assert isinstance(right, Spacegroup), \
+            "Can compare object of type Spacegroup " \
+            "to object of type Spacegroup only."
+        return (self.transgen == right.transgen) and \
+               (self.liste_cosets == right.liste_cosets)
 
     def __rpow__(self, left):
         assert isinstance(left, Transformation), \
