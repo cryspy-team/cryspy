@@ -29,3 +29,40 @@ They are 4x4-matrices of the following shape:
 
 Leftmultiplication of this Matrix onto Difference vector or Rightmultiplication onto reciprocal vector means "appliying Matrix {{./equation004.png?type=equation}}".
 Leftmultiplication of this Matrix onto Position vector means "first applying Matrix {{./equation005.png?type=equation}}, then shifting with vector {{./equation006.png?type=equation}} .
+
+==== Basis transformations ====
+
+Let there be two Bases {{./equation009.png?type=equation}} and {{./equation010.png?type=equation}} with Origins {{./equation011.png?type=equation}} and {{./equation012.png?type=equation}} .
+Now a Point {{./equation013.png?type=equation}} in Space can be written in two different ways:
+
+{{./equation014.png?type=equation}}
+
+So, the Point can be expressed as column-vector:
+
+{{./equation015.png?type=equation}}
+
+
+The Basis-Transformation is
+
+{{./equation016.png?type=equation}} 
+
+with
+
+{{./equation017.png?type=equation}} .
+
+cryspy_fromstr constructs such a Transformation in the following way:
+Let {{./equation018.png?type=equation}} be numbers. Then the expression
+
+{{./equation019.png?type=equation}}
+
+(inserted in cryspy_fromstr.fromstr()) means:
+
+{{./equation020.png?type=equation}}
+
+So if, for example, you want to make the new a-axis the old a+b and shift the origin along 1/4 c, then you get the transformation by:
+
+'''
+cryspy_fromstr.fromstr("a+b,b,c+1/4")
+'''
+
+

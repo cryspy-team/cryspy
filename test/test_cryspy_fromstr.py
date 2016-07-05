@@ -38,7 +38,7 @@ def test_fromstr():
                                         " -1 1 0 1/3 \n"\
                                         "  0 0 2 0 \n"\
                                         "  0 0 0 1"))
-    string = "a+b,b-a +1/3, 2c"
+    string = "a-b,b+a+1/3, 2c"
     g = fs.fromstr(string)
     assert g == geo.Transformation(fs.fromstr(" 1 1 0 0 \n"\
                                               "-1 1 0 1/3\n"\
@@ -47,9 +47,9 @@ def test_fromstr():
 
     string = "c,a,b"
     g = fs.fromstr(string)
-    assert g == geo.Transformation(fs.fromstr("0 0 1 0 \n" \
+    assert g == geo.Transformation(fs.fromstr("0 1 0 0 \n" \
+                                              "0 0 1 0 \n" \
                                               "1 0 0 0 \n" \
-                                              "0 1 0 0 \n" \
                                               "0 0 0 1").inv())
 
 
