@@ -179,7 +179,6 @@ def cosetfromstr(string):
     return geo.Coset(fromstr(string), geo.canonical)
 
 
-
 def posfromstr(string):
     string = string.replace('\n', ' ')
     string = string.replace('\\', ' ')
@@ -191,3 +190,15 @@ def posfromstr(string):
     string = '\n'.join(words)
     string += "\n 1"
     return geo.Pos(matrixfromstr(string))
+
+def diffromstr(string):
+    string = string.replace('\n', ' ')
+    string = string.replace('\\', ' ')
+    string = string.replace('/ ', ' ')
+    string = string.replace(' /', ' ')
+    string = string.replace('|', ' ')
+    string = removeletters(string)
+    words = string.split()
+    string = '\n'.join(words)
+    string += "\n 0"
+    return geo.Dif(matrixfromstr(string))

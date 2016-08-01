@@ -158,6 +158,11 @@ def test_Metric():
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, neunzig, neunzig, neunzig).__str__()
 
+    M = fs.fromstr("/ 1 0 0 0 \n 0 1 0 0 \n 0 0 1 0 \n 0 0 0 1 /")
+    t = geo.Transformation(M)
+    metric_ = t ** metric
+    assert metric_.__str__() == metric.__str__()
+
 
 def test_Cellparameters():
     cell = geo.Cellparameters(2, 3, 4, 90, 90, 90)
@@ -168,17 +173,15 @@ def test_Cellparameters():
 
 
 def test_Transgen():
-    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
-                                 "0 0 3 0 \n"\
-                                 "0 2 0 0 \n"\
-                                 "0 0 0 1"))
+    tg = geo.Transgen(fs.fromstr("d 1 0 0"), \
+                      fs.fromstr("d 0 0 2"), \
+                      fs.fromstr("d 0 3 0"))
     assert tg.__str__() == "Transgen /  1  \   /  0  \   /  0  \ \n"\
                            "        |   0   | |   0   | |   3   |\n"\
                            "         \  0  /   \  2  /   \  0  / "
-    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n" \
-                                 "0 1 0 0 \n" \
-                                 "0 0 2 0 \n" \
-                                 "0 0 0 1 "))
+    tg = geo.Transgen(fs.fromstr("d 1 0 0"), \
+                      fs.fromstr("d 0 1 0"), \
+                      fs.fromstr("d 0 0 2"))
 
     pos = geo.Pos(fs.fromstr(" 0.5 \n -0.5 \n -0.5 \n 1"))
     pos1 = pos % tg
@@ -196,14 +199,12 @@ def test_canonical():
 def test_Coset():
     g = geo.Symmetry( \
         fs.fromstr("/ 1 0 2 -1 \n 0 -2 0 0 \n 0 0 1 1 \n 0 0 0 1 /"))
-    tg = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
-                                 "0 1 0 0 \n"\
-                                 "0 0 2 0 \n"\
-                                 "0 0 0 1"))
-    tg1 = geo.Transgen(fs.fromstr("1 0 0 0 \n"\
-                                 "0 1 0 0 \n"\
-                                 "0 0 2 0 \n"\
-                                 "0 0 0 1"))
+    tg = geo.Transgen(fs.fromstr("d 1 0 0"), \
+                      fs.fromstr("d 0 1 0"), \
+                      fs.fromstr("d 0 0 2"))
+    tg1 = geo.Transgen(fs.fromstr("d 1 0 0"), \
+                      fs.fromstr("d 0 1 0"), \
+                      fs.fromstr("d 0 0 2"))
     assert tg == tg1
     c = geo.Coset(g, tg)
     assert c.__str__() == \
@@ -241,10 +242,9 @@ def test_Spacegroup():
     " canonical        \n"\
     "             x,y,z\n"\
     "          -x,-y,-z"
-    transgen = geo.Transgen(fs.fromstr("1 0 0 0\n"\
-                                       "0 1 0 0\n"\
-                                       "0 0 2 0\n"\
-                                       "0 0 0 1"))
+    transgen = geo.Transgen(fs.fromstr("d 1 0 0"), \
+                            fs.fromstr("d 0 1 0"), \
+                            fs.fromstr("d 0 0 2"))
     c1 = geo.Coset(geo.Symmetry(\
                    fs.fromstr("1 0 0 0\n"\
                               "0 1 0 0\n"\
@@ -271,8 +271,13 @@ def test_Spacegroup():
                                         fs.fromstr("{x, -y,z}")])
     transformation = fs.fromstr("b, a, c")
     sg1 = transformation ** sg
-    sg2 = geo.Spacegroup(geo.canonical, [fs.fromstr("{x, y, z}"), \
+    sg2 = geo.Spacegroup(transformation**geo.canonical, [fs.fromstr("{x, y, z}"), \
                                          fs.fromstr("{-x, y, z}")])
+
+    assert sg.is_really_a_spacegroup() == True
+    sg_error = geo.Spacegroup(geo.canonical, [fs.fromstr("{x, y, z}"), \
+                                              fs.fromstr("{x+1/4, y, z}")])
+    assert sg_error.is_really_a_spacegroup() == False
     # Hier ist noch folgender Fehler:
     # Das Programm berücksichtigt die Reihenfolge der
     # Symmetrieelemente eines Transgens. D.h. z.B.:
