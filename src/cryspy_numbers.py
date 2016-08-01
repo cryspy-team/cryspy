@@ -6,34 +6,6 @@ import numpy as np
 
 
 class Mixed(object):
-    """ Mixed
-       Class for Numbers, which can be either an exact rational fraction, \
-       or a float with error or int or float.
-
-       >>> a = Mixed(fr.Fraction(1, 3))
-       >>> type(a)
-       <class 'cryspy_numbers.Mixed'>
-       >>> print(a)
-       1/3
-       >>> a = Mixed(fr.Fraction(1,2))
-       >>> type(a.to_float())
-       <class 'float'>
-       >>> print(a.to_float())
-       0.5
-       >>> b = Mixed(uc.ufloat(1.2, 0.1))
-       >>> type(b)
-       <class 'cryspy_numbers.Mixed'>
-       >>> print(b)
-       1.20(10)
-       >>> c = Mixed(b)
-       >>> print(c)
-       1.20(10)
-       >>> type(c.to_float())
-       <class 'float'>
-       >>> print(c.to_float())
-       1.2
-    """
-
     def __init__(self, value):
         assert isinstance(value, fr.Fraction) or \
             isinstance(value, uc.UFloat) or \
@@ -59,7 +31,7 @@ class Mixed(object):
             if value.s == 0:
                 self.value = value.n
             else:
-                self.value = deepcopy(value)
+                self.value = uc.ufloat(value.n, value.s)
 
     def __float__(self):
         if isinstance(self.value, fr.Fraction):
@@ -138,7 +110,7 @@ class Mixed(object):
                 return Mixed(self.value + deepcopy(right.value))
             elif isinstance(right.value, int):
                 return Mixed(self.value + right.value)
-            elif isinstance(right.valule, float):
+            elif isinstance(right.value, float):
                 return Mixed(self.value + right.value)
         elif isinstance(self.value, float):
             if isinstance(right.value, fr.Fraction):
@@ -166,126 +138,131 @@ class Mixed(object):
         return self + left
 
     def __sub__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 2))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(1.0, 0.4))
-            >>> print(a - b)
-            -1/4
-            >>> print(c - d)
-            0.0(5)
-            >>> print(a - c)
-            -0.75(30)
-            >>> print(c - a)
-            0.75(30)
-            >>> print(a - 0.5)
-            -0.25(0)
-            >>> print(a - 1)
-            -3/4
-        """
-        if isinstance(right, int):
-            return Mixed(self.value - right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value - right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot subtract object of type %s " \
+            "from object of type Mixed."%(type(right))
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - right.value)
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
                 return Mixed(float(self.value) - right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - float(right.value))
             if isinstance(right.value, uc.UFloat):
                 return Mixed(self.value - right.value)
-       
+            if isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            if isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+
     def __rsub__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> print(0.5 - a)
-            0.25(0)
-            >>> print(1 - a)
-            3/4
-        """
-        if isinstance(left, int):
-            return Mixed(left - self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left - self.value)
-        else:
-            raise(BaseException("Error in __rsub__."))
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot subtract object of type Mixed " \
+            "from object of type %s."%(type(left))
+        return left - self
 
     def __mul__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(2, 1))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(3.0, 0.0))
-            >>> null = Mixed(fr.Fraction(0, 1))
-            >>> print(a * b)
-            1/2
-            >>> print(c * d)
-            3.0(9)
-            >>> print(b * c)
-            2.0(6)
-            >>> print(c * b)
-            2.0(6)
-            >>> print(a * 0.5)
-            0.125(0)
-            >>> print(a * 2)
-            1/2
-            >>> print(c * 0)
-            0
-            >>> print(null * c)
-            0
-            >>> print(c * null)
-            0
-        """
-        if isinstance(right, int):
-            if right == 0:
-                return Mixed(fr.Fraction(0, 1))
-            else:
-                return Mixed(self.value * right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value * right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot multiply object of type Mixed " \
+            "with object of type %s."%(right)
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value * right.value)
-            if isinstance(right.value, uc.UFloat):
-                if self.value == fr.Fraction(0, 1):
-                    return Mixed(fr.Fraction(0, 1))
-                else:
-                    return Mixed(float(self.value) * right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) * right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(float(self.value) * right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                if right.value == fr.Fraction(0, 1):
-                    return Mixed(fr.Fraction(0, 1))
-                else:
-                    return Mixed(self.value * float(right.value))
-            if isinstance(right.value, uc.UFloat):
+                return Mixed(self.value * float(right.value))
+            elif isinstance(right.value, uc.UFloat):
                 return Mixed(self.value * right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value * right.value)
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value * right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value * float(right.value))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value * right.value)
+            
 
     def __rmul__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(2, 1))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(3.0, 0.0))
-            >>> print(0.5 * a)
-            0.125(0)
-            >>> print(2 * a)
-            1/2
-            >>> print(0 * c)
-            0
-        """
-        if isinstance(left, int):
-            if left == 0:
-                return Mixed(fr.Fraction(0, 1))
-            else:
-                return Mixed(left * self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left * self.value)
-        else:
-            raise(BaseException("Error in __rmul__."))
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot multiply object of type %s " \
+            "to object of type %s."%(type(left))
+        return left * self
 
     def __truediv__(self, right):
         """
