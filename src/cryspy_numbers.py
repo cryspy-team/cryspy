@@ -265,56 +265,67 @@ class Mixed(object):
         return left * self
 
     def __truediv__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 3))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(2.0, 0.0))
-            >>> print(a / b)
-            3/4
-            >>> print(c / d)
-            0.50(15)
-            >>> print(a / d)
-            0.125(0)
-            >>> print(c / a)
-            4.0(1.2)
-            >>> print(a/0.5)
-            0.5(0)
-            >>> print(a/2)
-            1/8
-        """
-        if isinstance(right, int):
-            return Mixed(self.value / right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value / right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot divide object of type Mixed " \
+            "by object of type %s."%(type(right))
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / right.value)
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
                 return Mixed(float(self.value) / right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / float(right.value))
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value / right.value)
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(fr.Fraction(self.value, right.value))
+            elif isinstance(right.value, float):
+                return Mixed(self.value / right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value / float(right.value))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
                 return Mixed(self.value / right.value)
 
     def __rtruediv__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> print(0.5/a)
-            2.0(0)
-            >>> print(2/a)
-            8
-        """
-        if isinstance(left, int):
-            return Mixed(left / self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left / self.value)
-        else:
-            raise(BaseException("Error in __rtruediv__."))
-
-    def __pos__(self):
-        return self
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot divide object of type %s " \
+            "by object of type Mixed"%(type(left))
+        return left / self
 
     def __neg__(self):
         """
