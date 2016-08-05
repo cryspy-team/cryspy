@@ -5,6 +5,13 @@ import cryspy_numbers as nb
 import quicktions as fr
 import uncertainties as uc
 
+def approx(a, b):
+    allowed_error = 1e-9
+    assert isinstance(a, float), \
+        "Can only compare two floats for approx equality"
+    assert isinstance(b, float), \
+        "Can only compare two floats for approx aquality"
+    return abs(a - b) < allowed_error
 
 def test_Mixed():
     # Create a number of type Mixed with 4 different types.
@@ -575,6 +582,28 @@ def test_Mixed():
     assert isinstance((f1 * mf2).value, float)
     assert f1 * mf2 == nb.Mixed(11.9)
 
+    # Multiplication with integer 0
+
+    q = fr.Fraction(2, 3)
+    e = uc.ufloat(1.2, 0.1)
+    i = 4
+    f = 3.5
+    mq = nb.Mixed(q)
+    me = nb.Mixed(e)
+    mi = nb.Mixed(i)
+    mf = nb.Mixed(f)
+    m0 = nb.Mixed(0)
+
+    for m in [mq, me, mi, mf]:
+        assert m  * m0 == m0
+        assert m  * 0  == m0
+        assert m0 * m  == m0
+        assert 0  * m  == m0
+
+    for z in [q, e, i, f]:
+        assert z * m0 == m0
+        assert m0 * z == m0
+
     # Division
     q1 = fr.Fraction(2, 3)
     q2 = fr.Fraction(3, 4)
@@ -752,3 +781,179 @@ def test_Mixed():
     assert isinstance(f1 / mf2, nb.Mixed)
     assert isinstance((f1 / mf2).value, float)
     assert f1 / mf2 == nb.Mixed(0.9375)
+
+    # negative
+
+    q = fr.Fraction(3, 2)
+    e = uc.ufloat(1.2, 0.1)
+    i = 4
+    f = 3.5
+    mq = nb.Mixed(q)
+    me = nb.Mixed(e)
+    mi = nb.Mixed(i)
+    mf = nb.Mixed(f)
+
+    assert isinstance(-mq, nb.Mixed)
+    assert isinstance((-mq).value, fr.Fraction)
+    assert -mq == nb.Mixed(fr.Fraction(-3, 2))
+
+    assert isinstance(-me, nb.Mixed)
+    assert isinstance((-me).value, uc.UFloat)
+    assert -me == nb.Mixed(uc.ufloat(-1.2, 0.1))
+
+    assert isinstance(-mi, nb.Mixed)
+    assert isinstance((-mi).value, int)
+    assert -mi == nb.Mixed(-4)
+
+    assert isinstance(-mf, nb.Mixed)
+    assert isinstance((-mf).value, float)
+    assert -mf == nb.Mixed(-3.5)
+
+    # Modulo
+
+
+    q = fr.Fraction(5, 2)
+    e = uc.ufloat(3.2, 0.1)
+    i = 3
+    f = 3.5
+    mq = nb.Mixed(q)
+    me = nb.Mixed(e)
+    mi = nb.Mixed(i)
+    mf = nb.Mixed(f)
+
+    assert isinstance(mq % 2, nb.Mixed)
+    assert isinstance((mq % 2).value, fr.Fraction)
+    assert mq % 2 == nb.Mixed(fr.Fraction(1, 2))
+
+    assert isinstance(me % 2, nb.Mixed)
+    assert isinstance((me % 2).value, uc.UFloat)
+    assert approx((me % 2).value.n, 1.2)
+    assert approx((me % 2).value.s, 0.1)
+
+    assert isinstance(mi % 2, nb.Mixed)
+    assert isinstance((mi % 2).value, int)
+    assert mi % 2 == nb.Mixed(1)
+
+    assert isinstance(mf % 2, nb.Mixed)
+    assert isinstance((mf % 2).value, float)
+    assert approx((mf % 2).value, 1.5)
+
+    # Constants
+
+    assert isinstance(nb.pi, nb.Mixed)
+    assert isinstance((nb.pi).value, float)
+    assert (nb.pi).value == 3.141592653589793
+
+    # Square-Root
+
+    
+
+    # Trigonometric Functions:
+
+    a = nb.deg2rad(nb.Mixed(fr.Fraction(180, 1)))
+    assert approx(a.value, 3.1415926535)
+    a = nb.deg2rad(fr.Fraction(180, 1))
+    assert approx(a.value, 3.1415926535)
+    a = nb.deg2rad(nb.Mixed(uc.ufloat(180.0, 10.0)))
+    assert approx(a.value.n, 3.1415926535)
+    assert approx(a.value.s, 0.174532925199)
+    a = nb.deg2rad(uc.ufloat(180.0, 10.0))
+    assert approx(a.value.n, 3.1415926535)
+    assert approx(a.value.s, 0.174532925199)
+    a = nb.deg2rad(nb.Mixed(180))
+    assert approx(a.value, 3.1415926535)
+    a = nb.deg2rad(180)
+    assert approx(a.value, 3.1415926535)
+    a = nb.deg2rad(nb.Mixed(180.0))
+    assert approx(a.value, 3.1415926535)
+    a = nb.deg2rad(180.0)
+    assert approx(a.value, 3.1415926535)
+
+    a = nb.rad2deg(nb.Mixed(fr.Fraction(1, 2)))
+    assert approx(a.value, 28.647889756)
+    a = nb.rad2deg(fr.Fraction(1, 2))
+    assert approx(a.value, 28.647889756)
+    a = nb.rad2deg(nb.Mixed(uc.ufloat(3.1415926535897931, 0.17453292519943295)))
+    assert approx(a.value.n, 180.0)
+    assert approx(a.value.s, 10.0)
+    a = nb.rad2deg(uc.ufloat(3.1415926535897931, 0.17453292519943295))
+    assert approx(a.value.n, 180.0)
+    assert approx(a.value.s, 10.0)
+    a = nb.rad2deg(nb.Mixed(1))
+    assert approx(a.value, 57.295779513082323)
+    a = nb.rad2deg(1)
+    assert approx(a.value, 57.295779513082323)
+    a = nb.rad2deg(nb.Mixed(3.1415926535897931))
+    assert approx(a.value, 180.0)
+    a = nb.rad2deg(3.1415926535897931)
+    assert approx(a.value, 180.0)
+
+    a = nb.cos(nb.Mixed(fr.Fraction(1, 2)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8775825618903)
+    a = nb.cos(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8775825618903)
+    a = nb.cos(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.8775825619803)
+    assert approx(a.value.s, 0.0479425538604)
+    a = nb.cos(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.8775825619803)
+    assert approx(a.value.s, 0.0479425538604)
+    a = nb.cos(nb.Mixed(1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.54030230586)
+    a = nb.cos(1)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.54030230586)
+    a = nb.cos(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8775825618903)
+    a = nb.cos(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8775825618903)
+
+    a = nb.arccos(nb.Mixed(fr.Fraction(1, 2)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.04719755119)
+    a = nb.arccos(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.04719755119)
+    a = nb.arccos(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 1.04719755119)
+    assert approx(a.value.s, 0.11547005383)
+    a = nb.arccos(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 1.04719755119)
+    assert approx(a.value.s, 0.11547005383)
+    a = nb.arccos(nb.Mixed(1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.0)
+    a = nb.arccos(1)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.0)
+    a = nb.arccos(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.04719755119)
+    a = nb.arccos(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.04719755119)
