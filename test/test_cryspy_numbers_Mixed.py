@@ -32,8 +32,8 @@ def test_Mixed():
     assert nb.Mixed(f).value == f
     assert isinstance(nb.Mixed(q1).value, int)
     assert nb.Mixed(q1).value == 2
-    assert isinstance(nb.Mixed(e1).value, float)
-    assert nb.Mixed(e1).value == 3.7
+    assert isinstance(nb.Mixed(e1).value, uc.UFloat)
+    assert nb.Mixed(e1).value == uc.ufloat(3.7, 0.0)
 
     # Convert a number of type Mixed to float.
     assert isinstance(float(nb.Mixed(q)), float)
@@ -61,12 +61,33 @@ def test_Mixed():
     assert nb.Mixed(i) == nb.Mixed(i)
     assert nb.Mixed(f) == nb.Mixed(f)
     assert nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(fr.Fraction(2, 3))
-    assert not(nb.Mixed(fr.Fraction(2, 3)) ==  nb.Mixed(fr.Fraction(1, 3)))
+    assert (nb.Mixed(fr.Fraction(2, 3)) ==  nb.Mixed(fr.Fraction(1, 3))) == False
     assert nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(uc.ufloat(1.2, 0.1))
-    assert not(nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(uc.ufloat(1.2, 0.2)))
+    assert (nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(uc.ufloat(1.2, 0.2))) \
+        == False
     x = nb.Mixed(uc.ufloat(0.5, 0.3) + uc.ufloat(0.5, 0.4)) 
     y = nb.Mixed(uc.ufloat(1.0, 0.5))
     assert x == y
+    assert nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(fr.Fraction(2, 3))
+    assert (nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(uc.ufloat(1.2, 0.1))) \
+        == False
+    assert (nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(1)) == False
+    assert (nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(0.66)) == False
+    assert (nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(fr.Fraction(2, 3))) \
+        == False
+    assert nb.Mixed(uc.ufloat(1.2, 0.1) == nb.Mixed(uc.ufloat(1.2, 0.1)))
+    assert (nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(1)) == False
+    assert (nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(0.66)) == False
+    assert (nb.Mixed(1) == nb.Mixed(fr.Fraction(2, 3))) == False
+    assert (nb.Mixed(1) == nb.Mixed(uc.ufloat(1.2, 0.1))) == False
+    assert nb.Mixed(1) == nb.Mixed(1)
+    assert (nb.Mixed(1) == nb.Mixed(1.0)) == False
+    assert (nb.Mixed(1.0) == nb.Mixed(fr.Fraction(1, 1))) == False
+    assert (nb.Mixed(1.0) == nb.Mixed(uc.ufloat(1.0, 0.0))) == False
+    assert (nb.Mixed(1.0) == nb.Mixed(1)) == False
+    assert nb.Mixed(1.0) == nb.Mixed(1.0)
+
+    
 
     # Addition
 
@@ -846,7 +867,75 @@ def test_Mixed():
 
     # Square-Root
 
-    
+    a = nb.sqrt(nb.Mixed(fr.Fraction(2, 3)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.816496580)
+    a = nb.sqrt(fr.Fraction(2, 3))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.816496580)
+    a = nb.sqrt(nb.Mixed(fr.Fraction(1, 2)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.70710678118)
+    a = nb.sqrt(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.70710678118)
+    a = nb.sqrt(nb.Mixed(fr.Fraction(2, 1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.41421356237)
+    a = nb.sqrt(fr.Fraction(2, 1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.41421356237)
+    a = nb.sqrt(nb.Mixed(fr.Fraction(4, 9)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, fr.Fraction)
+    assert a == nb.Mixed(fr.Fraction(2, 3))
+    a = nb.sqrt(fr.Fraction(4, 9))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, fr.Fraction)
+    assert a == nb.Mixed(fr.Fraction(2, 3))
+
+    a = nb.sqrt(nb.Mixed(uc.ufloat(0.3, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.54772255750)
+    assert approx(a.value.s, 0.09128709291)
+    a = nb.sqrt(uc.ufloat(0.3, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.54772255750)
+    assert approx(a.value.s, 0.09128709291)
+
+    a = nb.sqrt(nb.Mixed(3))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.7320508075688)
+    a = nb.sqrt(3)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 1.7320508075688)
+    a = nb.sqrt(nb.Mixed(4))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, int)
+    assert a.value == 2
+    a = nb.sqrt(4)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, int)
+    assert a.value == 2
+
+    a = nb.sqrt(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.7071067811)
+    a = nb.sqrt(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.7071067811)
 
     # Trigonometric Functions:
 
