@@ -4,103 +4,121 @@ sys.path.append("../src/")
 import cryspy_numbers as nb
 import uncertainties as uc
 import quicktions as fr
-import cryspy_fromstr as fs
+import cryspy_fromstr
+from cryspy_fromstr import fromstr as fs
 import cryspy_geo as geo
 
 
 def test_removeletters():
     string = "hallo 1 2 3"
-    assert fs.removeletters(string) == "      1 2 3"
+    assert cryspy_fromstr.removeletters(string) == "      1 2 3"
 
 
 def test_fromstr():
     string = "1/2"
-    assert fs.fromstr(string) == nb.Mixed(fr.Fraction(1, 2))
+    assert isinstance(fs(string), nb.Mixed)
+    assert fs(string) == nb.Mixed(fr.Fraction(1, 2))
     string = "1.2+/-0.1"
-    assert fs.fromstr(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert fs(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
     string = "1.2(1)"
-    assert fs.fromstr(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert fs(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
     string = "4"
-    assert fs.fromstr(string) == nb.Mixed(fr.Fraction(4, 1))
+    assert fs(string) == nb.Mixed(fr.Fraction(4, 1))
     string = "4.5"
-    assert fs.fromstr(string) == nb.Mixed(uc.ufloat(4.5, 0.0))
+    assert fs(string) == nb.Mixed(4.5)
+
+    string = "1 2 3"
+    print(cryspy_fromstr.typefromstr(string))
+    assert cryspy_fromstr.typefromstr(string) == nb.Matrix
+    assert fs(string) == nb.Matrix([[1, 2, 3]])
+
     string = "/ 1 2 \ \n \ 3 4 /"
-    assert fs.fromstr(string) == \
+    assert fs(string) == \
         nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]), \
                    nb.Row([nb.Mixed(3), nb.Mixed(4)])])
     string = "1 2 \n 3 4"
-    assert fs.fromstr(string) == \
+    assert fs(string) == \
         nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]), \
                    nb.Row([nb.Mixed(3), nb.Mixed(4)])])
     string = "x+y,y - x +1/3,2z"
-    g = fs.fromstr(string)
-    assert g == geo.Symmetry(fs.fromstr("/ 1 1 0 0 \n"\
-                                        " -1 1 0 1/3 \n"\
-                                        "  0 0 2 0 \n"\
-                                        "  0 0 0 1"))
-    string = "a-b,b+a+1/3, 2c"
-    g = fs.fromstr(string)
-    assert g == geo.Transformation(fs.fromstr(" 1 1 0 0 \n"\
-                                              "-1 1 0 1/3\n"\
-                                              " 0 0 2 0 \n"\
-                                              " 0 0 0 1").inv())
+    g = fs(string)
+    assert g == geo.Symmetry(fs("/ 1 1 0 0 \n"\
+                                " -1 1 0 1/3 \n"\
+                                "  0 0 2 0 \n"\
+                                "  0 0 0 1"))
+    string = "a' = a-b \n" \
+             "b' = b+a \n" \
+             "c' = 2c"
+    g = fs(string)
+    assert g == geo.Transformation(fs(" 1 1 0 0 \n"\
+                                      "-1 1 0 0 \n"\
+                                      " 0 0 2 0 \n"\
+                                      " 0 0 0 1").inv())
 
-    string = "c,a,b"
-    g = fs.fromstr(string)
-    assert g == geo.Transformation(fs.fromstr("0 1 0 0 \n" \
-                                              "0 0 1 0 \n" \
-                                              "1 0 0 0 \n" \
-                                              "0 0 0 1").inv())
-
+    string = "a' = c \n" \
+             "b' = a \n" \
+             "c' = b"
+    g = fs(string)
+    assert g == geo.Transformation(fs("0 1 0 0 \n" \
+                                      "0 0 1 0 \n" \
+                                      "1 0 0 0 \n" \
+                                      "0 0 0 1").inv())
+    string = "O -> (1/2, 0, 0)"
+    g = fs(string)
+    assert g == geo.Transformation(fs("1 0 0 -1/2 \n" \
+                                      "0 1 0    0 \n" \
+                                      "0 0 1    0 \n" \
+                                      "0 0 0    1"))
 
     string = "p0 0 0"
-    p = fs.fromstr(string)
-    assert p == geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))
+    p = fs(string)
+    assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))
     string = "P0 0 0"
-    p = fs.fromstr(string)
-    assert p == geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))
+    p = fs(string)
+    assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))
     string = "r0 0 0"
-    p = fs.fromstr(string)
-    assert p == geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))
+    p = fs(string)
+    assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))
     string = "R0 0 0"
-    p = fs.fromstr(string)
-    assert p == geo.Pos(fs.fromstr("0 \n 0 \n 0 \n 1"))
+    p = fs(string)
+    assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))
     string = p.__str__()
     assert string == "Pos /  0  \ \n" \
                      "   |   0   |\n" \
                      "    \  0  / "
-    p1 = fs.fromstr(string)
+    p1 = fs(string)
     assert p == p1
     string = "R1/2 1/2 1/2"
-    p = fs.fromstr(string)
-    assert p == geo.Pos(fs.fromstr("1/2 \n 1/2 \n 1/2 \n 1"))
+    p = fs(string)
+    assert p == geo.Pos(fs("1/2 \n 1/2 \n 1/2 \n 1"))
 
-
+    
 
 def test_typefromstr():
   string = "/ 1 2 \ \\n\ 3 4/"
-  assert fs.typefromstr(string) == nb.Matrix
+  assert cryspy_fromstr.typefromstr(string) == nb.Matrix
   string = "<1 2 3>"
-  assert fs.typefromstr(string) == nb.Matrix
+  assert cryspy_fromstr.typefromstr(string) == nb.Matrix
   string = "1/2"
-  assert fs.typefromstr(string) == nb.Mixed
+  assert cryspy_fromstr.typefromstr(string) == nb.Mixed
   string = "1.2+/-0.1"
-  assert fs.typefromstr(string) == nb.Mixed
+  assert cryspy_fromstr.typefromstr(string) == nb.Mixed
   string = "1.2(1)"
-  assert fs.typefromstr(string) == nb.Mixed
+  assert cryspy_fromstr.typefromstr(string) == nb.Mixed
   string = "4"
-  assert fs.typefromstr(string) == nb.Mixed
+  assert cryspy_fromstr.typefromstr(string) == nb.Mixed
   string = "x+y,y -x + 1/3, 2z"
-  assert fs.typefromstr(string) == geo.Symmetry
+  assert cryspy_fromstr.typefromstr(string) == geo.Symmetry
   string = "a+b,b-a+1/3,2c"
-  assert fs.typefromstr(string) == geo.Transformation
+  assert cryspy_fromstr.typefromstr(string) == geo.Transformation
   string = "{-x,-y,z+1/2}"
-  assert fs.typefromstr(string) == geo.Coset
+  assert cryspy_fromstr.typefromstr(string) == geo.Coset
   string = "p0 0 0"
-  assert fs.typefromstr(string) == geo.Pos
+  assert cryspy_fromstr.typefromstr(string) == geo.Pos
   string = "P0 0 0"
-  assert fs.typefromstr(string) == geo.Pos
+  assert cryspy_fromstr.typefromstr(string) == geo.Pos
   string = "r0 0 0"
-  assert fs.typefromstr(string) == geo.Pos
+  assert cryspy_fromstr.typefromstr(string) == geo.Pos
   string = "R0 0 0"
-  assert fs.typefromstr(string) == geo.Pos
+  assert cryspy_fromstr.typefromstr(string) == geo.Pos
+

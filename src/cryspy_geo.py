@@ -123,35 +123,9 @@ class Operator:
         else:
             return False
 
-    def __pow__(self, right):
-        if isinstance(right, Pos):
-            return Pos(self.value * right.value)
-        elif isinstance(right, Dif):
-            return Dif(self.value * right.value)
-        elif isinstance(right, Symmetry):
-            return Symmetry(self.value * right.value * self.value.inv())
-        elif isinstance(right, Transformation):
-            return Transformation(self.value * right.value * \
-                self.value.inv())
-        elif isinstance(right, Transgen):
-            return Transgen(self ** right.liste[0], \
-                            self ** right.liste[1], \
-                            self ** right.liste[2])
-        elif isinstance(right, Metric):
-            return Metric(self.value * right.value * self.value.inv())
-        elif isinstance(right, Operator):
-            return Operator(self.value * right.value * self.value.inv())
-        else:
-            return NotImplemented
-            #"I cannot apply object of type Operator"\
-            #    " to object of type %s."%(type(right))))
-
-    def __mul__(self, right):
-        if isinstance(self, Symmetry) and isinstance(right, Symmetry):
-            return Symmetry(self.value * right.value)
-
     def inv(self):
         return Operator(self.value.inv())
+
 
 
 def linearterm2str(liste_numbers, liste_variables):
@@ -191,7 +165,7 @@ def linearterm2str(liste_numbers, liste_variables):
         result = result[1:]
     return result
 
-
+"""
 def str2linearterm(string, liste_variables):
     assert isinstance(string, str), \
         "Argument must be of type str."
@@ -219,7 +193,7 @@ def str2linearterm(string, liste_variables):
                 word += '0'
         liste_numbers[index] += fs.fromstr(word)
     return liste_numbers
-
+"""
 
 class Symmetry(Operator):
     def __str__(self):
@@ -229,22 +203,78 @@ class Symmetry(Operator):
                 ["x", "y", "z", '']) + ','
         result = result[:-1]
         return result
+
+    def inv(self):
+        return Symmetry(self.value.inv())
+
+    def __mul__(self, right):
+        if isinstance(right, Symmetry):
+            return Symmetry(self.value * right.value)
+        else:
+            return NotImplemented
+
+    def __pow__(self, right):
+        if isinstance(right, Pos):
+            return Pos(self.value * right.value)
+        elif isinstance(right, Dif):
+            return Dif(self.value * right.value)
+        else:
+            return NotImplemented
             
 
 class Transformation(Operator):
     def __str__(self):
-        result = ''
+        result = 'Transformation '
         m = self.value.inv()
+        Ox = m.liste[0].liste[3]
+        Oy = m.liste[1].liste[3]
+        Oz = m.liste[2].liste[3]
+        matrix = nb.Matrix([[1, 0, 0, Ox], \
+                            [0, 1, 0, Oy], \
+                            [0, 0, 1, Oz], \
+                            [0, 0, 0,  1]])
+        result = "Transformation O -> (%s, %s, %s)\n" \
+                 "               then\n"% \
+                     (Ox.__str__(), Oy.__str__(), Oz.__str__())
         matrix = nb.Matrix( \
-            [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], m.liste[0].liste[3]]), \
-             nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], m.liste[1].liste[3]]), \
-             nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], m.liste[2].liste[3]]), \
-             nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], m.liste[3].liste[3]])])
+            [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
+             nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
+             nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+             nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], 1])])
+        terms = []
         for i in range(3):
-            result += linearterm2str(matrix.liste[i].liste, 
-                ["a", "b", "c", '']) + "\n"
-        result = result[:-1]
-        return bp.block([["Transformation ", "a' = \nb' = \nc' = ", result],])
+            terms.append(linearterm2str(matrix.liste[i].liste, 
+                ["a", "b", "c", '']))
+        return result + "               a' = " + terms[0] + "\n" \
+                      + "               b' = " + terms[1] + "\n" \
+                      + "               c' = " + terms[2]
+
+    def inv(self):
+        return Transformation(self.value.inv())
+
+    def __mul__(self, right):
+        if isinstance(right, Transformation):
+            return Transformation(self.value * right.value)
+        else:
+            return NotImplemented
+
+    def __pow__(self, right):
+        if isinstance(right, Symmetry):
+            return Symmetry(self.value * right.value * self.value.inv())
+        elif isinstance(right, Transgen):
+            return Transgen(self ** right.liste[0], \
+                                self ** right.liste[1], \
+                                self ** right.liste[2])
+        elif isinstance(right, Pos):
+            return Pos(self.value * right.value)
+        elif isinstance(right, Dif):
+            return Dif(self.value * right.value)
+        elif isinstance(right, Metric):
+            M = self.value
+            Minv = M.inv()
+            Minvtr = Minv.transpose()
+            return Metric(Minvtr * right.value * Minv)
+
 
 
 class Metric(Operator):
@@ -347,20 +377,6 @@ class Cellparameters():
 
 class Transgen():
     def __init__(self, b1, b2, b3):
-#        assert isinstance(value, nb.Matrix), \
-#            "Must be created by an object of type Matrix."
-#        assert value.shape() == (4, 4), \
-#            "Must be created by a 4x4-Matrix."
-#        assert value.liste[3] == nb.Row([0, 0, 0, 1]), \
-#            "Must be created by a 4x4-Matrix of this shape: \n"\
-#            "   * * * * \n"\
-#            "   * * * * \n"\
-#            "   * * * * \n"\
-#            "   0 0 0 1 \n"
-#        assert  (value.liste[0].liste[3] == 0) \
-#            and (value.liste[1].liste[3] == 0) \
-#            and (value.liste[2].liste[3] == 0), \
-#            "Must be created by a 4x4-Matrix without translation part."
         assert  isinstance(b1, Dif) \
             and isinstance(b2, Dif) \
             and isinstance(b3, Dif), \
@@ -375,7 +391,7 @@ class Transgen():
         m20 = b3.value.liste[0].liste[0]
         m21 = b3.value.liste[1].liste[0]
         m22 = b3.value.liste[2].liste[0]
-        self.operator = Operator(nb.Matrix( \
+        self.transformation = Transformation(nb.Matrix( \
             [nb.Row([m00, m01, m02, 0]), \
              nb.Row([m10, m11, m12, 0]), \
              nb.Row([m20, m21, m22, 0]), \
@@ -391,13 +407,42 @@ class Transgen():
                 self.liste[2].value.block(0,3,0,1).__str__()],])
 
     def __rmod__(self, left):
-        assert isinstance(left, Pos), \
-            "Argument must be of type Pos."
-        left = self.operator.inv() ** left
-        left.value.liste[0].liste[0] %= 1
-        left.value.liste[1].liste[0] %= 1
-        left.value.liste[2].liste[0] %= 1
-        return self.operator ** left
+        if isinstance(left, Pos):
+            result = self.transformation.inv() ** left
+            result.value.liste[0].liste[0] %= 1
+            result.value.liste[1].liste[0] %= 1
+            result.value.liste[2].liste[0] %= 1
+            return self.transformation ** result
+        elif isinstance(left, Dif):
+            result = self.transformation.inv() ** left
+            result.value.liste[0].liste[0] %= 1
+            result.value.liste[1].liste[0] %= 1
+            result.value.liste[2].liste[0] %= 1
+            return self.transformation ** result
+        elif isinstance(left, Symmetry):
+            result = self.transformation.inv() ** left
+            result.value.liste[0].liste[3] %= 1
+            result.value.liste[1].liste[3] %= 1
+            result.value.liste[2].liste[3] %= 1
+            return self.transformation ** result
+        elif isinstance(left, Coset):
+            if left.transgen == self:
+                return Coset(left.symmetry % self, self)
+            else:
+                raise(BaseException("If you try to calculate " \
+                    "Coset % Transgen, but the coset has another " \
+                    "transgen, then you come into devil's kitchen!"))
+        elif isinstance(left, Spacegroup):
+            if left.transgen == self:
+                return Spacegroup(self, [coset % self \
+                    for coset in left.liste_cosets])
+            else:
+                raise(BaseException("If you try to calculate " \
+                    "Spacegroup % Transgen, but the spacegroup has " \
+                    "another transgen, then you come into " \
+                    "devil's kitchen!"))
+        else:
+            return NotImplemented
 
     def __eq__(self, right):
         # Returns True even when the order is different.
@@ -418,15 +463,15 @@ canonical = Transgen( \
     Dif(nb.Matrix( \
     [nb.Row([0]), nb.Row([0]), nb.Row([1]), nb.Row([0])])))
 
+
 class Coset():
     def __init__(self, symmetry, transgen):
         assert isinstance(symmetry, Symmetry), \
             "First argument must be of type Symmetry."
         assert isinstance(transgen, Transgen), \
             "Second argument must be of type Transgen."
-        self.symmetry = symmetry
+        self.symmetry = symmetry % transgen
         self.transgen = transgen
-        self.gohome()
     
     def __str__(self):
         if self.transgen == canonical:
@@ -446,15 +491,12 @@ class Coset():
             return False
 
     def gohome(self):
-       self.symmetry = self.transgen.operator.inv() ** self.symmetry
-       self.symmetry.value.liste[0].liste[3] %= 1
-       self.symmetry.value.liste[1].liste[3] %= 1
-       self.symmetry.value.liste[2].liste[3] %= 1
-       self.symmetry = self.transgen.operator ** self.symmetry
-
+        return Coset(self.symmetry % self.transgen, self.transgen)
     def __pow__(self, right):
         if isinstance(right, Pos):
             return (self.symmetry ** right) % self.transgen
+        elif isinstance(right, Dif):
+            return(self.symmetry ** right) % self.transgen
         else:
             return NotImplemented
 
@@ -473,6 +515,7 @@ class Coset():
                                " != ", \
                                right.transgen.__str__()]])
         return Coset(self.symmetry * right.symmetry, self.transgen)
+
 
 
 class Spacegroup():

@@ -86,7 +86,8 @@ def test_Mixed():
     assert (nb.Mixed(1.0) == nb.Mixed(uc.ufloat(1.0, 0.0))) == False
     assert (nb.Mixed(1.0) == nb.Mixed(1)) == False
     assert nb.Mixed(1.0) == nb.Mixed(1.0)
-
+    assert nb.Mixed(0) == 0
+    assert nb.Mixed(fr.Fraction(2, 1)) == 2
     
 
     # Addition

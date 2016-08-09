@@ -54,6 +54,7 @@ class Mixed(object):
             return ''
 
     def __eq__(self, right):
+        right = Mixed(right)
         if isinstance(right, Mixed):
             if type(self.value) == type(right.value):
                 if isinstance(self.value, fr.Fraction):
