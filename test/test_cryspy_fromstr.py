@@ -28,7 +28,6 @@ def test_fromstr():
     assert fs(string) == nb.Mixed(4.5)
 
     string = "1 2 3"
-    print(cryspy_fromstr.typefromstr(string))
     assert cryspy_fromstr.typefromstr(string) == nb.Matrix
     assert fs(string) == nb.Matrix([[1, 2, 3]])
 
@@ -69,6 +68,21 @@ def test_fromstr():
                                       "0 1 0    0 \n" \
                                       "0 0 1    0 \n" \
                                       "0 0 0    1"))
+
+    string1 = "O -> (1/2, 0, 0)"
+    string2 = "a' = b\n" \
+              "b' = a\n" \
+              "c' = c"
+    string = "O -> (1/2, 0, 0) \n" \
+             "then \n "\
+             "a' = b\n"\
+             "b' = a\n"\
+             "c' = c"
+
+    g1 = fs(string1)
+    g2 = fs(string2)
+    g = fs(string)
+    assert g == g2 * g1
 
     string = "p0 0 0"
     p = fs(string)

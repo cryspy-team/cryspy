@@ -205,7 +205,6 @@ def transformationfromstr(string):
             word = words[1]
             word = word.replace('(', ' ').replace(')', ' ').replace(',', ' ')
             threenumbers = fromstr(word)
-            print(threenumbers)
             matrix = nb.Matrix([[1, 0, 0, threenumbers.liste[0].liste[0]], \
                                  [0, 1, 0, threenumbers.liste[0].liste[1]], \
                                  [0, 0, 1, threenumbers.liste[0].liste[2]], \
@@ -219,29 +218,32 @@ def transformationfromstr(string):
             liste = []
             i = 0
             for line in lines:
-                i += 1
-                words = line.split(' ')
-                assert  (    ((i == 1) and (words[0] == "a'")) \
-                          or ((i == 2) and (words[0] == "b'")) \
-                          or ((i == 3) and (words[0] == "c'"))  )\
-                    and (words[1] == '='), \
-                    "The Transformation must have the following form: \n" \
-                    "a' = ... \n" \
-                    "b' = ... \n" \
-                    "c' = ... \n" \
-                    "in this Order!"
-    
-                row = nb.Row(str2linearterm(words[2], ['a', 'b', 'c']))
-                liste.append(row)
-            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
-                fromstr("1")]))
-            m = nb.Matrix(liste)
-            matrix = nb.Matrix( \
-                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], m.liste[0].liste[3]]), \
-                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], m.liste[1].liste[3]]), \
-                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], m.liste[2].liste[3]]), \
-                 nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], m.liste[3].liste[3]])])
-    
+                if line != '':
+                    i += 1
+                    words = line.split(' ')
+                    assert  (    ((i == 1) and (words[0] == "a'")) \
+                              or ((i == 2) and (words[0] == "b'")) \
+                              or ((i == 3) and (words[0] == "c'"))  )\
+                        and (words[1] == '='), \
+                        "The Transformation must have the following form: \n" \
+                        "a' = ... \n" \
+                        "b' = ... \n" \
+                        "c' = ... \n" \
+                        "in this Order!"
+        
+                    row = nb.Row(str2linearterm(words[2], ['a', 'b', 'c']))
+                    liste.append(row)
+                liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+                    fromstr("1")]))
+                print(liste)
+                m = nb.Matrix(liste)
+                print(m)
+                matrix = nb.Matrix( \
+                    [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
+                     nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
+                     nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+                     nb.Row([0, 0, 0, 1])])
+        
         return geo.Transformation(matrix.inv())
 
 
