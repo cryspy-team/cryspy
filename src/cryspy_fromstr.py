@@ -193,8 +193,9 @@ def transformationfromstr(string):
         # i.e. the string represents a transformation which is
         # a composition of elementar transformations.
         result = geo.Transformation(nb.Matrix.onematrix(4))
-        for word in string.split("then"):
+        for word in string.split("\nthen\n"):
             result = transformationfromstr(word) * result
+        return result
     else:
         # The string represents an elementar transformation,
         # i.e. either a pure translation of the origin or a
@@ -203,22 +204,25 @@ def transformationfromstr(string):
             # The string represents a pure translation of the origin.
             words = string.split("->")
             word = words[1]
+            word = word.replace('\n', ' ')
             word = word.replace('(', ' ').replace(')', ' ').replace(',', ' ')
             threenumbers = fromstr(word)
-            matrix = nb.Matrix([[1, 0, 0, threenumbers.liste[0].liste[0]], \
-                                 [0, 1, 0, threenumbers.liste[0].liste[1]], \
-                                 [0, 0, 1, threenumbers.liste[0].liste[2]], \
-                                 [0, 0, 0, 1                             ]])
+            matrix = nb.Matrix([[1, 0, 0, -threenumbers.liste[0].liste[0]], \
+                                [0, 1, 0, -threenumbers.liste[0].liste[1]], \
+                                [0, 0, 1, -threenumbers.liste[0].liste[2]], \
+                                [0, 0, 0, 1                             ]])
+            return geo.Transformation(matrix)
         elif ('a' in string) or ('b' in string) or ('c' in string):
             # The string represents a pure change of the axes
             lines = string.split('\n')
             assert len(lines) == 3, \
-                "The following string looks like a Transformation, but it has not "\
-                "exactly three lines: %s"%(string)
+                "The following string looks like a Transformation, " \
+                "but it has not exactly three lines: %s"%(string)
             liste = []
             i = 0
             for line in lines:
-                if line != '':
+                if len(line.split(' ')) > 0:
+                    print(line)
                     i += 1
                     words = line.split(' ')
                     assert  (    ((i == 1) and (words[0] == "a'")) \
@@ -230,22 +234,20 @@ def transformationfromstr(string):
                         "b' = ... \n" \
                         "c' = ... \n" \
                         "in this Order!"
-        
-                    row = nb.Row(str2linearterm(words[2], ['a', 'b', 'c']))
+                    words = line.split('=') 
+                    row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
-                liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
-                    fromstr("1")]))
-                print(liste)
-                m = nb.Matrix(liste)
-                print(m)
-                matrix = nb.Matrix( \
-                    [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
-                     nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
-                     nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
-                     nb.Row([0, 0, 0, 1])])
+                    print(row)
+            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+                fromstr("1")]))
+            m = nb.Matrix(liste)
+            matrix = nb.Matrix( \
+                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
+                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
+                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+                 nb.Row([0, 0, 0, 1])])
         
         return geo.Transformation(matrix.inv())
-
 
 def cosetfromstr(string):
     string = string.replace('{', ' ')

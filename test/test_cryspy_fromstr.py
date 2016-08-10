@@ -13,6 +13,9 @@ def test_removeletters():
     string = "hallo 1 2 3"
     assert cryspy_fromstr.removeletters(string) == "      1 2 3"
 
+def test_str2linearterm():
+    term = cryspy_fromstr.str2linearterm("a + b", ['a', 'b', 'c'])
+    assert term == [1, 1, 0, 0] 
 
 def test_fromstr():
     string = "1/2"
@@ -68,13 +71,13 @@ def test_fromstr():
                                       "0 1 0    0 \n" \
                                       "0 0 1    0 \n" \
                                       "0 0 0    1"))
-
+    
     string1 = "O -> (1/2, 0, 0)"
     string2 = "a' = b\n" \
               "b' = a\n" \
               "c' = c"
     string = "O -> (1/2, 0, 0) \n" \
-             "then \n "\
+             "then\n"\
              "a' = b\n"\
              "b' = a\n"\
              "c' = c"
@@ -83,6 +86,23 @@ def test_fromstr():
     g2 = fs(string2)
     g = fs(string)
     assert g == g2 * g1
+
+
+    string = "O -> (1/2, 0, 0) \n" \
+             "then\n" \
+             "a' = a + b\n" \
+             "b' = b\n" \
+             "c' = c"
+    print("--------")
+    g = fs(string)
+    print(g.value)
+    assert g ** fs("p 1/2 0 0") == fs("p 0 0 0")
+    assert g ** fs("p 1/2 1/3 0") == fs("p 0 1/3 0")
+    assert g ** fs("p 0 0 0") == fs("p -1/2 1/2 0")
+
+    assert g * g.inv() == geo.Transformation(nb.Matrix.onematrix(4))
+    
+
 
     string = "p0 0 0"
     p = fs(string)
