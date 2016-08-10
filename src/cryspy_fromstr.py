@@ -222,7 +222,6 @@ def transformationfromstr(string):
             i = 0
             for line in lines:
                 if len(line.split(' ')) > 0:
-                    print(line)
                     i += 1
                     words = line.split(' ')
                     assert  (    ((i == 1) and (words[0] == "a'")) \
@@ -237,7 +236,6 @@ def transformationfromstr(string):
                     words = line.split('=') 
                     row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
-                    print(row)
             liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
                 fromstr("1")]))
             m = nb.Matrix(liste)

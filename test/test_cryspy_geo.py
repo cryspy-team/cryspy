@@ -306,28 +306,103 @@ def test_operations():
 
 
     # * :
+    #====
+
+    # symmetry * symmetry:
     assert isinstance(symmetry * symmetry, geo.Symmetry)
+
+    # transformation * transformation
     assert isinstance(transformation * transformation, geo.Transformation)
 
     # **:
+    #====
+
+    # symmetry ** pos:
     assert isinstance(symmetry ** pos, geo.Pos)
+
+    # symmetry ** dif:
     assert isinstance(symmetry ** dif, geo.Dif)
+
+    # transformation ** symmetry:
     assert isinstance(transformation ** symmetry, geo.Symmetry)
+
+    # transformation ** transgen:
     assert isinstance(transformation ** transgen, geo.Transgen)
+
+    # transformation ** pos:
     assert isinstance(transformation ** pos, geo.Pos)
+
+    # transformation ** dif:
     assert isinstance(transformation ** dif, geo.Dif)
+
+    # transformation ** metric:
     assert isinstance(transformation ** metric, geo.Metric)
 
+    # transformation ** spacegroup:
+    assert isinstance(transformation ** spacegroup, geo.Spacegroup)
+
     # %:
+    #===
+
+    # symmetry % transgen:
     assert isinstance(symmetry % transgen, geo.Symmetry)
+
+    # pos % transgen:
     assert isinstance(pos % transgen, geo.Pos)
+    transgen1 = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])), \
+                             geo.Dif(nb.Matrix([[0], [1], [0], [0]])), \
+                             geo.Dif(nb.Matrix([[0], [0], [2], [0]])))
+    pos1 = geo.Pos(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [1]]))
+    pos1_ = geo.Pos(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [1]]))
+    assert pos1 % transgen1 == pos1_
+
+    transgen1 = geo.Transgen(geo.Dif(nb.Matrix([[0], [0], [2], [0]])), \
+                             geo.Dif(nb.Matrix([[0], [1], [0], [0]])), \
+                             geo.Dif(nb.Matrix([[1], [0], [0], [0]])))
+    pos1 = geo.Pos(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [1]]))
+    pos1_ = geo.Pos(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [1]]))
+    assert pos1 % transgen1 == pos1_
+
+    # dif % transgen:
     assert isinstance(dif % transgen, geo.Dif)
+
+    transgen1 = geo.Transgen(geo.Dif(nb.Matrix([[0], [0], [2], [0]])), \
+                             geo.Dif(nb.Matrix([[0], [1], [0], [0]])), \
+                             geo.Dif(nb.Matrix([[1], [0], [0], [0]])))
+    dif1 = geo.Dif(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [0]]))
+    dif1_ = geo.Dif(nb.Matrix([[0], [0], [fr.Fraction(3, 2)], [0]]))
+    assert dif1 % transgen1 == dif1_
+
+    # spacegroup % transgen:
     assert isinstance(spacegroup % transgen, geo.Spacegroup)
 
     # Here comes Coset:
+    #==================
+
 
     coset = geo.Coset(symmetry, transgen)
+
+    # coset * coset:
     assert isinstance(coset * coset, geo.Coset)
+
+    # coset ** pos:
     assert isinstance(coset ** pos, geo.Pos)
+
+    # coset ** dif:
     assert isinstance(coset ** dif, geo.Dif)
+
+    # coset % transgen:
     assert isinstance(coset % transgen, geo.Coset)
+
+    transgen1 = geo.Transgen(geo.Dif(nb.Matrix([[0], [0], [2], [0]])), \
+                             geo.Dif(nb.Matrix([[0], [1], [0], [0]])), \
+                             geo.Dif(nb.Matrix([[1], [0], [0], [0]])))
+    coset1 = geo.Coset(geo.Symmetry(nb.Matrix([[1, 0, 0, fr.Fraction(3, 2)], \
+                                               [0, 1, 0, fr.Fraction(3, 2)], \
+                                               [0, 0, 1, fr.Fraction(7, 2)], \
+                                               [0, 0, 0, 1  ]])), transgen1)
+    coset1_ = geo.Coset(geo.Symmetry(nb.Matrix([[1, 0, 0, fr.Fraction(1, 2)], \
+                                                [0, 1, 0, fr.Fraction(1, 2)], \
+                                                [0, 0, 1, fr.Fraction(3, 2)], \
+                                                [0, 0, 0, 1  ]])), transgen1)
+    assert coset1 % transgen1 == coset1_

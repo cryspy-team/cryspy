@@ -274,6 +274,11 @@ class Transformation(Operator):
             Minv = M.inv()
             Minvtr = Minv.transpose()
             return Metric(Minvtr * right.value * Minv)
+        elif isinstance(right, Spacegroup):
+            return Spacegroup(self ** right.transgen, \
+                          [self ** coset for coset in right.liste_cosets])
+        else:
+            return NotImplemented
 
 
 
@@ -383,13 +388,13 @@ class Transgen():
             "Arguments must be of type Dif."
         self.liste = [b1, b2, b3]
         m00 = b1.value.liste[0].liste[0]
-        m01 = b1.value.liste[1].liste[0]
-        m02 = b1.value.liste[2].liste[0]
-        m10 = b2.value.liste[0].liste[0]
+        m01 = b2.value.liste[0].liste[0]
+        m02 = b3.value.liste[0].liste[0]
+        m10 = b1.value.liste[1].liste[0]
         m11 = b2.value.liste[1].liste[0]
-        m12 = b2.value.liste[2].liste[0]
-        m20 = b3.value.liste[0].liste[0]
-        m21 = b3.value.liste[1].liste[0]
+        m12 = b3.value.liste[1].liste[0]
+        m20 = b1.value.liste[2].liste[0]
+        m21 = b2.value.liste[2].liste[0]
         m22 = b3.value.liste[2].liste[0]
         self.transformation = Transformation(nb.Matrix( \
             [nb.Row([m00, m01, m02, 0]), \
@@ -559,10 +564,5 @@ class Spacegroup():
         return (self.transgen == right.transgen) and \
                (self.liste_cosets == right.liste_cosets)
 
-    def __rpow__(self, left):
-        assert isinstance(left, Transformation), \
-            "Argument must be of type Transformation."
-        return Spacegroup(left ** self.transgen, \
-                          [left ** coset for coset in self.liste_cosets])
 
     
