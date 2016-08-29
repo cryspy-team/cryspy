@@ -6,25 +6,6 @@ import numpy as np
 
 
 class Mixed(object):
-    """ Mixed
-       Class for Numbers, which can be either an exact rational fraction, \
-       or a float with error.
-
-       >>> a = Mixed(fr.Fraction(1, 3))
-       >>> type(a)
-       <class 'cryspy_numbers.Mixed'>
-       >>> print(a)
-       1/3
-       >>> b = Mixed(uc.ufloat(1.2, 0.1))
-       >>> type(b)
-       <class 'cryspy_numbers.Mixed'>
-       >>> print(b)
-       1.20(10)
-       >>> c = Mixed(b)
-       >>> print(c)
-       1.20(10)
-    """
-
     def __init__(self, value):
         assert isinstance(value, fr.Fraction) or \
             isinstance(value, uc.UFloat) or \
@@ -36,233 +17,327 @@ class Mixed(object):
             "an uncertainties.core.Variable "\
             "or float or int or Mixed."
         if isinstance(value, int):
-            self.value = fr.Fraction(value, 1)
+            self.value = value
         elif isinstance(value, float):
-            self.value = uc.ufloat(value, 0.0)
+            self.value = value
         elif isinstance(value, Mixed):
             self.value = value.value
-        else:
-            self.value = value
+        elif isinstance(value, fr.Fraction):
+            if value.denominator == 1:
+                self.value = value.numerator
+            else:
+                self.value = value
+        elif isinstance(value, uc.UFloat):
+            self.value = uc.ufloat(value.n, value.s)
+
+    def __float__(self):
+        if isinstance(self.value, fr.Fraction):
+            return float(self.value)
+        elif isinstance(self.value, uc.UFloat):
+            return float(self.value.n)
+        elif isinstance(self.value, int):
+            return float(self.value)
+        elif isinstance(self.value, float):
+            return self.value
 
     def __str__(self):
         if isinstance(self.value, fr.Fraction):
             return self.value.__str__()
         elif isinstance(self.value, uc.UFloat):
             return self.value.format('S')
+        elif isinstance(self.value, int):
+            return self.value.__str__()
+        elif isinstance(self.value, float):
+            return self.value.__str__()
         else:
             raise(BaseException("Something is wrong with value of Mixed."))
             return ''
 
+    def __eq__(self, right):
+        right = Mixed(right)
+        if isinstance(right, Mixed):
+            if type(self.value) == type(right.value):
+                if isinstance(self.value, fr.Fraction):
+                    return self.value == right.value
+                if isinstance(self.value, uc.UFloat):
+                    return (self.value.n == right.value.n) \
+                        and (self.value.s == right.value.s)
+                if isinstance(self.value, int):
+                    return self.value == right.value
+                if isinstance(self.value, float):
+                    return self.value == right.value
+            else:
+                return False
+        else:
+            return False
+
     def __add__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 2))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(1.0, 0.4))
-            >>> print(a + b)
-            3/4
-            >>> print(c + d)
-            2.0(5)
-            >>> print(a + c)
-            1.25(30)
-            >>> print(c + a)
-            1.25(30)
-            >>> print(a + 0.5)
-            0.75(0)
-            >>> print(a + 1)
-            5/4
-        """
-        if isinstance(right, int):
-            return Mixed(self.value + right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value + right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot object of type %s " \
+            "to object of type Mixed."%(type(right))
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) + right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value + right.value)
+            elif isinstance(right.value, float):
                 return Mixed(float(self.value) + right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                return Mixed(self.value + float(right.value))
-            if isinstance(right.value, uc.UFloat):
+                return Mixed(deepcopy(self.value) + float(right.value))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(deepcopy(self.value) + deepcopy(right.value))
+            elif isinstance(right.value, int):
+                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+            elif isinstance(right.value, float):
+                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
-       
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value + deepcopy(right.value))
+            elif isinstance(right.value, int):
+                return Mixed(self.value + right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value + right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value + right.value)
+            if isinstance(right.value, uc.UFloat):
+                return Mixed( \
+                    uc.ufloat(self.value + right.value.n, right.value.s))
+            if isinstance(right.value, int):
+                return Mixed(self.value + right.value)
+            if isinstance(right.value, float):
+                return Mixed(self.value + right.value)
+
     def __radd__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> print(0.5 + a)
-            0.75(0)
-            >>> print(1 + a)
-            5/4
-        """
-        if isinstance(left, int):
-            return Mixed(self.value + left)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(self.value + left)
-        else:
-            raise(BaseException("Error in __radd__."))
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot add object of type Mixed to object " \
+            "of type %s."%(type(left))
+        return self + left
 
     def __sub__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 2))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(1.0, 0.4))
-            >>> print(a - b)
-            -1/4
-            >>> print(c - d)
-            0.0(5)
-            >>> print(a - c)
-            -0.75(30)
-            >>> print(c - a)
-            0.75(30)
-            >>> print(a - 0.5)
-            -0.25(0)
-            >>> print(a - 1)
-            -3/4
-        """
-        if isinstance(right, int):
-            return Mixed(self.value - right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value - right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot subtract object of type %s " \
+            "from object of type Mixed."%(type(right))
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - right.value)
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
                 return Mixed(float(self.value) - right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - float(right.value))
             if isinstance(right.value, uc.UFloat):
                 return Mixed(self.value - right.value)
-       
+            if isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            if isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value - right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value - right.value)
+
     def __rsub__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> print(0.5 - a)
-            0.25(0)
-            >>> print(1 - a)
-            3/4
-        """
-        if isinstance(left, int):
-            return Mixed(left - self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left - self.value)
-        else:
-            raise(BaseException("Error in __rsub__."))
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot subtract object of type Mixed " \
+            "from object of type %s."%(type(left))
+        return left - self
 
     def __mul__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(2, 1))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(3.0, 0.0))
-            >>> print(a * b)
-            1/2
-            >>> print(c * d)
-            3.0(9)
-            >>> print(b * c)
-            2.0(6)
-            >>> print(c * b)
-            2.0(6)
-            >>> print(a * 0.5)
-            0.125(0)
-            >>> print(a * 2)
-            1/2
-        """
-        if isinstance(right, int):
-            return Mixed(self.value * right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value * right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        if not(isinstance(right, Mixed)):
+            return NotImplemented
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value * right.value)
-            if isinstance(right.value, uc.UFloat):
-                if self.value == fr.Fraction(0, 1):
-                    return Mixed(fr.Fraction(0, 1))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) * right.value)
+            elif isinstance(right.value, int):
+                if right.value == 0:
+                    return Mixed(0)
                 else:
-                    return Mixed(float(self.value) * right.value)
+                    return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(float(self.value) * right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                if right.value == fr.Fraction(0, 1):
-                    return Mixed(fr.Fraction(0, 1))
-                else:
-                    return Mixed(self.value * float(right.value))
-            if isinstance(right.value, uc.UFloat):
+                return Mixed(self.value * float(right.value))
+            elif isinstance(right.value, uc.UFloat):
                 return Mixed(self.value * right.value)
+            elif isinstance(right.value, int):
+                if right.value == 0:
+                    return Mixed(0)
+                else:
+                    return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value * right.value)
+        elif isinstance(self.value, int):
+            if self.value == 0:
+                return Mixed(0)
+            else:
+                if isinstance(right.value, fr.Fraction):
+                    return Mixed(self.value * right.value)
+                elif isinstance(right.value, uc.UFloat):
+                    return Mixed(self.value * right.value)
+                elif isinstance(right.value, int):
+                    if right.value == 0:
+                        return Mixed(0)
+                    else:
+                        return Mixed(self.value * right.value)
+                elif isinstance(right.value, float):
+                    return Mixed(self.value * right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value * float(right.value))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value * right.value)
+            elif isinstance(right.value, int):
+                if right.value == 0:
+                    return Mixed(0)
+                else:
+                    return Mixed(self.value * right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value * right.value)
+            
 
     def __rmul__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(2, 1))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(3.0, 0.0))
-            >>> print(0.5 * a)
-            0.125(0)
-            >>> print(2 * a)
-            1/2
-        """
-        if isinstance(left, int):
-            if left == 0:
-                return Mixed(fr.Fraction(0, 1))
-            else:
-                return Mixed(left * self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left * self.value)
-        else:
-            raise(BaseException("Error in __rmul__."))
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot multiply object of type %s " \
+            "to object of type %s."%(type(left))
+        return left * self
 
     def __truediv__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 3))
-            >>> c = Mixed(uc.ufloat(1.0, 0.3))
-            >>> d = Mixed(uc.ufloat(2.0, 0.0))
-            >>> print(a / b)
-            3/4
-            >>> print(c / d)
-            0.50(15)
-            >>> print(a / d)
-            0.125(0)
-            >>> print(c / a)
-            4.0(1.2)
-            >>> print(a/0.5)
-            0.5(0)
-            >>> print(a/2)
-            1/8
-        """
-        if isinstance(right, int):
-            return Mixed(self.value / right)
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
         elif isinstance(right, float):
-            return Mixed(self.value / right)
-        elif isinstance(self.value, fr.Fraction):
+            right = Mixed(right)
+        assert isinstance(right, Mixed), \
+            "Cannot divide object of type Mixed " \
+            "by object of type %s."%(type(right))
+        if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / right.value)
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(float(self.value) / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
                 return Mixed(float(self.value) / right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / float(right.value))
-            if isinstance(right.value, uc.UFloat):
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
+                return Mixed(self.value / right.value)
+        elif isinstance(self.value, int):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(fr.Fraction(self.value, right.value))
+            elif isinstance(right.value, float):
+                return Mixed(self.value / right.value)
+        elif isinstance(self.value, float):
+            if isinstance(right.value, fr.Fraction):
+                return Mixed(self.value / float(right.value))
+            elif isinstance(right.value, uc.UFloat):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, int):
+                return Mixed(self.value / right.value)
+            elif isinstance(right.value, float):
                 return Mixed(self.value / right.value)
 
     def __rtruediv__(self, left):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> print(0.5/a)
-            2.0(0)
-            >>> print(2/a)
-            8
-        """
-        if isinstance(left, int):
-            return Mixed(left / self.value)
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
         elif isinstance(left, float):
-            return Mixed(left / self.value)
-        else:
-            raise(BaseException("Error in __rtruediv__."))
-
-    def __pos__(self):
-        return self
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
+        assert isinstance(left, Mixed), \
+            "Cannot divide object of type %s " \
+            "by object of type Mixed"%(type(left))
+        return left / self
 
     def __neg__(self):
         """
@@ -272,237 +347,148 @@ class Mixed(object):
         """
         return (-1) * self
 
-    def __eq__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1,2))
-            >>> b = Mixed(uc.ufloat(1.2, 0.1))
-            >>> c = Mixed(uc.ufloat(1.2, 0.1))
-            >>> a == b
-            False
-            >>> a == a
-            True
-            >>> b == b
-            True
-            >>> b == c
-            True
-            >>> a == 0.5
-            True
-            >>> b == 1.2
-            False
-            >>> 0.5 == a
-            True
-        """
-        if isinstance(right, Mixed):
-            if isinstance(self.value, uc.UFloat):
-                if isinstance(right.value, uc.UFloat):
-                    return ((self.value.n, self.value.s) \
-                        == (right.value.n, right.value.s))
-                else:
-                    return False
-            else:
-                return (self.value == right.value)
-        else:
-            try:
-                return (self.value == right)
-            except:
-                raise(BaseException("Object of this type cannot"\
-                                    "be compared with object of tpye"\
-                                    "Mixed."))
 
     def __mod__(self, right):
-        """
-           >>> a = Mixed(fr.Fraction(5, 2))
-           >>> b = Mixed(fr.Fraction(9, 4))
-           >>> c = Mixed(uc.ufloat(1.2, 0.1))
-           >>> d = Mixed(uc.ufloat(2.5, 0.3))
-           >>> print(a % b)
-           1/4
-           >>> print("%8f"%((a % c).value.n))
-           0.100000
-           >>> print(c % a)
-           1.2(0)
-           >>> print(c % d)
-           1.20(10)
-           >>> print(a % 1)
-           1/2
-           >>> print(a % 0.5)
-           0.0(0)
-           >>> print(c % 1)
-           0.20(10)
-           >>> print(c % 0.5)
-           0.20(10)
-        """    
-        assert isinstance(right, Mixed) \
-            or isinstance(right, int) \
-            or isinstance(right, float), \
-            "Cannot calculate modulo of objects of type %s and %s"%\
-            (type(self), type(right))
+        if isinstance(right, int):
+            right = Mixed(right)
         if isinstance(right, Mixed):
-            if isinstance(self.value, uc.UFloat) \
-                and isinstance(right.value, fr.Fraction):
-                return Mixed(self.value.n % float(right.value))
-            elif isinstance(self.value, fr.Fraction) \
-                and isinstance(right.value, uc.UFloat):
-                return Mixed(float(self.value) % right.value.n)
+            if isinstance(right.value, int):
+                if isinstance(self.value, fr.Fraction):
+                    return Mixed(self.value % right.value)
+                elif isinstance(self.value, uc.UFloat):
+                    return Mixed(self.value % right.value)
+                elif isinstance(self.value, int):
+                    return Mixed(self.value % right.value)
+                elif isinstance(self.value, float):
+                    return Mixed(self.value % right.value)
             else:
-                return Mixed(self.value % right.value)
-        elif isinstance(right, int) or isinstance(right, float):
-            return Mixed(self.value % right)
+                return NotImplemented
+        else:
+            return NotImplemented
+
+pi = Mixed(3.141592653589793)
 
 
-pi = Mixed(uc.ufloat(3.141592653589793, \
-                     0))
+def sqrt(number):
+    number = Mixed(number)
+    if isinstance(number.value, fr.Fraction):
+        p = np.sqrt(number.value.numerator)
+        q = np.sqrt(number.value.denominator)
+        if (p % 1 == 0) and (q % 1 == 0):
+            return Mixed(fr.Fraction(int(p), int(q)))
+        else:
+            return Mixed(np.sqrt(float(number.value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.sqrt(number.value).item())
+    elif isinstance(number.value, int):
+        s = np.sqrt(number.value)
+        if s % 1 == 0:
+            return Mixed(int(s))
+        else:
+            return Mixed(s)
+    elif isinstance(number.value, float):
+        return Mixed(float(np.sqrt(number.value)))
 
 
 def deg2rad(number):
-    """
-        >>> x = Mixed(fr.Fraction(1, 2))
-        >>> print(deg2rad(x))
-        0.008726646259971648(0)
-        >>> y = Mixed(uc.ufloat(1.2, 0.1))
-        >>> print(deg2rad(y))
-        0.0209(17)
-    """
     assert isinstance(number, Mixed) \
+        or isinstance(number, fr.Fraction) \
+        or isinstance(number, uc.UFloat) \
         or isinstance(number, int) \
         or isinstance(number, float), \
-        "Argument must be of type Mixed, int or float."
+        "Argument must be of type Mixed, quicktions.Fraction, " \
+        "uncertainties.UFloat, int or float."
     return number * pi / 180
 
     
 def rad2deg(number):
-    """
-        >>> x = Mixed(fr.Fraction(1, 2))
-        >>> print(rad2deg(x))
-        28.64788975654116(0)
-        >>> y = Mixed(uc.ufloat(1.2, 0.1))
-        >>> print(rad2deg(y))
-        69(6)
-    """
     assert isinstance(number, Mixed) \
+        or isinstance(number, fr.Fraction) \
+        or isinstance(number, uc.UFloat) \
         or isinstance(number, int) \
         or isinstance(number, float), \
-        "Argument must be of type Mixed, int or float."
+        "Argument must be of type Mixed, quicktions.Fraction, " \
+        "uncertainties.UFloat, int or float."
     return number / pi * 180
 
 
 def cos(number):
-    """
-        >>> x = Mixed(fr.Fraction(1, 2))
-        >>> print(cos(x))
-        0.8775825618903728(0)
-        >>> x = Mixed(uc.ufloat(1.2, 0.1))
-        >>> print(cos(x))
-        0.36(9)
-    """
-    assert isinstance(number, Mixed) \
-        or isinstance(number, int) \
-        or isinstance(number, float), \
-        "Argument must be of type Mixed, int or float."
-    if     isinstance(number, float) \
-        or isinstance(number, int):
-        return Mixed(np.cos(number))
-    if isinstance(number, Mixed):
-        if isinstance(number.value, uc.UFloat):
-            # I don't exactly understand, 
-            # whats happening here with
-            # the types :-)
-            return Mixed(unumpy.cos(number.value).item())
-        if isinstance(number.value, fr.Fraction):
-            return Mixed(np.cos(float(number.value)))
-
-
-def sqrt(number):
-    """
-        >>> x = Mixed(uc.ufloat(4.0, 0.1))
-        >>> print(sqrt(x))
-        2.000(25)
-        >>> x = 16
-        >>> print(sqrt(x))
-        4.0(0)
-        >>> x = 16.0
-        >>> print(sqrt(x))
-        4.0(0)
-        >>> x = Mixed(fr.Fraction(1/3))
-        >>> print(sqrt(x))
-        0.5773502691896257(0)
-        >>> x = Mixed(fr.Fraction(9/4))
-        >>> print(sqrt(x))
-        3/2
-    """
-    assert isinstance(number, Mixed) \
-        or isinstance(number, int) \
-        or isinstance(number, float), \
-        "Argument must be of type Mixed, int or float."
-    if isinstance(number, int) \
-        or isinstance(number, float):
-        return Mixed(np.sqrt(number))
-    if isinstance(number, Mixed):
-        if isinstance(number.value, uc.UFloat):
-            return Mixed(unumpy.sqrt(number.value).item())
-        if isinstance(number.value, fr.Fraction):
-            p = np.sqrt(number.value.numerator)
-            q = np.sqrt(number.value.denominator)
-            if     (p % 1 == 0) and (q % 1 == 0):
-                return Mixed(fr.Fraction(int(p), int(q)))
-            else:
-                return Mixed(np.sqrt(float(number.value)))
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Connot calculate cos of an object of type %s."%(type(number))
+    if isinstance(number.value, fr.Fraction):
+        return Mixed(np.cos(float(number.value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.cos(number.value).item())
+    elif isinstance(number.value, float):
+        return Mixed(np.cos(number.value))
+    elif isinstance(number.value, int):
+        return Mixed(np.cos(number.value))
 
 
 def arccos(number):
-    """
-        >>> x = Mixed(fr.Fraction(1, 2))
-        >>> print(arccos(x))
-        1.0471975511965979(0)
-        >>> y = Mixed(uc.ufloat(0.5, 0.1))
-        >>> print(arccos(y))
-        1.05(12)
-    """
-    assert isinstance(number, Mixed) \
-        or isinstance(number, int) \
-        or isinstance(number, float), \
-        "Argument must be of type Mixed, int or float."
-    if     isinstance(number, float) \
-        or isinstance(number, int):
-        return Mixed(np.arccos(number))
-    if isinstance(number, Mixed):
-        if isinstance(number.value, uc.UFloat):
-            return Mixed(unumpy.arccos(number.value).item())
-        if isinstance(number.value, fr.Fraction):
-            return Mixed(np.arccos(float(number.value)))
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Cannot calculate arccos of object of type %s."%(type(number))
+    if isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.arccos(number.value).item())
+    elif isinstance(number.value, fr.Fraction):
+        return Mixed(np.arccos(float(number.value)))
+    elif isinstance(number.value, int):
+        return Mixed(np.arccos(number.value))
+    elif isinstance(number.value, float):
+        return Mixed(np.arccos(number.value))
 
 
 class Row(object):
-    """
-        >>> A = Row([Mixed(fr.Fraction(2, 3)), Mixed(fr.Fraction(3, 4))])
-        >>> print(A)
-        (  2/3  3/4  )
-        >>> A = Row([0.1, 5])
-        >>> print(A)
-        (  0.1(0)  5  )
-    """
     def __init__(self, liste):
         assert isinstance(liste, list), \
             "Object of type Row must be created by a list."
         length = len(liste)
         assert (length > 0), \
             "Object of type Row must be created by a non-empty list."
-        for item in liste:
-            assert isinstance(item, Mixed) or \
-                isinstance(item, int) or \
-                isinstance(item, float), \
-                "Object of type Row must be created by a list of " \
-                "objects of type Mixed or int or float."
         self.liste = deepcopy(liste)
-        for i in range(len(self.liste)):
-            if isinstance(self.liste[i], int):
-                self.liste[i] = Mixed(fr.Fraction(self.liste[i]))
-            if isinstance(self.liste[i], float):
-                self.liste[i] = Mixed(uc.ufloat(self.liste[i], 0.0))
+        for i in range(len(liste)):
+            if isinstance(self.liste[i], fr.Fraction):
+                self.liste[i] = Mixed(self.liste[i])
+            elif isinstance(self.liste[i], uc.UFloat):
+                self.liste[i] = Mixed(self.liste[i])
+            elif isinstance(self.liste[i], int):
+                self.liste[i] = Mixed(self.liste[i])
+            elif isinstance(self.liste[i], float):
+                self.liste[i] = Mixed(self.liste[i])
+        for item in self.liste:
+            assert isinstance(item, Mixed), \
+                "Object of type Row cannot be created by an object of type " \
+                "%s in the list"%(type(item))
     
-    def len(self):
+    def __len__(self):
         return len(self.liste)
-    
+
+    def __eq__(self, right):
+        if isinstance(right, Row):
+            if len(self) == len(right):
+                return min([(self.liste[i] == right.liste[i]) \
+                    for i in range(len(self))])
+            else:
+                return False
+        else:
+            return False
+   
     def __str__(self):
         str = "(  "
         for item in self.liste:
@@ -512,10 +498,6 @@ class Row(object):
         return str
     
     def canonical(dim, i):
-        """
-            >>> print(Row.canonical(5, 3))
-            (  0  0  0  1  0  )
-        """
         assert isinstance(dim, int), \
             "Canonical Row must be created by a dimension of type int."
         assert isinstance(i, int), \
@@ -532,16 +514,7 @@ class Row(object):
         return Row([kronecker(i, j) for j in range(dim)])
     
     def block(self, i1, i2):
-        """
-            >>> a = Mixed(fr.Fraction(1, 3))
-            >>> b = Mixed(fr.Fraction(1, 4))
-            >>> c = Mixed(fr.Fraction(2, 5))
-            >>> d = Mixed(uc.ufloat(1.2, 0.1))
-            >>> R = Row([a, b, c, d])
-            >>> print(R.block(1, 3))
-            (  1/4  2/5  )
-        """
-        length = self.len()
+        length = len(self)
         assert isinstance(i1, int) and isinstance(i2, int), \
             "For cutting a block out of a Row, use integers of type int!"
         assert (i1 >= 0) and (i2 >= 0) and (i1 <= length) and (i2 <= length), \
@@ -553,114 +526,63 @@ class Row(object):
         return Row([self.liste[i] for i in range(i1, i2)])
 
     def __add__(self, right):
-        """
-            >>> A = Row([Mixed(fr.Fraction(1, 2)), Mixed(fr.Fraction(2, 3))])
-            >>> B = Row([Mixed(fr.Fraction(3, 4)), Mixed(fr.Fraction(4, 5))])
-            >>> print(A + B)
-            (  5/4  22/15  )
-        """
         assert isinstance(right, Row), \
             "Only object of type Row can be added to object of type Row."
-        assert (self.len() == right.len()), \
+        assert (len(self) == len(right)), \
             "Two rows must have the same length to be added."
-        return Row([self.liste[i] + right.liste[i] for i in range(self.len())])
+        return Row([self.liste[i] + right.liste[i] for i in range(len(self))])
 
     def __sub__(self, right):
-        """
-            >>> A = Row([Mixed(fr.Fraction(1, 2)), Mixed(fr.Fraction(2, 3))])
-            >>> B = Row([Mixed(fr.Fraction(3, 4)), Mixed(fr.Fraction(4, 5))])
-            >>> print(A - B)
-            (  -1/4  -2/15  )
-        """
         assert isinstance(right, Row), \
             "Only object of type Row can be added to object of type Row."
-        assert (self.len() == right.len()), \
+        assert (len(self) == len(right)), \
             "Two rows must have the same length to be added."
-        return Row([self.liste[i] - right.liste[i] for i in range(self.len())])
+        return Row([self.liste[i] - right.liste[i] for i in range(len(self))])
 
     def __mul__(self, right):
-        assert isinstance(right, Mixed), \
-            "Only object of type Mixed can be multiplied with object of type Row."
-        
-        return Row([self.liste[i] * right for i in range(self.len())])
+        right = Mixed(right)
+        return Row([self.liste[i] * right for i in range(len(self))])
+
+    def __rmul__(self, left):
+        left = Mixed(left)
+        if isinstance(left, Mixed):
+            return self * left
+        else:
+            return NotImplemented
+
+
+class Matrix(object):
+    def __init__(self, liste):
+        assert isinstance(liste, list), \
+            "Object of type Matrix must be created by a list."
+        for i in range(len(liste)):
+            if isinstance(liste[i], list):
+                liste[i] = Row(liste[i])
+        rowlength = len(liste[0])
+        for row in liste:
+            assert (len(row) == rowlength), \
+              "Object of type Matrix must be created by a list of objects of type "\
+              "Row of the same length each."
+        self.liste = deepcopy(liste)
+
+    def shape(self):
+        return (len(self.liste), len(self.liste[0]))
 
     def __eq__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 3))
-            >>> b = Mixed(fr.Fraction(1, 4))
-            >>> c = Mixed(fr.Fraction(2, 5))
-            >>> R1 = Row([a, b, c])
-            >>> R2 = Row([a, b, c])
-            >>> R3 = Row([a, b, b])
-            >>> R4 = Row([a, b])
-            >>> R1 == R2
-            True
-            >>> R1 == R3
-            False
-            >>> R1 == R4
-            False
-            >>> R1 == a
-            False
-        """
-        if isinstance(right, Row):
-            if self.len() == right.len():
+        if isinstance(right, Matrix):
+            if (self.shape() == right.shape()):
                 return min([(self.liste[i] == right.liste[i]) \
-                    for i in range(self.len())])
+                    for i in range(self.shape()[0])])
             else:
                 return False
         else:
             return False
 
-
-class Matrix(object):
-    def __init__(self, liste):
-        """
-            >>> a = Mixed(fr.Fraction(1, 3))
-            >>> b = Mixed(fr.Fraction(1, 4))
-            >>> c = Mixed(fr.Fraction(2, 5))
-            >>> x = Mixed(uc.ufloat(1.2, 0.1))
-            >>> M = Matrix([Row([a, b]), Row([c, x])])
-            >>> type(M)
-            <class 'cryspy_numbers.Matrix'>
-        """
-        assert isinstance(liste, list), \
-            "Object of type Matrix must be created by a list."
-        for row in liste:
-            assert isinstance(row, Row), \
-             "Object of type Matrix must be created by a list of objects of type " \
-             "Row."
-        rowlength = liste[0].len()
-        for row in liste:
-            assert (row.len() == rowlength), \
-              "Object of type Matrix must be created by a list of objects of type "\
-              "Row of the same length each."
-        self.liste = deepcopy(liste)
-
     def __str__(self):
-        """
-            >>> a = Mixed(fr.Fraction(1, 3))
-            >>> b = Mixed(fr.Fraction(1, 4))
-            >>> c = Mixed(fr.Fraction(2, 5))
-            >>> d = Mixed(fr.Fraction(3, 4))
-            >>> x = Mixed(uc.ufloat(1.2, 0.1))
-            >>> y = Mixed(uc.ufloat(1.003, 0.001))
-            >>> M = Matrix([Row([a, b]), Row([c, d])])
-            >>> print(M)
-             /  1/3  1/4  \ 
-             \  2/5  3/4  / 
-            >>> N = Matrix([Row([a, b, c, d]), Row([a, d, x, y]), Row([b, x, d, x])])
-            >>> print(N)
-             /  1/3       1/4       2/5         3/4  \ 
-            |   1/3       3/4  1.20(10)  1.0030(10)   |
-             \  1/4  1.20(10)       3/4    1.20(10)  / 
-            >>> P = Matrix([Row([Mixed(1), Mixed(2), Mixed(3)])])
-            >>> print(P)
-             <  1  2  3  > 
-        """
         str = ''
         length = [0]*self.shape()[1]
         for row in self.liste:
-            for (i, item) in zip(range(row.len()), row.liste):
+            for (i, item) in zip(range(len(row)), row.liste):
                 length[i] = max(length[i], len(item.__str__()))
         for (i, row) in zip(range(len(self.liste)), self.liste):
             if self.shape()[0] == 1:
@@ -671,7 +593,7 @@ class Matrix(object):
                 str += ' \\  '
             else:
                 str += '|   '
-            for (j, item) in zip(range(row.len()), row.liste):
+            for (j, item) in zip(range(len(row)), row.liste):
                 codestr = '%' + '%i'%(length[j]) + 's  '
                 str += codestr%(item.__str__())
             if self.shape()[0] == 1:
@@ -686,109 +608,41 @@ class Matrix(object):
         str = str[:-1]
         return str
 
-    def shape(self):
-        """
-            >>> a = Mixed(fr.Fraction(1, 3))
-            >>> b = Mixed(fr.Fraction(1, 4))
-            >>> c = Mixed(fr.Fraction(2, 5))
-            >>> d = Mixed(fr.Fraction(3, 4))
-            >>> x = Mixed(uc.ufloat(1.2, 0.1))
-            >>> y = Mixed(uc.ufloat(1.003, 0.001))
-            >>> N = Matrix([Row([a, b, c, d]), Row([a, d, x, y]), Row([b, x, d, x])])
-            >>> N.shape()
-            (3, 4)
-        """
-        return (len(self.liste), self.liste[0].len())
 
     def __add__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> d = Mixed(fr.Fraction(4, 5))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> y = Mixed(uc.ufloat(4.25, 0.10))
-            >>> M1 = Matrix([Row([a, b]), Row([x, y])])
-            >>> M2 = Matrix([Row([c, x]), Row([d, y])])
-            >>> print(M1)
-             /       1/4       1/5  \ 
-             \  3.75(23)  4.25(10)  / 
-            >>> print(M2)
-             /  3/7  3.75(23)  \ 
-             \  4/5  4.25(10)  / 
-            >>> print(M1 + M2)
-             /     19/28  3.95(23)  \ 
-             \  4.55(23)  8.50(14)  / 
-        """
-        assert isinstance(right, Matrix), \
-            "Unknown Operator %s + %s"%(type(self), type(right))
-        assert self.shape() == right.shape(), \
-            "Two Matrices must have the same shape for Operator +"
-        (numrows, numcolumns) = self.shape()
-        return Matrix([\
-            Row([self.liste[i].liste[j] + right.liste[i].liste[j] \
-            for j in range(numcolumns)]) \
-            for i in range(numrows)])
+        if isinstance(right, Matrix):
+            assert self.shape() == right.shape(), \
+                "Two Matrices must have the same shape for Operator +"
+            (numrows, numcolumns) = self.shape()
+            return Matrix([\
+                Row([self.liste[i].liste[j] + right.liste[i].liste[j] \
+                for j in range(numcolumns)]) \
+                for i in range(numrows)])
+        else:
+            return NotImplemented
 
     def __sub__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> d = Mixed(fr.Fraction(4, 5))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> y = Mixed(uc.ufloat(4.25, 0.10))
-            >>> M1 = Matrix([Row([a, b]), Row([x, y])])
-            >>> M2 = Matrix([Row([c, x]), Row([d, y])])
-            >>> print(M1)
-             /       1/4       1/5  \ 
-             \  3.75(23)  4.25(10)  / 
-            >>> print(M2)
-             /  3/7  3.75(23)  \ 
-             \  4/5  4.25(10)  / 
-            >>> print(M1 - M2)
-             /     -5/28  -3.55(23)  \ 
-             \  2.95(23)   0.00(14)  / 
-        """
-        assert isinstance(right, Matrix), \
-            "Can subtract from object of typ Matrix object of type "\
-            "Matrix only"
-        (numrows, numcolumns) = self.shape()
-        return Matrix([\
-            Row([self.liste[i].liste[j] - right.liste[i].liste[j] \
-            for j in range(numcolumns)]) \
-            for i in range(numrows)])
+        if isinstance(right, Matrix):
+            assert self.shape() == right.shape(), \
+                "Two Matrices must have the same shape for Operator +"
+            (numrows, numcolumns) = self.shape()
+            return Matrix([\
+                Row([self.liste[i].liste[j] - right.liste[i].liste[j] \
+                for j in range(numcolumns)]) \
+                for i in range(numrows)])
+        else:
+            return NotImplemented
 
+ 
     def __mul__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> eins = Mixed(fr.Fraction(1, 1))
-            >>> null = Mixed(fr.Fraction(0, 1))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M = Matrix([Row([a, b]), Row([c, x])])
-            >>> print(M)
-             /  1/4       1/5  \ 
-             \  3/7  3.75(23)  / 
-            >>> print(M * z)
-             /   5/4          1  \ 
-             \  15/7  18.8(1.2)  / 
-            >>> I = Matrix([Row([eins, null]), Row([null, eins])])
-            >>> print(I)
-             /  1  0  \ 
-             \  0  1  / 
-            >>> print(I * M)
-             /  1/4       1/5  \ 
-             \  3/7  3.75(23)  / 
-            >>> N = Matrix([Row([a, b]), Row([a, c])])
-            >>> print(M * N)
-             /     9/80    19/140  \ 
-             \  1.04(6)  1.69(10)  / 
-        """
-        assert isinstance(right, Mixed) or isinstance(right, Matrix), \
-            "A Matrix can be multiplied only by a Mixed or a Matrix."
+        if isinstance(right, fr.Fraction):
+            right = Mixed(right)
+        elif isinstance(right, uc.UFloat):
+            right = Mixed(right)
+        elif isinstance(right, int):
+            right = Mixed(right)
+        elif isinstance(right, float):
+            right = Mixed(right)
         if isinstance(right, Mixed):
             (numrows, numcols) = self.shape()
             return Matrix( \
@@ -797,11 +651,9 @@ class Matrix(object):
                     for i in range(numrows) \
                 ] \
             )
-        if isinstance(right, Matrix):
-            numrows1 = len(self.liste)
-            numcols1 = self.liste[0].len()
-            numrows2 = len(right.liste)
-            numcols2 = right.liste[0].len()
+        elif isinstance(right, Matrix):
+            (numrows1, numcols1) = self.shape()
+            (numrows2, numcols2) = right.shape()
             assert (numcols1 == numrows2), \
                 "Matrix-Multiplication needs two matrices, with "\
                 " width of first matrix equals height of second matrix."
@@ -816,49 +668,30 @@ class Matrix(object):
                    for i in range(numrows1) \
                 ] \
             )
-
-    def __eq__(self, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M1 = Matrix([Row([a, b]), Row([c, x])])
-            >>> M2 = Matrix([Row([a, b]), Row([c, x])])
-            >>> M3 = Matrix([Row([a, b]), Row([c, z])])
-            >>> M4 = Matrix([Row([a, b]),])
-            >>> M1 == M2
-            True
-            >>> M1 == M3
-            False
-            >>> M1 == M4
-            False
-            >>> M1 == a
-            False
-        """
-        if isinstance(right, Matrix):
-            if (self.shape() == right.shape()):
-                return min([(self.liste[i] == right.liste[i]) \
-                    for i in range(self.shape()[0])])
-            else:
-                return False
         else:
-            return False
+            return NotImplemented
+
+    def __rmul__(self, left):
+        if isinstance(left, fr.Fraction):
+            left = Mixed(left)
+        elif isinstance(left, uc.UFloat):
+            left = Mixed(left)
+        elif isinstance(left, int):
+            left = Mixed(left)
+        elif isinstance(left, float):
+            left = Mixed(left)
+        if isinstance(left, Mixed):
+            return self * left
+        else:
+            return NotImplemented
 
     def onematrix(dim):
-        """
-            >>> A = Matrix.onematrix(2)
-            >>> print(A)
-             /  1  0  \ 
-             \  0  1  / 
-        """
         assert isinstance(dim, int), \
             "Onematrix must be created via a dimension of type int."
         assert (dim > 0), \
             "Dimension for creating onematrix must be > 0."
         return Matrix([Row.canonical(dim, i) for i in range(dim)])
-
+        
     def block(self, i1, i2, j1, j2):
         """
             >>> a = Mixed(fr.Fraction(1, 4))
@@ -887,23 +720,6 @@ class Matrix(object):
         return Matrix([self.liste[i].block(j1, j2) for i in range(i1, i2)])
 
     def swap_rows(self, i, j):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> eins = Mixed(fr.Fraction(1, 1))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M = Matrix([Row([a, b]), Row([c, x]), Row([eins, z])])
-            >>> print(M)
-             /  1/4       1/5  \ 
-            |   3/7  3.75(23)   |
-             \    1         5  / 
-            >>> print(M.swap_rows(0, 1))
-             /  3/7  3.75(23)  \ 
-            |   1/4       1/5   |
-             \    1         5  / 
-        """
         assert isinstance(i, int) and isinstance(j, int), \
             "The indices for swapping rows must be of type integer."
         (numrows, numcols) = self.shape()
@@ -917,20 +733,6 @@ class Matrix(object):
             return Matrix([self.liste[index] for index in indexes])
 
     def vglue(left, right):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(3, 7))
-            >>> eins = Mixed(fr.Fraction(1, 1))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M = Matrix([Row([a, b]), Row([c, x])])
-            >>> N = Matrix([Row([eins, z])])
-            >>> print(Matrix.vglue(M, N))
-             /  1/4       1/5  \ 
-            |   3/7  3.75(23)   |
-             \    1         5  / 
-        """
         (numrows1, numcols1) = left.shape()
         (numrows2, numcols2) = right.shape()
         assert (numcols1 == numcols2), \
@@ -945,53 +747,11 @@ class Matrix(object):
 
 
     def subtract_x_times_rowj_from_rowi(self, x, i, j):
-        """
-            >>> a = Mixed(fr.Fraction(1, 4))
-            >>> b = Mixed(fr.Fraction(1, 5))
-            >>> c = Mixed(fr.Fraction(1, 2))
-            >>> eins = Mixed(fr.Fraction(1, 1))
-            >>> x = Mixed(uc.ufloat(3.75, 0.23))
-            >>> z = Mixed(fr.Fraction(5, 1))
-            >>> M = Matrix([Row([a, b]), Row([c, x])])
-            >>> print(M.subtract_x_times_rowj_from_rowi(Mixed(2.0), 1, 0))
-             /     1/4       1/5  \ 
-             \  0.0(0)  3.35(23)  / 
-        """
         new = deepcopy(self)
         new.liste[i] = self.liste[i] + self.liste[j] * (Mixed(-1) * x)
         return new
 
     def inv(self):
-        """
-            >>> M = Matrix([Row([Mixed(2), Mixed(3)]), Row([Mixed(4), Mixed(5)])])
-            >>> print(M)
-             /  2  3  \ 
-             \  4  5  / 
-            >>> Minv = M.inv()
-            >>> print(Minv)
-             /  -5/2  3/2  \ 
-             \     2   -1  / 
-            >>> print(M * Minv)
-             /  1  0  \ 
-             \  0  1  / 
-            >>> N = Matrix([Row([Mixed(0), Mixed(1), Mixed(1)]), Row([Mixed(1), Mixed(0), Mixed(0)]), Row([Mixed(0), Mixed(0), Mixed(-1)])])
-            >>> print(N.inv())
-             /  0  1   0  \ 
-            |   1  0   1   |
-             \  0  0  -1  / 
-            >>> M = Matrix([Row([Mixed(0), Mixed(0), Mixed(1), Mixed(0)]), Row([Mixed(1), Mixed(0), Mixed(0), Mixed(0)]), Row([Mixed(0), Mixed(1), Mixed(0), Mixed(0)]),  Row([Mixed(0), Mixed(0), Mixed(0), Mixed(1)])])
-            >>> print(M)
-             /  0  0  1  0  \ 
-            |   1  0  0  0   |
-            |   0  1  0  0   |
-             \  0  0  0  1  / 
-            >>> Minv = M.inv()
-            >>> print(Minv)
-             /  0  1  0  0  \ 
-            |   0  0  1  0   |
-            |   1  0  0  0   |
-             \  0  0  0  1  / 
-        """
         (numrows, numcols) = self.shape()
         assert (numrows == numcols), \
             "I can invert square matrices only (num of rows == num of cols)."
@@ -1041,16 +801,6 @@ class Matrix(object):
         return right   
 
     def transpose(self):
-        """
-            >>> a = Mixed(fr.Fraction(1, 2))
-            >>> b = Mixed(fr.Fraction(3, 4))
-            >>> c = Mixed(uc.ufloat(1.2, 0.1))
-            >>> d = Mixed(uc.ufloat(2.5, 0.3))
-            >>> M = Matrix([Row([a, b]), Row([c, d]), Row([a, d])])
-            >>> print(M.transpose())
-             /  1/2  1.20(10)       1/2  \ 
-             \  3/4  2.50(30)  2.50(30)  / 
-        """
         shape = self.shape()
         return Matrix([ \
                    Row([ \

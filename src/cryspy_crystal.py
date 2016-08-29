@@ -32,6 +32,12 @@ class Atom():
             "to an object of type Atom."%(type(left))
         return Atom(self.name, self.typ, left ** self.pos)
 
+    def __mod__(self, right):
+        assert isinstance(right, geo.Transgen), \
+            "I cannot take an object of type Atom " \
+            "modulo an object of type %s"%(type(right))
+        return Atom(self.name, self.typ, self.pos % right)
+
     def __hash__(self):
         return int(hashlib.sha1(self.__str__().encode()).hexdigest(), 16)
 
@@ -74,5 +80,12 @@ class Atomset():
                     atoms |= set([coset ** atom])
             return Atomset(atoms)
 
-
+    def __mod__(self, right):
+        assert isinstance(right, geo.Transgen), \
+            "I cannot take an object of type Atomset " \
+            "modulo an object of type"%(type(right))
+        atoms = set([])
+        for atom in self.menge:
+            atoms |= set([atom % right])
+        return Atomset(atoms)
 
