@@ -1,5 +1,5 @@
-from cryspy_fromstr import fromstr as fs
-import cryspy_geo as geo
+from fromstr import fromstr as fs
+import geo as geo
 
 def spacegroup(number):
     if number == 15:

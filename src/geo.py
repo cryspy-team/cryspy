@@ -1,5 +1,5 @@
 import cryspy_numbers as nb
-import cryspy_fromstr as fs
+import fromstr as fs
 import blockprint as bp
 
 
@@ -380,25 +380,6 @@ class Cellparameters():
                           " " + self.beta.__str__(), \
                           " " + self.gamma.__str__()]])
 
-<<<<<<< HEAD
-class Transgen(Operator):
-    def __init__(self, value):
-        assert isinstance(value, nb.Matrix), \
-            "Must be created by an object of type Matrix."
-        assert value.shape() == (4, 4), \
-            "Must be created by a 4x4-Matrix."
-        assert value.liste[3] == nb.Row([0, 0, 0, 1]), \
-            "Must be created by a 4x4-Matrix of this shape: \n"\
-            "   * * * * \n"\
-            "   * * * * \n"\
-            "   * * * * \n"\
-            "   0 0 0 1 \n"
-        assert  (value.liste[0].liste[3] == 0) \
-            and (value.liste[1].liste[3] == 0) \
-            and (value.liste[2].liste[3] == 0), \
-            "Must be created by a 4x4-Matrix without translation part."
-        self.value = value
-=======
 class Transgen():
     def __init__(self, b1, b2, b3):
         assert  isinstance(b1, Dif) \
