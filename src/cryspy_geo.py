@@ -327,7 +327,7 @@ class Transgen(Operator):
             "Must be created by an object of type Matrix."
         assert value.shape() == (4, 4), \
             "Must be created by a 4x4-Matrix."
-        assert value.liste[3] == nb.Row([0, 0, 0, 1), \
+        assert value.liste[3] == nb.Row([0, 0, 0, 1]), \
             "Must be created by a 4x4-Matrix of this shape: \n"\
             "   * * * * \n"\
             "   * * * * \n"\
@@ -357,8 +357,9 @@ class Transgen(Operator):
         left.value.liste[2].liste[0] %= 1
         return Pos(self.value * left.value)
 
-   def __rpow__(self, left):
-       if isinstance(left, Transformation):
+#   def __rpow__(self, left):
+#       if isinstance(left, Transformation):
+           
            
 
 
