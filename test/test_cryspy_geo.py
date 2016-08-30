@@ -127,6 +127,15 @@ def test_Metric():
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
 
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
+                                      [1, 0, 0, 0], \
+                                      [0, 0, 1, 0.5], \
+                                      [0, 0, 0, 1]]))
+
+    assert t ** metric == geo.Metric(nb.Matrix([[4, 0, 0, 0], \
+                                                [0, 9, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]]))
 
 def test_Transgen():
     tg = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])), \

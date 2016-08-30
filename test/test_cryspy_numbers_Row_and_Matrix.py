@@ -308,3 +308,17 @@ def test_Matrix():
 
     assert nb.Matrix([[1, 2, 3], [4, 5, 6]]).transpose() == \
            nb.Matrix([[1, 4], [2, 5], [3, 6]])
+
+    # delete_translation
+
+    M = nb.Matrix([[1,  2,  3,  4], \
+                   [5,  6,  7,  8], \
+                   [9, 10, 11, 12], \
+                   [0,  0,  0,  1]])
+
+    assert M.delete_translation() == nb.Matrix([[1,  2,  3, 0], \
+                                              [5,  6,  7, 0], \
+                                              [9, 10, 11, 0], \
+                                              [0,  0,  0, 1]])
+
+

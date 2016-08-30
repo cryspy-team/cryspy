@@ -270,7 +270,7 @@ class Transformation(Operator):
         elif isinstance(right, Dif):
             return Dif(self.value * right.value)
         elif isinstance(right, Metric):
-            M = self.value
+            M = self.value.delete_translation()
             Minv = M.inv()
             Minvtr = Minv.transpose()
             return Metric(Minvtr * right.value * Minv)

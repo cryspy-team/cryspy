@@ -809,3 +809,44 @@ class Matrix(object):
                    ]) \
                    for i in range(shape[1]) \
                ])
+
+    def delete_translation(self):
+        # If a 4x4-Matrix has the shape
+        #
+        #  / *  *  *  * \
+        # |  *  *  *  *  |
+        # |  *  *  *  *  |
+        #  \ 0  0  0  1 / ,
+        #
+        # it is reduced to
+        #
+        #  / *  *  *  0 \
+        # |  *  *  *  0  |
+        # |  *  *  *  0  |
+        #  \ 0  0  0  1 / .
+
+        assert self.shape() == (4, 4), \
+            "Matrix must be a 4x4-Matrix"
+
+        assert self.block(3, 4, 0, 4) == Matrix([[0, 0, 0, 1]]), \
+            "Matrix must be of the form\n" \
+            "  / * * * * \  \n" \
+            " |  * * * *  | \n" \
+            " |  * * * *  | \n" \
+            "  \ 0 0 0 1 /  "
+
+        a = self.liste[0].liste[0]
+        b = self.liste[0].liste[1]
+        c = self.liste[0].liste[2]
+        d = self.liste[1].liste[0]
+        e = self.liste[1].liste[1]
+        f = self.liste[1].liste[2]
+        g = self.liste[2].liste[0]
+        h = self.liste[2].liste[1]
+        i = self.liste[2].liste[2]
+
+        return Matrix([[a, b, c, 0], \
+                       [d, e, f, 0], \
+                       [g, h, i, 0], \
+                       [0, 0, 0, 1]])
+
