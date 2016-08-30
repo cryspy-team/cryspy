@@ -4,7 +4,7 @@ sys.path.append("../src/")
 import quicktions as fr
 import uncertainties as uc
 import cryspy_numbers as nb
-import cryspy_geo as geo
+import geo as geo
 
 
 def test_Pos():

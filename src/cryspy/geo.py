@@ -1,6 +1,6 @@
-import cryspy_numbers as nb
-import cryspy_fromstr as fs
-import blockprint as bp
+from cryspy import cryspy_numbers as nb
+from cryspy.fromstr import fromstr as fs
+from cryspy import blockprint as bp
 
 
 class Pos:

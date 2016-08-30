@@ -1,6 +1,6 @@
 import hashlib
-import cryspy_numbers as nb
-import cryspy_geo as geo
+import numbers as nb
+import geo as geo
 import blockprint as bp
 
 class Atom():

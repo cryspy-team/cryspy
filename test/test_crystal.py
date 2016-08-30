@@ -1,9 +1,9 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import cryspy_geo as geo
-from cryspy_fromstr import fromstr as fs
-import cryspy_crystal as cr
+import geo as geo
+from fromstr import fromstr as fs
+import crystal as cr
 
 def test_Atom():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
@@ -20,7 +20,11 @@ def test_Atom():
     assert atom4 != atom1
 
     atom = cr.Atom("Cl1", "Cl", fs("p 1/2 1/2 1/2"))
-    transformation = fs("a,2b,c")
+    transformation = fs("O->(0,0,0) \n" \
+                        "then\n" \
+                        "a' = a \n" \
+                        "b' = 2b \n" \
+                        "c' = c")
     atom_trans = cr.Atom("Cl1", "Cl", fs("p 1/2 1/4 1/2"))
     assert (transformation**atom).__str__() == atom_trans.__str__()
 
@@ -60,7 +64,11 @@ def test_Atomset():
         "                       \    0  / \n" \
         "                                 "
 
-    transformation = fs("a+b, b, c+1/4")
+    transformation = fs("O->(0,0,1/4) \n" \
+                        "then\n" \
+                        "a' = a+b \n" \
+                        "b' = b   \n" \
+                        "c' = c")
     atomset1 = transformation**atomset
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
                            cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
