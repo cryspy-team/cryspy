@@ -1,5 +1,4 @@
 from cryspy import cryspy_numbers as nb
-from cryspy.fromstr import fromstr as fs
 from cryspy import blockprint as bp
 
 

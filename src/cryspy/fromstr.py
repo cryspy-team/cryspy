@@ -1,7 +1,7 @@
 from cryspy import cryspy_numbers as nb
 import quicktions as fr
 import uncertainties as uc
-#from cryspy import geo as geo
+from cryspy import geo as geo
 
 
 def removeletters(string):

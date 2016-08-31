@@ -2,11 +2,11 @@
 # This must not be tested, but it must not be used in other
 # modules.
 
-from fromstr import fromstr as fs
-import blockprint as bp
-import cryspy_numbers as nb
-import geo as geo
-import crystal as cr
+from cryspy.fromstr import fromstr as fs
+from cryspy import blockprint as bp
+from cryspy import cryspy_numbers as nb
+from cryspy import geo as geo
+from cryspy import crystal as cr
 
 def atomtable(liste, atomset):
     assert isinstance(liste, list), \
