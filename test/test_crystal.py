@@ -1,9 +1,9 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import geo as geo
-from fromstr import fromstr as fs
-import crystal as cr
+from cryspy import geo as geo
+from cryspy.fromstr import fromstr as fs
+from cryspy import crystal as cr
 
 def test_Atom():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))

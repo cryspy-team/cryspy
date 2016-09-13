@@ -1,7 +1,7 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import cryspy_numbers as nb
+from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 

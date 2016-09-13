@@ -81,7 +81,7 @@ class Mixed(object):
         elif isinstance(right, float):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
-            "Cannot object of type %s " \
+            "Cannot add object of type %s " \
             "to object of type Mixed."%(type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -193,10 +193,10 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, float):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot subtract object of type Mixed " \
-            "from object of type %s."%(type(left))
-        return left - self
+        if isinstance(left, Mixed):
+            return left - self
+        else:
+            return NotImplemented
 
     def __mul__(self, right):
         if isinstance(right, fr.Fraction):
@@ -271,10 +271,10 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, float):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot multiply object of type %s " \
-            "to object of type %s."%(type(left))
-        return left * self
+        if isinstance(left, Mixed):
+            return left * self
+        else:
+            return NotImplemented
 
     def __truediv__(self, right):
         if isinstance(right, fr.Fraction):
@@ -285,9 +285,8 @@ class Mixed(object):
             right = Mixed(right)
         elif isinstance(right, float):
             right = Mixed(right)
-        assert isinstance(right, Mixed), \
-            "Cannot divide object of type Mixed " \
-            "by object of type %s."%(type(right))
+        if not isinstance(right, Mixed):
+            return NotImplemented
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / right.value)
@@ -334,17 +333,12 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, int):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot divide object of type %s " \
-            "by object of type Mixed"%(type(left))
-        return left / self
+        if isinstance(left, Mixed):
+            return left / self
+        else:
+            return NotImplemented
 
     def __neg__(self):
-        """
-            >>> a = Mixed(fr.Fraction(1, 2))
-            >>> print(-a)
-            -1/2
-        """
         return (-1) * self
 
 
@@ -550,6 +544,9 @@ class Row(object):
         else:
             return NotImplemented
 
+    def __neg__(self):
+        return Row([-number for number in self.liste])
+
 
 class Matrix(object):
     def __init__(self, liste):
@@ -685,6 +682,9 @@ class Matrix(object):
         else:
             return NotImplemented
 
+    def __neg__(self):
+        return Matrix([-row for row in self.liste])
+
     def onematrix(dim):
         assert isinstance(dim, int), \
             "Onematrix must be created via a dimension of type int."
@@ -711,7 +711,7 @@ class Matrix(object):
             "For cutting a block out of a matrix, use indexes of type integer!"
         (numrows, numcols) = self.shape()
         assert (i1 <= numrows) and (i2 <= numrows)\
-            and (j1 <= numcols) and (j2 <= numrows), \
+            and (j1 <= numcols) and (j2 <= numcols), \
             "For cutting a block out of a matrix, use integers, which are between "\
             "0 and num of rows / num of cols"
         assert (i1 < i2) and (j1 < j2), \

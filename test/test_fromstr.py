@@ -1,12 +1,12 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import cryspy_numbers as nb
+from cryspy import numbers as nb
 import uncertainties as uc
 import quicktions as fr
-import fromstr
-from fromstr import fromstr as fs
-import geo as geo
+from cryspy import fromstr
+from cryspy.fromstr import fromstr as fs
+from cryspy import geo as geo
 
 
 def test_removeletters():
@@ -141,7 +141,16 @@ def test_fromstr():
     p = fs(string)
     assert p == geo.Pos(fs("1/2 \n 1/2 \n 1/2 \n 1"))
 
-    
+    q = fs("k1 2 3")
+    assert q == geo.Rec(fs("1 2 3 0"))
+    q = fs("K 1 2 3")
+    assert q == geo.Rec(fs("1 2 3 0"))
+    q = fs("q 1/2 1/2 0")
+    assert q == geo.Rec(fs("1/2 1/2 0 0"))
+    q = fs("Q0 0 0")
+    assert q == geo.Rec(fs("0 0 0 0"))
+    q = fs("Rec <  1  2  3  > ")
+    assert q == geo.Rec(fs("1 2 3 0"))
 
 def test_typefromstr():
   string = "/ 1 2 \ \\n\ 3 4/"
@@ -170,4 +179,13 @@ def test_typefromstr():
   assert fromstr.typefromstr(string) == geo.Pos
   string = "R0 0 0"
   assert fromstr.typefromstr(string) == geo.Pos
+  string = "k0 0 0"
+  assert fromstr.typefromstr(string) == geo.Rec
+  string = "K0 0 0"
+  assert fromstr.typefromstr(string) == geo.Rec
+  string = "q0 0 0"
+  assert fromstr.typefromstr(string) == geo.Rec
+  string = "Q0 0 0"
+  assert fromstr.typefromstr(string) == geo.Rec
+  
 

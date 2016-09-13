@@ -1,5 +1,5 @@
 import hashlib
-from cryspy import cryspy_numbers as nb
+from cryspy import numbers as nb
 from cryspy import geo as geo
 from cryspy import blockprint as bp
 

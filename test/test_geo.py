@@ -3,8 +3,8 @@ import sys
 sys.path.append("../src/")
 import quicktions as fr
 import uncertainties as uc
-import cryspy_numbers as nb
-import geo as geo
+from cryspy import numbers as nb
+from cryspy import geo as geo
 
 
 def test_Pos():
@@ -13,12 +13,16 @@ def test_Pos():
     assert x.x() == 1
     assert x.y() == 2
     assert x.z() == 3
-
+    x = geo.origin
+    assert x == geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
 
 def test_Dif():
     x = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
     assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / "
 
+def test_Rec():
+    q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    assert q.__str__() == "Rec <  1  2  3  > "
 
 def test_eq():
     r1 = geo.Pos(nb.Matrix([[1], [2], [3], [1]]))
@@ -27,6 +31,9 @@ def test_eq():
     d1 = geo.Dif(nb.Matrix([[4], [5], [6], [0]]))
     d2 = geo.Dif(nb.Matrix([[4], [5], [6], [0]]))
     d3 = geo.Dif(nb.Matrix([[3], [5], [6], [0]]))
+    q1 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q2 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q3 = geo.Rec(nb.Matrix([[2, 3, 4, 0]]))
     assert not (r1 == d1)
     assert     (r1 == r1) 
     assert     (r1 == r2)
@@ -34,6 +41,11 @@ def test_eq():
     assert     (d1 == d1)
     assert     (d1 == d2)
     assert not (d1 == d3)
+    assert not (r1 == q1)
+    assert not (d1 == q1)
+    assert     (q1 == q1)
+    assert     (q1 == q2)
+    assert not (q1 == q3)
 
 
 def test_add_and_sub():
@@ -46,7 +58,17 @@ def test_add_and_sub():
     assert (d1 - d2) == geo.Dif(nb.Matrix([[-1], [0], [1], [0]]))
     assert (x1 - d1) == geo.Pos(nb.Matrix([[-3], [-3], [-3], [1]]))
     assert (x1 - x2) == geo.Dif(nb.Matrix([[-1], [-1], [-1], [0]]))
+    q1 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q2 = geo.Rec(nb.Matrix([[4, 5, 6, 0]]))
+    assert (q1 + q2) == geo.Rec(nb.Matrix([[5, 7, 9, 0]]))
+    assert (q1 - q2) == geo.Rec(nb.Matrix([[-3, -3, -3, 0]]))
+    assert -d1 == geo.Dif(nb.Matrix([[-4], [-5], [-6], [0]]))
+    assert -q1 == geo.Rec(nb.Matrix([[-1, -2, -3, 0]]))
 
+def test_Skalarprodukt():
+    d1 = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
+    q1 = geo.Rec(nb.Matrix([[4, 5, 6, 0]]))
+    assert q1 * d1 == 32
 
 def test_Operator():
     id = geo.Operator(nb.Matrix([[1, 0, 0, 0], \

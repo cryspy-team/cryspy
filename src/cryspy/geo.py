@@ -1,4 +1,4 @@
-from cryspy import cryspy_numbers as nb
+from cryspy import numbers as nb
 from cryspy import blockprint as bp
 
 
@@ -49,6 +49,8 @@ class Pos:
                 "I cannot subtract objects of type %s and %s"% \
                 (typen(self), type(right))))
 
+origin = Pos(nb.Matrix([[0], [0], [0], [1]]))
+
 class Dif:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -84,6 +86,9 @@ class Dif:
             raise(BaseException("I cannot subtract objects of type"\
                 "%s and %s"%(type(self), type(right))))
 
+    def __neg__(self):
+        return Dif(-self.value)
+
 canonical_e0 = Dif(nb.Matrix([nb.Row([1]), \
                               nb.Row([0]), \
                               nb.Row([0]), \
@@ -98,6 +103,47 @@ canonical_e2 = Dif(nb.Matrix([nb.Row([0]), \
                               nb.Row([0]), \
                               nb.Row([1]), \
                               nb.Row([0])]))
+
+class Rec:
+    def __init__(self, value):
+        assert isinstance(value, nb.Matrix), \
+            "Must be created by an object of type Matrix."
+        assert value.shape() == (1, 4), \
+            "Must be created by a 1x4-Matrix."
+        assert value.liste[0].liste[3] == 0, \
+            "Must be created by a 1x4-Matrix of this shape: \n" \
+            "  < *  *  *  0 > "
+        self.value = value
+
+    def __str__(self):
+        return bp.block([["Rec", self.value.block(0, 1, 0, 3).__str__()],])
+
+    def __eq__(self, right):
+        if isinstance(right, Rec):
+            return (self.value == right.value)
+        else:
+            return False
+
+    def __add__(self, right):
+        if isinstance(right, Rec):
+            return Rec(self.value + right.value)
+        else:
+            return NotImplemented
+
+    def __sub__(self, right):
+        if isinstance(right, Rec):
+            return Rec(self.value - right.value)
+        else:
+            return NotImplemented
+
+    def __neg__(self):
+        return Rec(-self.value)
+
+    def __mul__(self, right):
+        if isinstance(right, Dif):
+            return (self.value * right.value).liste[0].liste[0]
+        else:
+            return NotImplemented
 
 class Operator:
     def __init__(self, value):
@@ -124,7 +170,6 @@ class Operator:
 
     def inv(self):
         return Operator(self.value.inv())
-
 
 
 def linearterm2str(liste_numbers, liste_variables):
@@ -164,35 +209,6 @@ def linearterm2str(liste_numbers, liste_variables):
         result = result[1:]
     return result
 
-"""
-def str2linearterm(string, liste_variables):
-    assert isinstance(string, str), \
-        "Argument must be of type str."
-    assert isinstance(liste_variables, list), \
-        "Argument must be of type list."
-    for item in liste_variables:
-        assert isinstance(item, str), \
-            "Argument must be a list of objects of type str."
-    string = string.replace('-', '+-')
-    string = string.replace(' ', '')
-    words = string.split('+')
-    liste_numbers = [0 for i in range(len(liste_variables) + 1)]
-    for word in words:
-        has_variable = False
-        index = -1
-        for a in word:
-            if a.isalpha():
-                word = word.replace(a, '')
-                index = liste_variables.index(a)
-                has_variable = True
-        if word == '' or word == '-':
-            if has_variable:
-                word += '1'
-            else:
-                word += '0'
-        liste_numbers[index] += fs.fromstr(word)
-    return liste_numbers
-"""
 
 class Symmetry(Operator):
     def __str__(self):
