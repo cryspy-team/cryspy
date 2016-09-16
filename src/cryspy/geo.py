@@ -145,6 +145,15 @@ class Rec:
         else:
             return NotImplemented
 
+    def h(self):
+        return self.value.liste[0].liste[0]
+
+    def k(self):
+        return self.value.liste[0].liste[1]
+
+    def l(self):
+        return self.value.liste[0].liste[2]
+
 class Operator:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -313,24 +322,28 @@ class Metric(Operator):
             "     * * * 0\n" \
             "     0 0 0 1"
         self.value = value
+        self.valueinv = value.inv()
 
     
     def dot(self, vector1, vector2):
-        assert  isinstance(vector1, Dif) \
-            and isinstance(vector2, Dif), \
-            "Arguments must be both of type Dif."
-        if (isinstance(vector1, Pos) or isinstance(vector1, Dif)):
+        assert  (isinstance(vector1, Dif) and isinstance(vector2, Dif) ) \
+            or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
+            "Arguments must be both of type Dif of both of type Rec."
+        if isinstance(vector1, Dif):
             matrix = vector1.value.transpose() * self.value * vector2.value
+            return matrix.liste[0].liste[0]
+        if isinstance(vector1, Rec):
+            matrix = vector1.value * self.valueinv * vector2.value.transpose()
             return matrix.liste[0].liste[0]
 
     def length(self, vector):
-        assert isinstance(vector, Dif), \
-            "Argument must be of type Dif."
+        assert isinstance(vector, Dif) or isinstance(vector, Rec), \
+            "Argument must be of type Dif or Rec."
         return nb.sqrt(self.dot(vector, vector))
 
     def angle(self, vector1, vector2):
-        assert  isinstance(vector1, Dif) \
-            and isinstance(vector2, Dif), \
+        assert (isinstance(vector1, Dif) and isinstance(vector2, Dif)) \
+            or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
             "Both arguments must be of type Dif."
         len1 = self.length(vector1)
         len2 = self.length(vector2)

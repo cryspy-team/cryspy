@@ -23,6 +23,9 @@ def test_Dif():
 def test_Rec():
     q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
     assert q.__str__() == "Rec <  1  2  3  > "
+    assert q.h() == 1
+    assert q.k() == 2
+    assert q.l() == 3
 
 def test_eq():
     r1 = geo.Pos(nb.Matrix([[1], [2], [3], [1]]))
@@ -143,11 +146,25 @@ def test_Metric():
     o =  geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
     p1 = geo.Pos(nb.Matrix([[1], [0], [0], [1]]))
     p2 = geo.Pos(nb.Matrix([[0], [1], [0], [1]]))
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    q2 = geo.Rec(nb.Matrix([[0, 1, 0, 0]]))
+    q3 = geo.Rec(nb.Matrix([[1, 1, 0, 0]]))
     assert metric.dot(p1 - o, p1 - o).__str__() == "9"
     assert metric.dot(p1 - o, p2 - o).__str__() == "0"
+    assert metric.dot(q1, q1).__str__() == "1/9"
+    assert metric.dot(q2, q2).__str__() == "1/4"
+    assert metric.dot(q3, q3).__str__() == "13/36"
+    assert metric.length(p1 - o) == 3
+    assert abs(float((metric.angle(p1 - o, p2 - o) - nb.deg2rad(90)))) < 0.00001
+    assert metric.length(q1).__str__() == "1/3"
+    assert abs(float((metric.angle(q1, q2) - nb.deg2rad(90)))) < 0.00001
+    assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
+    assert metric.angle(q1, q1).__str__() == "0.0"
+    
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
+
 
     t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
                                       [1, 0, 0, 0], \
