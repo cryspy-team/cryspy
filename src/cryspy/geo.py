@@ -301,6 +301,8 @@ class Transformation(Operator):
         elif isinstance(right, Spacegroup):
             return Spacegroup(self ** right.transgen, \
                           [self ** coset for coset in right.liste_cosets])
+        elif isinstance(right, Rec):
+            return Rec(right.value * self.inv().value.delete_translation())
         else:
             return NotImplemented
 

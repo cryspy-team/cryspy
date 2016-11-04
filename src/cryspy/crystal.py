@@ -1,7 +1,9 @@
 import hashlib
+import numpy as np
 from cryspy import numbers as nb
 from cryspy import geo as geo
 from cryspy import blockprint as bp
+from cryspy import tables
 
 class Atom():
     def __init__(self, name, typ, pos):
@@ -89,3 +91,24 @@ class Atomset():
             atoms |= set([atom % right])
         return Atomset(atoms)
 
+
+def structurefactor(atomset, metric, q, wavelength):
+    assert isinstance(atomset, Atomset), \
+        "atomset must be of type Atomset."
+    assert isinstance(metric, geo.Metric), \
+        "metric must be of type geo.Metric."
+    assert isinstance(q, geo.Rec), \
+        "q (scattering vector) must be of type geo.Rec."
+    wavelength = nb.Mixed(wavelength)
+    assert isinstance(wavelength, nb.Mixed), \
+        "wavelength must be of type numbers.Mixed or a type " \
+        "that can be converted to this."
+
+    sintl = 0.5 * metric.length(q)
+    i2pi = np.complex(0, 1) * 2.0 * np.pi
+    F = 0
+    for atom in atomset.menge:
+        F += tables.formfactor(atom.typ, sintl) \
+           * np.exp(i2pi * float(q * (atom.pos - geo.origin)))
+
+    return F

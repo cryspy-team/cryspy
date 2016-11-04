@@ -1,9 +1,12 @@
 import pytest
 import sys
 sys.path.append("../src/")
+import numpy as np
+import test_numbers_Mixed
 from cryspy import geo as geo
 from cryspy.fromstr import fromstr as fs
 from cryspy import crystal as cr
+from cryspy import tables
 
 def test_Atom():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
@@ -88,3 +91,32 @@ def test_Atomset():
     atomset1 = atomset % geo.canonical
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 3/4")), \
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 3/4"))})
+
+
+def test_structurefactor():
+    asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")), \
+                          cr.Atom("Mn1", "Mn", fs("p 1/2   0     0")), \
+                          cr.Atom("Mn2", "Mn", fs("p 1/2   0     0")), \
+                          cr.Atom("Mn3", "Mn", fs("p 0     0     1/2")), \
+                          cr.Atom("O1",  "O",  fs("p 0.223 0.274 0.081")), \
+                          cr.Atom("O2",  "O",  fs("p 0.342 0.522 0.341"))})
+    sg = tables.spacegroup(148)
+    cell = sg ** asyunit
+    cellparameters = geo.Cellparameters(10.46, 10.46, 6.35, 90, 90, 120)
+    metric = cellparameters.to_Metric()
+    q = fs("q 3 0 0")
+    wavelength = 0.71073
+    F = cr.structurefactor(cell, metric, q, wavelength)
+    assert test_numbers_Mixed.approx(-6.540191224, F.real)
+    assert test_numbers_Mixed.approx(0.0, F.imag)
+
+    cell = cr.Atomset({cr.Atom("Au1", "Au", fs("p 0   0   0  ")), \
+                       cr.Atom("Cu1", "Cu", fs("p 0   1/2 1/2")), \
+                       cr.Atom("Cu2", "Cu", fs("p 1/2 0   1/2")), \
+                       cr.Atom("Cu3", "Cu", fs("p 1/2 1/2 0  "))})
+    cellparameters = geo.Cellparameters(3.71, 3.71, 3.71, 90, 90, 90)
+    metric = cellparameters.to_Metric()
+    q = fs("q 1 0 0")
+    sintl = 0.5 * metric.length(q)
+
+

@@ -132,6 +132,54 @@ def test_Transformation():
     assert isinstance(t2.inv(), geo.Transformation)
     assert t2 * t2.inv() == geo.Transformation(nb.Matrix.onematrix(4))
 
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
+                                      [0, 0, 1, 0], \
+                                      [1, 0, 0, 0], \
+                                      [0, 0, 0, 1]]))
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0.3], \
+                                      [0, 0, 1, 0.7], \
+                                      [1, 0, 0, 100], \
+                                      [0, 0, 0, 1]]))
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+    t = geo.Transformation(nb.Matrix([[1, 0, 0, 0], \
+                                      [0, 1, 0, 0], \
+                                      [0, 0, 2, 0], \
+                                      [0, 0, 0, 1]]))
+    assert t.__str__()  == "Transformation O -> (0, 0, 0)\n" \
+                           "               then\n" \
+                           "               a' = a\n" \
+                           "               b' = b\n" \
+                           "               c' = 1/2c"
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == \
+        geo.Rec(nb.Matrix([[0, 0, nb.Mixed(fr.Fraction(1, 2)), 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+    t = geo.Transformation(nb.Matrix([[1, 0, 0, 0], \
+                                      [0, 0, 2, 0], \
+                                      [0, -1, 0, 0], \
+                                      [0, 0, 0, 1]]))
+    assert t.__str__()  == "Transformation O -> (0, 0, 0)\n" \
+                           "               then\n" \
+                           "               a' = a\n" \
+                           "               b' = 1/2c\n" \
+                           "               c' = -b"
+    assert isinstance(t ** q1, geo.Rec)
+    print(t)
+    assert (t ** q1) == \
+        geo.Rec(nb.Matrix([[0, nb.Mixed(fr.Fraction(1, 2)), 0, 0]]))
+
+    
+
+
                                
 def test_Metric():
     M = nb.Matrix([[9, 0, 0, 0], \

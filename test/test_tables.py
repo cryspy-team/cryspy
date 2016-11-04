@@ -2,7 +2,7 @@ import pytest
 import sys
 sys.path.append("../src/")
 from cryspy import geo as geo
-from cryspy import fromstr as fs
+from cryspy.fromstr import fromstr as fs
 from cryspy import tables as tb
 
 def test_cryspy_tables():
@@ -14,5 +14,10 @@ def test_cryspy_tables():
 #    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(63)
 #    assert sg.is_really_a_spacegroup() == True
+    sg = tb.spacegroup(148)
+#    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(166)
-    assert sg.is_really_a_spacegroup() == True
+#    assert sg.is_really_a_spacegroup() == True
+
+def test_formfactor():
+    assert 72.633286681565636 == tb.formfactor('Au', fs('0.13445'))
