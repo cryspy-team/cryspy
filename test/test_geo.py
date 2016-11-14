@@ -19,6 +19,9 @@ def test_Pos():
 def test_Dif():
     x = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
     assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / "
+    assert x.x() == 1
+    assert x.y() == 2
+    assert x.z() == 3
 
 def test_Rec():
     q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
@@ -182,6 +185,30 @@ def test_Transformation():
 
                                
 def test_Metric():
+    M = nb.Matrix([[1, 0, 0, 0], \
+                   [0, 1, 0, 0], \
+                   [0, 0, 1, 0], \
+                   [0, 0, 0, 1]])
+    metric = geo.Metric(M)
+    t =  metric.schmidttransformation
+    assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
+    assert t ** geo.canonical_e1 == geo.Dif(nb.Matrix([[0], [1], [0], [0]]))
+    assert t ** geo.canonical_e2 == geo.Dif(nb.Matrix([[0], [0], [1], [0]]))
+
+    metric = geo.Cellparameters(1, 1, 1, 90, 90, 45).to_Metric()
+    t =  metric.schmidttransformation
+    assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
+    e1 = t ** geo.canonical_e1
+    assert abs(e1.x() - 0.70710678).value < 0.000001
+    assert abs(e1.y() - 0.70710678).value < 0.000001
+    assert abs(e1.z() - 0).value < 0.000001
+    e2 = t ** geo.canonical_e2
+    assert abs(e2.x() - 0).value < 0.000001
+    assert abs(e2.y() - 0).value < 0.000001
+    assert abs(e2.z() - 1).value < 0.000001
+
+
+
     M = nb.Matrix([[9, 0, 0, 0], \
                    [0, 4, 0, 0], \
                    [0, 0, 1, 0], \

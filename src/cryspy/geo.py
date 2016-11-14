@@ -61,6 +61,15 @@ class Dif:
             "Must be created by a 4x1-Matrix with a 0 as last entry."
         self.value = value
 
+    def x(self):
+        return self.value.liste[0].liste[0]
+
+    def y(self):
+        return self.value.liste[1].liste[0]
+
+    def z(self):
+        return self.value.liste[2].liste[0]
+
     def __str__(self):
         return bp.block([["Dif", self.value.block(0, 3, 0, 1).__str__()],])
 
@@ -88,6 +97,15 @@ class Dif:
 
     def __neg__(self):
         return Dif(-self.value)
+
+    def __mul__(self, right):
+        if isinstance(right, nb.Mixed):
+            return Dif(nb.Matrix([[right * self.x()], \
+                                  [right * self.y()], \
+                                  [right * self.z()], \
+                                  [0               ]]))
+        else:
+            return NotImplemented
 
 canonical_e0 = Dif(nb.Matrix([nb.Row([1]), \
                               nb.Row([0]), \
@@ -325,6 +343,7 @@ class Metric(Operator):
             "     0 0 0 1"
         self.value = value
         self.valueinv = value.inv()
+        self.schmidttransformation = self.calculate_schmidttransformation()
 
     
     def dot(self, vector1, vector2):
@@ -351,6 +370,34 @@ class Metric(Operator):
         len2 = self.length(vector2)
         return nb.arccos(self.dot(vector1, vector2) \
             / (len1 * len2))
+
+    def calculate_schmidttransformation(self):
+        a1 = canonical_e0
+        b1 = canonical_e1
+        c1 = canonical_e2
+
+        a2 = a1
+        a3 = a2 * (1/self.length(a2))
+        
+        b2 = b1 - a3*self.dot(a3, b1)
+        b3 = b2 * (1/self.length(b2))
+
+        c2 = c1 - a3*self.dot(a3, c1) - b3*self.dot(b3, c1)
+        c3 = c2 * (1/self.length(c2))
+
+        M = nb.Matrix([[a3.x(), b3.x(), c3.x()], \
+                       [a3.y(), b3.y(), c3.y()], \
+                       [a3.z(), b3.z(), c3.z()]]).inv()
+        transformation = Transformation(
+            nb.Matrix([[M.liste[0].liste[0], M.liste[0].liste[1], M.liste[0].liste[2], 0], \
+                       [M.liste[1].liste[0], M.liste[1].liste[1], M.liste[1].liste[2], 0], \
+                       [M.liste[2].liste[0], M.liste[2].liste[1], M.liste[2].liste[2], 0], \
+                       [0   , 0   , 0   , 1]]) \
+            )
+            
+        return transformation
+
+#    def cartesian(self, pos):
 
     def to_Cellparameters(self):
         e0 = canonical_e0

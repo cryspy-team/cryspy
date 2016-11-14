@@ -71,6 +71,12 @@ class Mixed(object):
         else:
             return False
 
+    def __abs__(self):
+        if self.value < 0:
+            return -self
+        else:
+            return self
+
     def __add__(self, right):
         if isinstance(right, fr.Fraction):
             right = Mixed(right)
