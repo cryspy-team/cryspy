@@ -67,10 +67,13 @@ def make_blender_script(atomset, metric, outfilename):
     outstr += "bpy.ops.mesh.delete(type='VERT')\n"
     outstr += "bpy.ops.object.mode_set(mode='OBJECT')\n"
     outstr += "posobject = bpy.context.object\n"
+    outstr += "posobject.name = 'Positions'\n"
 
 
     materialnumber = 0
+    atomnumber = 0
     for atom in atomset.menge:
+        atomnumber += 1
         materialnumber += 1
         x = float((t**atom.pos).x())
         y = float((t**atom.pos).y())
@@ -78,7 +81,8 @@ def make_blender_script(atomset, metric, outfilename):
         outstr += "posobject.data.vertices.add(1)\n"
         outstr += "posobject.data.vertices[-1].co = (%f, %f, %f)\n"%(x, y, z)
         (spheresize, color) = size_and_color(atom.typ)
-        outstr += "bpy.ops.mesh.primitive_uv_sphere_add(location=(%f, %f, %f), size=%f)\n"%(x, y, z, spheresize)
+        outstr += "bpy.ops.mesh.primitive_ico_sphere_add(location=(%f, %f, %f), size=%f)\n"%(x, y, z, spheresize)
+        outstr += "bpy.context.object.name = 'Atom%03i(%s)'\n"%(atomnumber, atom.name)
         outstr += "mat = bpy.data.materials.new('material.%03i')\n"%(materialnumber)
         outstr += "mat.diffuse_color = %s\n"%(color.__str__())
         outstr += "bpy.context.object.data.materials.append(mat)\n"
