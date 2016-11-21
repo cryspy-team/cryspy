@@ -20,6 +20,9 @@ def test_cryspy_tables():
 #    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(212)
 #    assert sg.is_really_a_spacegroup() == True
+    sg = tb.spacegroup(227)
+    assert sg.is_really_a_spacegroup() == True
+
 
 def test_formfactor():
     assert 72.633286681565636 == tb.formfactor('Au', fs('0.13445'))

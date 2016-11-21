@@ -94,7 +94,10 @@ def make_blender_script(atomset, metric, outfilename):
 def size_and_color(atomtype):
     assert isinstance(atomtype, str), \
         "atomtype must be of type str."
-    if atomtype == "O":
+    if atomtype == "Li":
+        spheresize = 0.1
+        color = (1.0, 1.0, 0.7)
+    elif atomtype == "O":
         spheresize = 0.3
         color = (1.0, 0.0, 0.0)
     elif atomtype == "Ca":
@@ -103,6 +106,9 @@ def size_and_color(atomtype):
     elif atomtype == "Mn":
         spheresize = 0.5
         color = (0.6, 0.0, 0.8)
+    elif atomtype == "Fe":
+        spheresize = 0.5
+        color = (0.6, 0.4, 0.0)
     else:
         spheresize = 0.2
         color = (0.5, 0.5, 0.5)

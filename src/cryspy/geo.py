@@ -478,6 +478,7 @@ class Transgen():
              nb.Row([m10, m11, m12, 0]), \
              nb.Row([m20, m21, m22, 0]), \
              nb.Row([  0,   0,   0, 1])]))
+        self.transformationinv = self.transformation.inv()
         
     def __str__(self):
         if self == canonical:
@@ -502,7 +503,7 @@ class Transgen():
             result.value.liste[2].liste[0] %= 1
             return self.transformation ** result
         elif isinstance(left, Symmetry):
-            result = self.transformation.inv() ** left
+            result = self.transformationinv ** left
             result.value.liste[0].liste[3] %= 1
             result.value.liste[1].liste[3] %= 1
             result.value.liste[2].liste[3] %= 1
@@ -621,7 +622,13 @@ class Spacegroup():
     def is_really_a_spacegroup(self):
         for coset1 in self.liste_cosets:
             for coset2 in self.liste_cosets:
-                if not (coset1*coset2 in self.liste_cosets):
+                coset3 = coset1*coset2
+                if not (coset3 in self.liste_cosets):
+                    print("%s * %s = %s"%( \
+                        coset1.__str__(), \
+                        coset2.__str__(), \
+                        coset3.__str__() \
+                    ))
                     return False
         return True
 
