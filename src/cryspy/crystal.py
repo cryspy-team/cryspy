@@ -18,8 +18,18 @@ class Atom():
         self.pos = pos
     
     def __str__(self):
-        return bp.block([["Atom", " " + self.name, \
-                          " " + self.typ, " " +  self.pos.__str__()],])
+        return "# Atom\n" \
+               "# ====\n" \
+               "_atom_site_label\n" \
+               "_atom_site_type_symbol\n" \
+               "_atom_site_fract_x\n" \
+               "_atom_site_fract_y\n" \
+               "_atom_site_fract_z\n" + \
+               self.name + " " \
+               + self.typ + "  " \
+               + self.pos.x().__str__()  + "  " \
+               + self.pos.y().__str__() + "  " \
+               + self.pos.z().__str__()
 
     def __eq__(self, right):
         if (self.typ == right.typ) and (self.pos == right.pos):
@@ -68,13 +78,27 @@ class Atomset():
             return False
 
     def __str__(self):
-        strings = [["Atomset\n" \
-                    "-------"],]
+        string = "# Atomset\n" \
+                 "# =======\n" \
+                 "loop_\n" \
+                 " _atom_site_label\n" \
+                 " _atom_site_type_symbol\n" \
+                 " _atom_type_fract_x\n" \
+                 " _atom_type_fract_y\n" \
+                 " _atom_type_fract_z"
+        lines = []
         for atom in self.menge:
-            strings.append(["", atom.__str__() + "\n "])
-        return bp.block(strings)
-
-
+            lines.append( \
+                atom.name + " " + \
+                atom.typ + "  " + \
+                atom.pos.x().__str__() + "  " + \
+                atom.pos.y().__str__() + "  " + \
+                atom.pos.z().__str__()
+            )
+        lines = sorted(lines)
+        for line in lines:
+            string += "\n" + line
+        return string
     def __add__(self, right):
         if isinstance(right, geo.Dif):
             return Atomset({atom + right for atom in self.menge})

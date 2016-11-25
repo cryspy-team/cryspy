@@ -11,9 +11,14 @@ from cryspy import tables
 def test_Atom():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
     assert atom1.__str__() == \
-    "Atom Cs1 Cs Pos /  0  \ \n" \
-    "               |   0   |\n" \
-    "                \  0  / "
+        "# Atom\n" \
+        "# ====\n" \
+        "_atom_site_label\n" \
+        "_atom_site_type_symbol\n" \
+        "_atom_site_fract_x\n" \
+        "_atom_site_fract_y\n" \
+        "_atom_site_fract_z\n" \
+        "Cs1 Cs  0  0  0"
 
     atom2 = cr.Atom("Cs2", "Cs", fs("p 0 0 0"))
     assert atom2 == atom1
@@ -61,16 +66,16 @@ def test_Atomset():
     atom2 = cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0"))
     atomset = cr.Atomset({atom1, atom2})
     assert atomset.__str__() == \
-        "Atomset                          \n" \
-        "-------                          \n" \
-        "         Atom Cs1 Cs Pos /  0  \ \n" \
-        "                        |   0   |\n" \
-        "                         \  0  / \n" \
-        "                                 \n" \
-        "       Atom Cs2 Cs Pos /  1/4  \ \n" \
-        "                      |   1/4   |\n" \
-        "                       \    0  / \n" \
-        "                                 "
+        "# Atomset\n" \
+        "# =======\n" \
+        "loop_\n" \
+        " _atom_site_label\n" \
+        " _atom_site_type_symbol\n" \
+        " _atom_type_fract_x\n" \
+        " _atom_type_fract_y\n" \
+        " _atom_type_fract_z\n" \
+        "Cs1 Cs  0  0  0\n" \
+        "Cs2 Cs  1/4  1/4  0"
 
     transformation = fs("O->(0,0,1/4) \n" \
                         "then\n" \
@@ -116,7 +121,7 @@ def test_Atomset():
 
 
 
-def test_structurefactor():
+"""def test_structurefactor():
     asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")), \
                           cr.Atom("Mn1", "Mn", fs("p 1/2   0     0")), \
                           cr.Atom("Mn2", "Mn", fs("p 1/2   0     0")), \
@@ -141,5 +146,4 @@ def test_structurefactor():
     metric = cellparameters.to_Metric()
     q = fs("q 1 0 0")
     sintl = 0.5 * metric.length(q)
-
-
+"""

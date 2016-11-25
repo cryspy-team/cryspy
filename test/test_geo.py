@@ -251,6 +251,22 @@ def test_Metric():
                                                 [0, 0, 1, 0], \
                                                 [0, 0, 0, 1]]))
 
+def test_Cellparameters():
+    cellparameters = geo.Cellparameters( \
+        5.218, 3.169, 1.234, \
+        90, 90, 90 \
+    )
+    assert cellparameters.__str__() == \
+        "# Cellparameters\n" \
+        "# ==============\n" \
+        "_cell_length_a     5.218\n" \
+        "_cell_length_b     3.169\n" \
+        "_cell_length_c     1.234\n" \
+        "_cell_angle_alpha  90\n" \
+        "_cell_angle_beta   90\n" \
+        "_cell_angle_gamma  90"
+
+
 def test_Transgen():
     tg = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])), \
                       geo.Dif(nb.Matrix([[0], [0], [2], [0]])), \

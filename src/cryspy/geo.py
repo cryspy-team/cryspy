@@ -447,14 +447,15 @@ class Cellparameters():
                                  nb.Row([0,  0,  0,  1])]))
 
     def __str__(self):
-        return "Cellparameters\n" + \
-               bp.block([["a", " b", " c", " alpha", " beta", " gamma"], \
-                         [self.a.__str__(), \
-                          " " + self.b.__str__(), \
-                          " " + self.c.__str__(), \
-                          " " + self.alpha.__str__(), \
-                          " " + self.beta.__str__(), \
-                          " " + self.gamma.__str__()]])
+        return "# Cellparameters\n" + \
+               "# ==============\n" + \
+               "_cell_length_a     " + self.a.__str__() + "\n" + \
+               "_cell_length_b     " + self.b.__str__() + "\n" +\
+               "_cell_length_c     " + self.c.__str__() + "\n" + \
+               "_cell_angle_alpha  " + self.alpha.__str__() + "\n" +\
+               "_cell_angle_beta   " + self.beta.__str__() + "\n" +\
+               "_cell_angle_gamma  " + self.gamma.__str__()
+
 
 class Transgen():
     def __init__(self, b1, b2, b3):
