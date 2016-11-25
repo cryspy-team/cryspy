@@ -27,6 +27,12 @@ class Atom():
         else:
             return False
 
+    def __add__(self, right):
+        if isinstance(right, geo.Dif):
+            return Atom(self.name, self.typ, self.pos + right)
+        else:
+            return NotImplemented
+
     def __rpow__(self, left):
         assert isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset), \
@@ -67,6 +73,22 @@ class Atomset():
         for atom in self.menge:
             strings.append(["", atom.__str__() + "\n "])
         return bp.block(strings)
+
+
+    def __add__(self, right):
+        if isinstance(right, geo.Dif):
+            return Atomset({atom + right for atom in self.menge})
+        elif isinstance(right, Atomset):
+            return Atomset(self.menge.union(right.menge))
+        else:
+            return NotImplemented
+            
+           
+    def __radd__(self, left):
+        if isinstance(left, geo.Dif):
+            return self + left
+        else:
+            return NotImplemented
 
 
     def __rpow__(self, left):

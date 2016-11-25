@@ -50,6 +50,11 @@ def test_Atom():
     atom2 = cr.Atom("Cl1", "Cl", fs("p 1/2 1/4 3/2"))
     assert atom1 == atom2
 
+    d = fs("d 1/2 0 0")
+    atom1 = cr.Atom("Cl1", "Cl", fs("p 0 0 0"))
+    atom2 = cr.Atom("Cl1", "Cl", fs("p 1/2 0 0"))
+    atom3 = atom1 + d
+    assert atom2 == atom3
 
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
@@ -91,6 +96,24 @@ def test_Atomset():
     atomset1 = atomset % geo.canonical
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 3/4")), \
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 3/4"))})
+
+    assert atomset1 == atomset2
+
+    atomset1 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0"))})
+    atomset2 = cr.Atomset({cr.Atom("Cu1", "Cu", fs("p 1/2 1/2 1/2"))})
+    atomset3 = atomset1 + atomset2
+    atomset4 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
+                           cr.Atom("Cu1", "Cu", fs("p 1/2 1/2 1/2"))})
+    assert atomset3 == atomset4
+
+    d = fs("d 1/2 0 0")
+    atomset5 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 1/2 0 0"))})
+    atomset6 = atomset1 + d
+    atomset7 = d + atomset1
+    assert atomset5 == atomset6
+    assert atomset5 == atomset7
+    
+
 
 
 def test_structurefactor():

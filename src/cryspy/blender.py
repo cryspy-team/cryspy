@@ -14,6 +14,7 @@ def make_blender_script(atomset, metric, outfilename):
              "\n"
 
 
+    b = 0.02 # half axes-width in Angstroem
     t = metric.schmidttransformation
    
     pos = fs("p 1 0 0")
@@ -22,14 +23,14 @@ def make_blender_script(atomset, metric, outfilename):
     z = float((t**pos).z())
     outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
     outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.data.vertices[0].co = (0.0, -0.1, -0.1)\n"
-    outstr += "myaxis.data.vertices[1].co = (0.0, -0.1,  0.1)\n"
-    outstr += "myaxis.data.vertices[2].co = (0.0,  0.1, -0.1)\n"
-    outstr += "myaxis.data.vertices[3].co = (0.0,  0.1,  0.1)\n"
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y-0.1, z-0.1)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y-0.1, z+0.1)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y+0.1, z-0.1)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y+0.1, z+0.1)
+    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
+    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
+    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
+    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
 
     pos = fs("p 0 1 0")
     x = float((t**pos).x())
@@ -37,14 +38,14 @@ def make_blender_script(atomset, metric, outfilename):
     z = float((t**pos).z())
     outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
     outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.data.vertices[0].co = (-0.1, 0.0, -0.1)\n"
-    outstr += "myaxis.data.vertices[1].co = (0.1, 0.0,  -0.1)\n"
-    outstr += "myaxis.data.vertices[2].co = (-0.1,  0.0, 0.1)\n"
-    outstr += "myaxis.data.vertices[3].co = (0.1,  0.0,  0.1)\n"
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x-0.1, y, z-0.1)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x+0.1, y, z-0.1)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x-0.1, y, z+0.1)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x+0.1, y, z+0.1)
+    outstr += "myaxis.data.vertices[0].co = (-%f, 0.0, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[1].co = ( %f, 0.0, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[2].co = (-%f, 0.0,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[3].co = ( %f, 0.0,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x - b, y, z - b)
+    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x + b, y, z - b)
+    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x - b, y, z + b)
+    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x + b, y, z + b)
 
     pos = fs("p 0 0 1")
     x = float((t**pos).x())
@@ -52,14 +53,14 @@ def make_blender_script(atomset, metric, outfilename):
     z = float((t**pos).z())
     outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
     outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.data.vertices[0].co = (-0.1, -0.1, 0.0)\n"
-    outstr += "myaxis.data.vertices[1].co = (-0.1,  0.1, 0.0)\n"
-    outstr += "myaxis.data.vertices[2].co = (0.1, -0.1, 0.0)\n"
-    outstr += "myaxis.data.vertices[3].co = (0.1,  0.1, 0.0)\n"
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x-0.1, y-0.1, z)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x-0.1, y+0.1, z)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x+0.1, y-0.1, z)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x+0.1, y+0.1, z)
+    outstr += "myaxis.data.vertices[0].co = (-%f, -%f, 0.0)\n"%(b, b)
+    outstr += "myaxis.data.vertices[1].co = (-%f,  %f, 0.0)\n"%(b, b)
+    outstr += "myaxis.data.vertices[2].co = ( %f, -%f, 0.0)\n"%(b, b)
+    outstr += "myaxis.data.vertices[3].co = ( %f,  %f, 0.0)\n"%(b, b)
+    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x - b, y - b, z)
+    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x - b, y + b, z)
+    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x + b, y - b, z)
+    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x + b, y + b, z)
 
 
     outstr += "bpy.ops.mesh.primitive_cube_add(location=(0,0,0))\n"

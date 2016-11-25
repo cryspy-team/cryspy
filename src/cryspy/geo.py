@@ -85,8 +85,7 @@ class Dif:
         elif isinstance(right, Pos):
             return Pos(self.value + right.value)
         else:
-            raise(BaseException("I cannot add objects of type %s and %s"\
-                %(type(self), type(right))))
+            return NotImplemented
 
     def __sub__(self, right):
         if isinstance(right, Dif):
