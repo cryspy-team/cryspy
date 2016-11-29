@@ -1,6 +1,7 @@
 from cryspy import geo
 from cryspy import crystal
 from cryspy.fromstr import fromstr as fs
+from cryspy import tables
 
 def make_blender_script(atomset, metric, outfilename):
     assert isinstance(atomset, crystal.Atomset), \
@@ -81,7 +82,7 @@ def make_blender_script(atomset, metric, outfilename):
         z = float((t**atom.pos).z())
         outstr += "posobject.data.vertices.add(1)\n"
         outstr += "posobject.data.vertices[-1].co = (%f, %f, %f)\n"%(x, y, z)
-        (spheresize, color) = size_and_color(atom.typ)
+        (spheresize, color) = tables.colorscheme_jmol(atom.typ)
         outstr += "bpy.ops.mesh.primitive_ico_sphere_add(location=(%f, %f, %f), size=%f)\n"%(x, y, z, spheresize)
         outstr += "bpy.context.object.name = 'Atom%03i(%s)'\n"%(atomnumber, atom.name)
         outstr += "mat = bpy.data.materials.new('material.%03i')\n"%(materialnumber)
@@ -92,25 +93,3 @@ def make_blender_script(atomset, metric, outfilename):
     outfile.write(outstr)
     outfile.close()
 
-def size_and_color(atomtype):
-    assert isinstance(atomtype, str), \
-        "atomtype must be of type str."
-    if atomtype == "Li":
-        spheresize = 0.1
-        color = (1.0, 1.0, 0.7)
-    elif atomtype == "O":
-        spheresize = 0.3
-        color = (1.0, 0.0, 0.0)
-    elif atomtype == "Ca":
-        spheresize = 0.4
-        color = (0.0, 0.0, 0.8)
-    elif atomtype == "Mn":
-        spheresize = 0.5
-        color = (0.6, 0.0, 0.8)
-    elif atomtype == "Fe":
-        spheresize = 0.5
-        color = (0.6, 0.4, 0.0)
-    else:
-        spheresize = 0.2
-        color = (0.5, 0.5, 0.5)
-    return (spheresize, color)
