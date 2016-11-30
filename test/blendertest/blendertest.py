@@ -40,5 +40,5 @@ for atomseti in [atomset1, atomset2, atomset3, atomset4, \
 
 
 atomset = cryspy.crystal.Atomset(menge)
-cryspy.blender.make_blender_script(atomset, metric, "blenderscript.py")
+cryspy.blender.make_blender_script(atomset, metric, "structure", "blenderscript.py")
 
