@@ -1,0 +1,1 @@
+Search.setIndex({objnames:{},objtypes:{},terms:{setuptool:[],rst:[],includ:[],modul:[],page:0,index:0,content:0,bla:1,search:0},envversion:43,objects:{},titles:["Welcome to cryspy&#8217;s documentation!","The Module numbers"],filenames:["index","numbers"],titleterms:{number:1,cryspi:0,tabl:0,document:0,indic:0,modul:1,welcom:0}})

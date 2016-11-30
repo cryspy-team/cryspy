@@ -1,7 +1,7 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import cryspy_numbers as nb
+from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 
@@ -116,6 +116,10 @@ def test_Row():
     assert R1 * 2 == nb.Row([2, 4, 1])
     assert 2 * R1 == nb.Row([2, 4, 1])
 
+    # neg
+    R1 = nb.Row([1, 2, 3])
+    assert -R1 == nb.Row([-1, -2, -3])
+
 def test_Matrix():
     
     # create and shape
@@ -170,6 +174,10 @@ def test_Matrix():
            nb.Matrix([[1, 1], [1, 1], [1, 1]]) == \
            nb.Matrix([[0, 1], [2, 3], [4, 5]])
 
+    # neg
+
+    M1 = nb.Matrix([[1, 2, 3], [4, 5, 6]])
+    assert -M1 == nb.Matrix([[-1, -2, -3], [-4, -5, -6]])
 
     # Multiplication "Matrix * Matrix"
 
@@ -263,6 +271,8 @@ def test_Matrix():
     M = nb.Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     assert M.block(0, 2, 0, 2) == nb.Matrix([[1, 2], [4, 5]])
     assert M.block(1, 2, 0, 3) == nb.Matrix([[4, 5, 6]])
+    M = nb.Matrix([[1, 2, 3, 4]])
+    assert M.block(0, 1, 0, 3) == nb.Matrix([[1, 2, 3]])
 
     # swap_rows
 
@@ -308,3 +318,17 @@ def test_Matrix():
 
     assert nb.Matrix([[1, 2, 3], [4, 5, 6]]).transpose() == \
            nb.Matrix([[1, 4], [2, 5], [3, 6]])
+
+    # delete_translation
+
+    M = nb.Matrix([[1,  2,  3,  4], \
+                   [5,  6,  7,  8], \
+                   [9, 10, 11, 12], \
+                   [0,  0,  0,  1]])
+
+    assert M.delete_translation() == nb.Matrix([[1,  2,  3, 0], \
+                                              [5,  6,  7, 0], \
+                                              [9, 10, 11, 0], \
+                                              [0,  0,  0, 1]])
+
+

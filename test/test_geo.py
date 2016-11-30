@@ -3,8 +3,8 @@ import sys
 sys.path.append("../src/")
 import quicktions as fr
 import uncertainties as uc
-import cryspy_numbers as nb
-import cryspy_geo as geo
+from cryspy import numbers as nb
+from cryspy import geo as geo
 
 
 def test_Pos():
@@ -13,12 +13,22 @@ def test_Pos():
     assert x.x() == 1
     assert x.y() == 2
     assert x.z() == 3
-
+    x = geo.origin
+    assert x == geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
 
 def test_Dif():
     x = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
     assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / "
+    assert x.x() == 1
+    assert x.y() == 2
+    assert x.z() == 3
 
+def test_Rec():
+    q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    assert q.__str__() == "Rec <  1  2  3  > "
+    assert q.h() == 1
+    assert q.k() == 2
+    assert q.l() == 3
 
 def test_eq():
     r1 = geo.Pos(nb.Matrix([[1], [2], [3], [1]]))
@@ -27,6 +37,9 @@ def test_eq():
     d1 = geo.Dif(nb.Matrix([[4], [5], [6], [0]]))
     d2 = geo.Dif(nb.Matrix([[4], [5], [6], [0]]))
     d3 = geo.Dif(nb.Matrix([[3], [5], [6], [0]]))
+    q1 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q2 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q3 = geo.Rec(nb.Matrix([[2, 3, 4, 0]]))
     assert not (r1 == d1)
     assert     (r1 == r1) 
     assert     (r1 == r2)
@@ -34,6 +47,11 @@ def test_eq():
     assert     (d1 == d1)
     assert     (d1 == d2)
     assert not (d1 == d3)
+    assert not (r1 == q1)
+    assert not (d1 == q1)
+    assert     (q1 == q1)
+    assert     (q1 == q2)
+    assert not (q1 == q3)
 
 
 def test_add_and_sub():
@@ -46,7 +64,17 @@ def test_add_and_sub():
     assert (d1 - d2) == geo.Dif(nb.Matrix([[-1], [0], [1], [0]]))
     assert (x1 - d1) == geo.Pos(nb.Matrix([[-3], [-3], [-3], [1]]))
     assert (x1 - x2) == geo.Dif(nb.Matrix([[-1], [-1], [-1], [0]]))
+    q1 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
+    q2 = geo.Rec(nb.Matrix([[4, 5, 6, 0]]))
+    assert (q1 + q2) == geo.Rec(nb.Matrix([[5, 7, 9, 0]]))
+    assert (q1 - q2) == geo.Rec(nb.Matrix([[-3, -3, -3, 0]]))
+    assert -d1 == geo.Dif(nb.Matrix([[-4], [-5], [-6], [0]]))
+    assert -q1 == geo.Rec(nb.Matrix([[-1, -2, -3, 0]]))
 
+def test_Skalarprodukt():
+    d1 = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
+    q1 = geo.Rec(nb.Matrix([[4, 5, 6, 0]]))
+    assert q1 * d1 == 32
 
 def test_Operator():
     id = geo.Operator(nb.Matrix([[1, 0, 0, 0], \
@@ -107,8 +135,80 @@ def test_Transformation():
     assert isinstance(t2.inv(), geo.Transformation)
     assert t2 * t2.inv() == geo.Transformation(nb.Matrix.onematrix(4))
 
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
+                                      [0, 0, 1, 0], \
+                                      [1, 0, 0, 0], \
+                                      [0, 0, 0, 1]]))
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0.3], \
+                                      [0, 0, 1, 0.7], \
+                                      [1, 0, 0, 100], \
+                                      [0, 0, 0, 1]]))
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+    t = geo.Transformation(nb.Matrix([[1, 0, 0, 0], \
+                                      [0, 1, 0, 0], \
+                                      [0, 0, 2, 0], \
+                                      [0, 0, 0, 1]]))
+    assert t.__str__()  == "Transformation O -> (0, 0, 0)\n" \
+                           "               then\n" \
+                           "               a' = a\n" \
+                           "               b' = b\n" \
+                           "               c' = 1/2c"
+    assert isinstance(t ** q1, geo.Rec)
+    assert (t ** q1) == \
+        geo.Rec(nb.Matrix([[0, 0, nb.Mixed(fr.Fraction(1, 2)), 0]]))
+
+    q1 = geo.Rec(nb.Matrix([[0, 0, 1, 0]]))
+    t = geo.Transformation(nb.Matrix([[1, 0, 0, 0], \
+                                      [0, 0, 2, 0], \
+                                      [0, -1, 0, 0], \
+                                      [0, 0, 0, 1]]))
+    assert t.__str__()  == "Transformation O -> (0, 0, 0)\n" \
+                           "               then\n" \
+                           "               a' = a\n" \
+                           "               b' = 1/2c\n" \
+                           "               c' = -b"
+    assert isinstance(t ** q1, geo.Rec)
+    print(t)
+    assert (t ** q1) == \
+        geo.Rec(nb.Matrix([[0, nb.Mixed(fr.Fraction(1, 2)), 0, 0]]))
+
+    
+
+
                                
 def test_Metric():
+    M = nb.Matrix([[1, 0, 0, 0], \
+                   [0, 1, 0, 0], \
+                   [0, 0, 1, 0], \
+                   [0, 0, 0, 1]])
+    metric = geo.Metric(M)
+    t =  metric.schmidttransformation
+    assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
+    assert t ** geo.canonical_e1 == geo.Dif(nb.Matrix([[0], [1], [0], [0]]))
+    assert t ** geo.canonical_e2 == geo.Dif(nb.Matrix([[0], [0], [1], [0]]))
+
+    metric = geo.Cellparameters(1, 1, 1, 90, 90, 45).to_Metric()
+    t =  metric.schmidttransformation
+    assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
+    e1 = t ** geo.canonical_e1
+    assert abs(e1.x() - 0.70710678).value < 0.000001
+    assert abs(e1.y() - 0.70710678).value < 0.000001
+    assert abs(e1.z() - 0).value < 0.000001
+    e2 = t ** geo.canonical_e2
+    assert abs(e2.x() - 0).value < 0.000001
+    assert abs(e2.y() - 0).value < 0.000001
+    assert abs(e2.z() - 1).value < 0.000001
+
+
+
     M = nb.Matrix([[9, 0, 0, 0], \
                    [0, 4, 0, 0], \
                    [0, 0, 1, 0], \
@@ -121,12 +221,35 @@ def test_Metric():
     o =  geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
     p1 = geo.Pos(nb.Matrix([[1], [0], [0], [1]]))
     p2 = geo.Pos(nb.Matrix([[0], [1], [0], [1]]))
+    q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
+    q2 = geo.Rec(nb.Matrix([[0, 1, 0, 0]]))
+    q3 = geo.Rec(nb.Matrix([[1, 1, 0, 0]]))
     assert metric.dot(p1 - o, p1 - o).__str__() == "9"
     assert metric.dot(p1 - o, p2 - o).__str__() == "0"
+    assert metric.dot(q1, q1).__str__() == "1/9"
+    assert metric.dot(q2, q2).__str__() == "1/4"
+    assert metric.dot(q3, q3).__str__() == "13/36"
+    assert metric.length(p1 - o) == 3
+    assert abs(float((metric.angle(p1 - o, p2 - o) - nb.deg2rad(90)))) < 0.00001
+    assert metric.length(q1).__str__() == "1/3"
+    assert abs(float((metric.angle(q1, q2) - nb.deg2rad(90)))) < 0.00001
+    assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
+    assert metric.angle(q1, q1).__str__() == "0.0"
+    
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
 
+
+    t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
+                                      [1, 0, 0, 0], \
+                                      [0, 0, 1, 0.5], \
+                                      [0, 0, 0, 1]]))
+
+    assert t ** metric == geo.Metric(nb.Matrix([[4, 0, 0, 0], \
+                                                [0, 9, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]]))
 
 def test_Transgen():
     tg = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])), \

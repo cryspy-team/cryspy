@@ -1,7 +1,7 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import blockprint as bp
+from cryspy import blockprint as bp
 
 
 def test_height_of_block():

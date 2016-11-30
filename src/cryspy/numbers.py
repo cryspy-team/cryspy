@@ -71,6 +71,12 @@ class Mixed(object):
         else:
             return False
 
+    def __abs__(self):
+        if self.value < 0:
+            return -self
+        else:
+            return self
+
     def __add__(self, right):
         if isinstance(right, fr.Fraction):
             right = Mixed(right)
@@ -81,7 +87,7 @@ class Mixed(object):
         elif isinstance(right, float):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
-            "Cannot object of type %s " \
+            "Cannot add object of type %s " \
             "to object of type Mixed."%(type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
@@ -193,10 +199,10 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, float):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot subtract object of type Mixed " \
-            "from object of type %s."%(type(left))
-        return left - self
+        if isinstance(left, Mixed):
+            return left - self
+        else:
+            return NotImplemented
 
     def __mul__(self, right):
         if isinstance(right, fr.Fraction):
@@ -271,10 +277,10 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, float):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot multiply object of type %s " \
-            "to object of type %s."%(type(left))
-        return left * self
+        if isinstance(left, Mixed):
+            return left * self
+        else:
+            return NotImplemented
 
     def __truediv__(self, right):
         if isinstance(right, fr.Fraction):
@@ -285,9 +291,8 @@ class Mixed(object):
             right = Mixed(right)
         elif isinstance(right, float):
             right = Mixed(right)
-        assert isinstance(right, Mixed), \
-            "Cannot divide object of type Mixed " \
-            "by object of type %s."%(type(right))
+        if not isinstance(right, Mixed):
+            return NotImplemented
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / right.value)
@@ -334,17 +339,12 @@ class Mixed(object):
             left = Mixed(left)
         elif isinstance(left, int):
             left = Mixed(left)
-        assert isinstance(left, Mixed), \
-            "Cannot divide object of type %s " \
-            "by object of type Mixed"%(type(left))
-        return left / self
+        if isinstance(left, Mixed):
+            return left / self
+        else:
+            return NotImplemented
 
     def __neg__(self):
-        """
-            >>> a = Mixed(fr.Fraction(1, 2))
-            >>> print(-a)
-            -1/2
-        """
         return (-1) * self
 
 
@@ -550,6 +550,9 @@ class Row(object):
         else:
             return NotImplemented
 
+    def __neg__(self):
+        return Row([-number for number in self.liste])
+
 
 class Matrix(object):
     def __init__(self, liste):
@@ -685,6 +688,9 @@ class Matrix(object):
         else:
             return NotImplemented
 
+    def __neg__(self):
+        return Matrix([-row for row in self.liste])
+
     def onematrix(dim):
         assert isinstance(dim, int), \
             "Onematrix must be created via a dimension of type int."
@@ -711,7 +717,7 @@ class Matrix(object):
             "For cutting a block out of a matrix, use indexes of type integer!"
         (numrows, numcols) = self.shape()
         assert (i1 <= numrows) and (i2 <= numrows)\
-            and (j1 <= numcols) and (j2 <= numrows), \
+            and (j1 <= numcols) and (j2 <= numcols), \
             "For cutting a block out of a matrix, use integers, which are between "\
             "0 and num of rows / num of cols"
         assert (i1 < i2) and (j1 < j2), \
@@ -809,3 +815,44 @@ class Matrix(object):
                    ]) \
                    for i in range(shape[1]) \
                ])
+
+    def delete_translation(self):
+        # If a 4x4-Matrix has the shape
+        #
+        #  / *  *  *  * \
+        # |  *  *  *  *  |
+        # |  *  *  *  *  |
+        #  \ 0  0  0  1 / ,
+        #
+        # it is reduced to
+        #
+        #  / *  *  *  0 \
+        # |  *  *  *  0  |
+        # |  *  *  *  0  |
+        #  \ 0  0  0  1 / .
+
+        assert self.shape() == (4, 4), \
+            "Matrix must be a 4x4-Matrix"
+
+        assert self.block(3, 4, 0, 4) == Matrix([[0, 0, 0, 1]]), \
+            "Matrix must be of the form\n" \
+            "  / * * * * \  \n" \
+            " |  * * * *  | \n" \
+            " |  * * * *  | \n" \
+            "  \ 0 0 0 1 /  "
+
+        a = self.liste[0].liste[0]
+        b = self.liste[0].liste[1]
+        c = self.liste[0].liste[2]
+        d = self.liste[1].liste[0]
+        e = self.liste[1].liste[1]
+        f = self.liste[1].liste[2]
+        g = self.liste[2].liste[0]
+        h = self.liste[2].liste[1]
+        i = self.liste[2].liste[2]
+
+        return Matrix([[a, b, c, 0], \
+                       [d, e, f, 0], \
+                       [g, h, i, 0], \
+                       [0, 0, 0, 1]])
+

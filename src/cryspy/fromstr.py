@@ -1,7 +1,7 @@
-import cryspy_numbers as nb
+from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
-import cryspy_geo as geo
+from cryspy import geo as geo
 
 
 def removeletters(string):
@@ -47,20 +47,6 @@ def str2linearterm(string, liste_variables):
     return liste_numbers
 
 def fromstr(string):
-    """
-        >>> print(fromstr("1/2"))
-        1/2
-        >>> print(fromstr("1.2+/-0.1"))
-        1.20(10)
-        >>> print(fromstr("1.2(1)"))
-        1.20(10)
-        >>> print(fromstr("4"))
-        4
-        >>> print(fromstr("/ 1 2 \ \\n \ 3 4 /"))
-         /  1  2  \ 
-         \  3  4  / 
-
-    """
     assert isinstance(string, str), \
         "Function fromstr must have an argument of type string."
     typ = typefromstr(string)
@@ -110,21 +96,33 @@ def fromstr(string):
         except ValueError:
             raise(Exception("The following string looks like a Dif "\
                             "but I cannot convert it: %s"%(string)))
+    elif typ == geo.Rec:
+        try:
+            return recfromstr(string)
+        except ValueError:
+            raise(Exception("The following string looks like a Rec "\
+                            "but I cannot convert it: %s"%(string)))
 
 def typefromstr(string):
     words = string.split()
 
-    if ('a' in string) or ('b' in string) or ('c' in string) \
+    if ('Rec' in string):
+        return geo.Rec
+    elif ('a' in string) or ('b' in string) or ('c' in string) \
         or ("then" in string) or ('O' in string) or ("->" in string):
         return geo.Transformation
     elif (words[0][0] == '/') and words[-1][-1] == '/':
         return nb.Matrix
     elif (words[0][0] == '<') and (words[-1][-1] == '>'):
         return nb.Matrix
-    elif ('p' in string) or ('P' in string) or ('r' in string) or ('R' in string):
+    elif ('p' in string) or ('P' in string) or \
+        ('r' in string) or ('R' in string):
         return geo.Pos
     elif ('d' in string) or ('D' in string):
         return geo.Dif
+    elif ('k' in string) or ('K' in string) or \
+        ('q' in string) or ('Q' in string):
+        return geo.Rec
     elif ('{' in string) and ('}' in string):
         return geo.Coset
     elif ('x' in string) or ('y' in string) or ('z' in string):
@@ -276,3 +274,17 @@ def diffromstr(string):
     string = '\n'.join(words)
     string += "\n 0"
     return geo.Dif(matrixfromstr(string))
+
+def recfromstr(string):
+    string = string.replace('\n', ' ')
+    string = string.replace('\\', ' ')
+    string = string.replace('/ ', ' ')
+    string = string.replace(' /', ' ')
+    string = string.replace('|', ' ')
+    stirng = string.replace('<', ' ')
+    string = string.replace('>', ' ')
+    string = removeletters(string)
+    words = string.split()
+    string = ' '.join(words)
+    string += " 0"
+    return geo.Rec(matrixfromstr(string))

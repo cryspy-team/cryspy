@@ -1,6 +1,5 @@
-import cryspy_numbers as nb
-import cryspy_fromstr as fs
-import blockprint as bp
+from cryspy import numbers as nb
+from cryspy import blockprint as bp
 
 
 class Pos:
@@ -50,6 +49,8 @@ class Pos:
                 "I cannot subtract objects of type %s and %s"% \
                 (typen(self), type(right))))
 
+origin = Pos(nb.Matrix([[0], [0], [0], [1]]))
+
 class Dif:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -59,6 +60,15 @@ class Dif:
         assert (value.liste[3].liste[0] == 0), \
             "Must be created by a 4x1-Matrix with a 0 as last entry."
         self.value = value
+
+    def x(self):
+        return self.value.liste[0].liste[0]
+
+    def y(self):
+        return self.value.liste[1].liste[0]
+
+    def z(self):
+        return self.value.liste[2].liste[0]
 
     def __str__(self):
         return bp.block([["Dif", self.value.block(0, 3, 0, 1).__str__()],])
@@ -75,8 +85,7 @@ class Dif:
         elif isinstance(right, Pos):
             return Pos(self.value + right.value)
         else:
-            raise(BaseException("I cannot add objects of type %s and %s"\
-                %(type(self), type(right))))
+            return NotImplemented
 
     def __sub__(self, right):
         if isinstance(right, Dif):
@@ -84,6 +93,18 @@ class Dif:
         else:
             raise(BaseException("I cannot subtract objects of type"\
                 "%s and %s"%(type(self), type(right))))
+
+    def __neg__(self):
+        return Dif(-self.value)
+
+    def __mul__(self, right):
+        if isinstance(right, nb.Mixed):
+            return Dif(nb.Matrix([[right * self.x()], \
+                                  [right * self.y()], \
+                                  [right * self.z()], \
+                                  [0               ]]))
+        else:
+            return NotImplemented
 
 canonical_e0 = Dif(nb.Matrix([nb.Row([1]), \
                               nb.Row([0]), \
@@ -99,6 +120,56 @@ canonical_e2 = Dif(nb.Matrix([nb.Row([0]), \
                               nb.Row([0]), \
                               nb.Row([1]), \
                               nb.Row([0])]))
+
+class Rec:
+    def __init__(self, value):
+        assert isinstance(value, nb.Matrix), \
+            "Must be created by an object of type Matrix."
+        assert value.shape() == (1, 4), \
+            "Must be created by a 1x4-Matrix."
+        assert value.liste[0].liste[3] == 0, \
+            "Must be created by a 1x4-Matrix of this shape: \n" \
+            "  < *  *  *  0 > "
+        self.value = value
+
+    def __str__(self):
+        return bp.block([["Rec", self.value.block(0, 1, 0, 3).__str__()],])
+
+    def __eq__(self, right):
+        if isinstance(right, Rec):
+            return (self.value == right.value)
+        else:
+            return False
+
+    def __add__(self, right):
+        if isinstance(right, Rec):
+            return Rec(self.value + right.value)
+        else:
+            return NotImplemented
+
+    def __sub__(self, right):
+        if isinstance(right, Rec):
+            return Rec(self.value - right.value)
+        else:
+            return NotImplemented
+
+    def __neg__(self):
+        return Rec(-self.value)
+
+    def __mul__(self, right):
+        if isinstance(right, Dif):
+            return (self.value * right.value).liste[0].liste[0]
+        else:
+            return NotImplemented
+
+    def h(self):
+        return self.value.liste[0].liste[0]
+
+    def k(self):
+        return self.value.liste[0].liste[1]
+
+    def l(self):
+        return self.value.liste[0].liste[2]
 
 class Operator:
     def __init__(self, value):
@@ -125,7 +196,6 @@ class Operator:
 
     def inv(self):
         return Operator(self.value.inv())
-
 
 
 def linearterm2str(liste_numbers, liste_variables):
@@ -165,35 +235,6 @@ def linearterm2str(liste_numbers, liste_variables):
         result = result[1:]
     return result
 
-"""
-def str2linearterm(string, liste_variables):
-    assert isinstance(string, str), \
-        "Argument must be of type str."
-    assert isinstance(liste_variables, list), \
-        "Argument must be of type list."
-    for item in liste_variables:
-        assert isinstance(item, str), \
-            "Argument must be a list of objects of type str."
-    string = string.replace('-', '+-')
-    string = string.replace(' ', '')
-    words = string.split('+')
-    liste_numbers = [0 for i in range(len(liste_variables) + 1)]
-    for word in words:
-        has_variable = False
-        index = -1
-        for a in word:
-            if a.isalpha():
-                word = word.replace(a, '')
-                index = liste_variables.index(a)
-                has_variable = True
-        if word == '' or word == '-':
-            if has_variable:
-                word += '1'
-            else:
-                word += '0'
-        liste_numbers[index] += fs.fromstr(word)
-    return liste_numbers
-"""
 
 class Symmetry(Operator):
     def __str__(self):
@@ -270,13 +311,15 @@ class Transformation(Operator):
         elif isinstance(right, Dif):
             return Dif(self.value * right.value)
         elif isinstance(right, Metric):
-            M = self.value
+            M = self.value.delete_translation()
             Minv = M.inv()
             Minvtr = Minv.transpose()
             return Metric(Minvtr * right.value * Minv)
         elif isinstance(right, Spacegroup):
             return Spacegroup(self ** right.transgen, \
                           [self ** coset for coset in right.liste_cosets])
+        elif isinstance(right, Rec):
+            return Rec(right.value * self.inv().value.delete_translation())
         else:
             return NotImplemented
 
@@ -298,29 +341,62 @@ class Metric(Operator):
             "     * * * 0\n" \
             "     0 0 0 1"
         self.value = value
+        self.valueinv = value.inv()
+        self.schmidttransformation = self.calculate_schmidttransformation()
 
     
     def dot(self, vector1, vector2):
-        assert  isinstance(vector1, Dif) \
-            and isinstance(vector2, Dif), \
-            "Arguments must be both of type Dif."
-        if (isinstance(vector1, Pos) or isinstance(vector1, Dif)):
+        assert  (isinstance(vector1, Dif) and isinstance(vector2, Dif) ) \
+            or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
+            "Arguments must be both of type Dif of both of type Rec."
+        if isinstance(vector1, Dif):
             matrix = vector1.value.transpose() * self.value * vector2.value
+            return matrix.liste[0].liste[0]
+        if isinstance(vector1, Rec):
+            matrix = vector1.value * self.valueinv * vector2.value.transpose()
             return matrix.liste[0].liste[0]
 
     def length(self, vector):
-        assert isinstance(vector, Dif), \
-            "Argument must be of type Dif."
+        assert isinstance(vector, Dif) or isinstance(vector, Rec), \
+            "Argument must be of type Dif or Rec."
         return nb.sqrt(self.dot(vector, vector))
 
     def angle(self, vector1, vector2):
-        assert  isinstance(vector1, Dif) \
-            and isinstance(vector2, Dif), \
+        assert (isinstance(vector1, Dif) and isinstance(vector2, Dif)) \
+            or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
             "Both arguments must be of type Dif."
         len1 = self.length(vector1)
         len2 = self.length(vector2)
         return nb.arccos(self.dot(vector1, vector2) \
             / (len1 * len2))
+
+    def calculate_schmidttransformation(self):
+        a1 = canonical_e0
+        b1 = canonical_e1
+        c1 = canonical_e2
+
+        a2 = a1
+        a3 = a2 * (1/self.length(a2))
+        
+        b2 = b1 - a3*self.dot(a3, b1)
+        b3 = b2 * (1/self.length(b2))
+
+        c2 = c1 - a3*self.dot(a3, c1) - b3*self.dot(b3, c1)
+        c3 = c2 * (1/self.length(c2))
+
+        M = nb.Matrix([[a3.x(), b3.x(), c3.x()], \
+                       [a3.y(), b3.y(), c3.y()], \
+                       [a3.z(), b3.z(), c3.z()]]).inv()
+        transformation = Transformation(
+            nb.Matrix([[M.liste[0].liste[0], M.liste[0].liste[1], M.liste[0].liste[2], 0], \
+                       [M.liste[1].liste[0], M.liste[1].liste[1], M.liste[1].liste[2], 0], \
+                       [M.liste[2].liste[0], M.liste[2].liste[1], M.liste[2].liste[2], 0], \
+                       [0   , 0   , 0   , 1]]) \
+            )
+            
+        return transformation
+
+#    def cartesian(self, pos):
 
     def to_Cellparameters(self):
         e0 = canonical_e0
@@ -401,6 +477,7 @@ class Transgen():
              nb.Row([m10, m11, m12, 0]), \
              nb.Row([m20, m21, m22, 0]), \
              nb.Row([  0,   0,   0, 1])]))
+        self.transformationinv = self.transformation.inv()
         
     def __str__(self):
         if self == canonical:
@@ -425,7 +502,7 @@ class Transgen():
             result.value.liste[2].liste[0] %= 1
             return self.transformation ** result
         elif isinstance(left, Symmetry):
-            result = self.transformation.inv() ** left
+            result = self.transformationinv ** left
             result.value.liste[0].liste[3] %= 1
             result.value.liste[1].liste[3] %= 1
             result.value.liste[2].liste[3] %= 1
@@ -544,7 +621,13 @@ class Spacegroup():
     def is_really_a_spacegroup(self):
         for coset1 in self.liste_cosets:
             for coset2 in self.liste_cosets:
-                if not (coset1*coset2 in self.liste_cosets):
+                coset3 = coset1*coset2
+                if not (coset3 in self.liste_cosets):
+                    print("%s * %s = %s"%( \
+                        coset1.__str__(), \
+                        coset2.__str__(), \
+                        coset3.__str__() \
+                    ))
                     return False
         return True
 

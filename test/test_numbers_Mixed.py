@@ -1,7 +1,7 @@
 import pytest
 import sys
 sys.path.append("../src/")
-import cryspy_numbers as nb
+from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 
@@ -88,7 +88,10 @@ def test_Mixed():
     assert nb.Mixed(1.0) == nb.Mixed(1.0)
     assert nb.Mixed(0) == 0
     assert nb.Mixed(fr.Fraction(2, 1)) == 2
-    
+
+    # Other relations
+
+
 
     # Addition
 

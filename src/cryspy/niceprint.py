@@ -2,11 +2,11 @@
 # This must not be tested, but it must not be used in other
 # modules.
 
-from cryspy_fromstr import fromstr as fs
-import blockprint as bp
-import cryspy_numbers as nb
-import cryspy_geo as geo
-import cryspy_crystal as cr
+from cryspy.fromstr import fromstr as fs
+from cryspy import blockprint as bp
+from cryspy import numbers as nb
+from cryspy import geo as geo
+from cryspy import crystal as cr
 
 def atomtable(liste, atomset):
     assert isinstance(liste, list), \
@@ -119,9 +119,9 @@ def print_cif_without_symmetries(liste, atomset, metric):
                 atomname_extended = "%s_%i"%(atomname, how_often)
                 string += "  " + atomname_extended
                 string += " " + atom.typ
-                string += " %f"%(atom.pos.x().to_float())
-                string += " %f"%(atom.pos.y().to_float())
-                string += " %f"%(atom.pos.z().to_float())
+                string += " %f"%(float(atom.pos.x()))
+                string += " %f"%(float(atom.pos.y()))
+                string += " %f"%(float(atom.pos.z()))
                 string += "\n"
 
     return string
