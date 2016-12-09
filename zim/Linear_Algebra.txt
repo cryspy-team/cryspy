@@ -30,6 +30,14 @@ They are 4x4-matrices of the following shape:
 Leftmultiplication of this Matrix onto Difference vector or Rightmultiplication onto reciprocal vector means "appliying Matrix {{./equation004.png?type=equation}}".
 Leftmultiplication of this Matrix onto Position vector means "first applying Matrix {{./equation005.png?type=equation}}, then shifting with vector {{./equation006.png?type=equation}} .
 
+==== Symmetry Elements ====
+The symmtry element is described as such a matrix, so that e.g.
+
+{{./equation021.png?type=equation}}
+
+represents the symmetry which maps {{./equation022.png?type=equation}} to {{./equation023.png?type=equation}} .
+
+
 ==== Basis transformations ====
 
 Let there be two Bases {{./equation009.png?type=equation}} and {{./equation010.png?type=equation}} with Origins {{./equation011.png?type=equation}} and {{./equation012.png?type=equation}} .

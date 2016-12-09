@@ -319,6 +319,30 @@ def test_Matrix():
     assert nb.Matrix([[1, 2, 3], [4, 5, 6]]).transpose() == \
            nb.Matrix([[1, 4], [2, 5], [3, 6]])
 
+    # delete_ith_row_and_first_column
+    M = nb.Matrix([[1, 2, 3, 4], \
+                   [5, 6, 7, 8], \
+                   [9, 10, 11, 12]])
+    assert M.delete_ith_row_and_first_column(1) == nb.Matrix([[2, 3, 4], \
+                                                              [10, 11, 12]])
+
+    # det
+    M = nb.Matrix([[3]])
+    assert M.det() == 3
+    M = nb.Matrix([[1, 2], \
+                   [3, 4]])
+    assert M.det() == -2
+    M = nb.Matrix([[1, 2, 3], \
+                   [4, 5, 6], \
+                   [7, 8, 9]])
+    assert M.det() == 0
+    M = nb.Matrix([[1, 2, 3, 4], \
+                   [5, 6, 7, 8], \
+                   [9, 8, 11, 12], \
+                   [13, 14, 15, 17]])
+    assert M.det() == -16
+    
+
     # delete_translation
 
     M = nb.Matrix([[1,  2,  3,  4], \

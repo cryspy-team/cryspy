@@ -1,3 +1,31 @@
+#  File:         ==== cryspy.numbers.py ====
+#  Description:  Contains the number class Mixed which is used
+#                by all cryspy classes.
+#                Mixed can represent one of the following types:
+#                
+#                    * an exact fraction of two integers
+#                    * a float with error
+#                    * an integer
+#                    * a float
+#
+#                In calculations with different types, the result
+#                will have a reasonable type, for example
+#                
+#                    (float with error) + (exact fraction)
+#                    = (float with error) .
+#
+#                It is recommended, that cryspy classes using Mixed-numbers
+#                as arguments can use integers or floats instead, e.g.
+#                
+#                    >>> m = cryspy.numbers.Matrix([[1, 2], [3, 4]])
+#           
+#                is possible, the numbers need not to be converted
+#                to Mixed-objects by the user.
+#
+#                Furthermore, the numbers-module exhibits a type
+#                cryspy.numbers.Matrix ,
+#                which represents a matrix of elements of type Mixed.
+
 from copy import deepcopy
 import quicktions as fr
 import uncertainties as uc
@@ -815,6 +843,42 @@ class Matrix(object):
                    ]) \
                    for i in range(shape[1]) \
                ])
+
+    def delete_ith_row_and_first_column(self, i):
+        assert isinstance(i, int), \
+            "Index of Row must be an integer."
+        assert (0 <= i < self.shape()[0]), \
+            "Index of Row must be between 0 and " \
+            "number of Row - 1."
+
+        liste = []
+        count = 0
+        for row in self.liste:
+            if count != i:
+                liste.append(Row(row.liste[1:]))
+            count += 1
+
+        return Matrix(liste)
+
+
+
+    def det(self):
+        # Returns the determinant.
+        shape = self.shape()
+        assert shape[0] == shape[1], \
+            "Matrix must be a square matrix" \
+            "for taking the determinant."
+
+        if shape[0] == 1:
+            return self.liste[0].liste[0]
+        else:
+            result = 0
+            for i in range(0, shape[0]):
+                M = self.delete_ith_row_and_first_column(i)
+                result += self.liste[i].liste[0] * (-1)**i * M.det()
+
+            return result
+        
 
     def delete_translation(self):
         # If a 4x4-Matrix has the shape

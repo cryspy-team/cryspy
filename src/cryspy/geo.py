@@ -1,7 +1,49 @@
+# File:         ======== geo.py ========
+# Description:  This module includes all the basic objects nedded
+#               for calculations in 3D-Space (direct or reciprocal).
+#
+#               In direct space there exist the classes Pos and Dif:
+#               Pos is a position and Dif is the difference-vector between
+#               two positions. So you can calculate in the following way:
+#
+#               Dif + Dif = Dif
+#               Dif - Dif = Dif
+#               Pos - Pos = Dif
+#               Pos + Dif = Pos
+#               Pos - Dif = Pos
+#               Pos + Pos: not defined
+#
+#               In reciprocal space, there is the type Rec, which represents
+#               a reciprocal vector.
+#
+#               You can calculate Rec * Dif = Mixed, which in independent
+#               from the metric you caclulate with.
+#
+#               For other scalar products (and thus length and angles),
+#               you need to specify a metric of type Metric.
+#               It can be easy created from an object of type
+#               Cellparameters in the following way (example is orthorhombic):
+#
+#                   >>> metric = cryspy.geo.Cellparameters( \
+#                           1.23, 3.45, 5.67, 90, 90, 90 \    
+#                       ).to_Metric()
+#
+#               This metric can now be used to calculate scalarproduct:
+#
+#               Metric.dot(Dif, Dif) = Mixed
+#               Metric.dot(Rec, Rec) = Mixed
+#               similar for Metric.angle and Metric.length .
+#
+#
+#               
+
 from cryspy import numbers as nb
 from cryspy import blockprint as bp
 
-
+# **** class Pos ****
+# An object of this class represents a position in 3D direct space.
+# It is constructed via a 4x1-numbers.Matrix, wherein the last entry
+# must be 1.
 class Pos:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -51,6 +93,12 @@ class Pos:
 
 origin = Pos(nb.Matrix([[0], [0], [0], [1]]))
 
+
+# **** class Dif ****
+# An object of this class represents a difference vector in 3D
+# direct space.
+# It is constructed via a 4x1-numbers.Matrix, wherein the last
+# entry must be a 0.
 class Dif:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -121,6 +169,11 @@ canonical_e2 = Dif(nb.Matrix([nb.Row([0]), \
                               nb.Row([1]), \
                               nb.Row([0])]))
 
+
+# **** class Rec ****
+# An object of this class represents a vector in 3D reciprocal space.
+# It is constructed via a 1x4-numbers.Matrix, wherein the last
+# entry must be a 0.
 class Rec:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -171,6 +224,21 @@ class Rec:
     def l(self):
         return self.value.liste[0].liste[2]
 
+
+# **** class Operator ****
+# This class is the basic class for the following classes:
+#
+#     * Symmetry
+#     * Transformation
+#     * Metric
+#
+# It is constructed via a 4x4-Matrix of the following form:
+# 
+#     * * * *
+#     * * * *
+#     * * * *
+#     0 0 0 1
+#
 class Operator:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -262,6 +330,139 @@ class Symmetry(Operator):
         else:
             return NotImplemented
             
+
+# **** class Pointgroup ****
+# An object of this class represents a point group.
+# It is essentially a list of objects of type Symmetry.
+# It is constructed via a list of objects of type Symmetry.
+class Pointgroup:
+    def __init__(self, liste):
+        assert isinstance(liste, list), \
+            "Object of type geo.Pointgroup must be constructed " \
+            "via a list of object of type Symmetry."
+
+        for symmetry in liste:
+            assert isinstance(symmetry, Symmetry), \
+                "Object of type geo.Pointgroup must be constructed " \
+                "via a list of object of type Symmetry."
+
+        self.liste = liste
+
+    def __str__(self):
+        string  = "Pointgroup\n"
+        string += "==========\n"
+        for symmetry in self.liste:
+            string += symmetry.__str__() + "\n"
+        return string
+
+    def __eq__(self, right):
+        if isinstance(right, Pointgroup):
+            if len(self.liste) == len(right.liste):
+                result = True
+                for i in range(len(self.liste)):
+                    if not self.liste[i] == right.liste[i]:
+                        result = False
+                return result
+            else:
+                return False
+        else:
+            return False
+
+    def is_really_a_pointgroup(self):
+        result = True
+        for s1 in self.liste:
+            for s2 in self.liste:
+                if not((s1 * s2) in self.liste):
+                    result = False
+        return result
+
+    def sort(self):
+        # This is the sorting of algorithm A of:
+        #     H. D. Flack
+        #     "The Derivation of Twin Laws for
+        #      (Pseudo-)Merohedry by Coset 
+        #      Decomposition"
+        #     Acta Cryst. (1987) A43, 564-568
+        #
+        identity = []
+        twofold_rotations = []
+        non_twofold_rotations = []
+        inversion = []
+        mirror_reflections = []
+        non_twofold_second_kind = []
+
+        id = Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                 [0, 1, 0, 0], \
+                                 [0, 0, 1, 0], \
+                                 [0, 0, 0, 1]]))
+        I = Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                [0, -1, 0, 0], \
+                                [0, 0, -1, 0], \
+                                [0, 0, 0, 1]]))
+                                
+        for symmetry in self.liste:
+            if symmetry == id:
+                identity.append(symmetry)
+            elif symmetry.value.det() == 1:
+                if symmetry*symmetry == id:
+                    twofold_rotations.append(symmetry)
+                else:
+                    non_twofold_rotations.append(symmetry)
+            else:
+                if symmetry == I:
+                    inversion.append(symmetry)
+                elif symmetry*symmetry == id:
+                    mirror_reflections.append(symmetry)
+                else:
+                    non_twofold_second_kind.append(symmetry)
+
+        return Pointgroup(
+            identity + \
+            twofold_rotations + \
+            non_twofold_rotations + \
+            inversion + \
+            mirror_reflections + \
+            non_twofold_second_kind
+        )
+                
+
+
+
+
+    def coset_decomposition_with_respect_to(self, subgroup):
+        # This is the algorithm A of:
+        #     H. D. Flack
+        #     "The Derivation of Twin Laws for
+        #      (Pseudo-)Merohedry by Coset 
+        #      Decomposition"
+        #     Acta Cryst. (1987) A43, 564-568
+        assert isinstance(subgroup, Pointgroup), \
+            "I can only calculate a coset decomposition with respect " \
+            "to a pointgroup (an object of type geo.Pointgroup)."
+
+        G = self.sort()
+        H = subgroup.sort()
+
+        n = len(G.liste)
+        m = len(H.liste)
+        flags = [True,] * n
+        for i in range(n):
+            if flags[i]:
+                for j in range(1, m):
+                    for k in range(i+1, n):
+                        if G.liste[k] == G.liste[i]*H.liste[j]:
+                            flags[k] = False
+        string = ""
+        for i in range(n):
+            if flags[i]:
+                string += G.liste[i].__str__() + "\n"
+
+        return string
+                    
+
+
+
+
 
 class Transformation(Operator):
     def __str__(self):

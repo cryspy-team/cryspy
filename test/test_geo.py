@@ -108,6 +108,162 @@ def test_Symmetry():
     assert g * g.inv() == geo.Symmetry(nb.Matrix.onematrix(4))
 
 
+def test_Pointgroup():
+    pg = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                 [0, 1, 0, 0], \
+                                                 [0, 0, 1, 0], \
+                                                 [0, 0, 0, 1]])), \
+                         geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                 [0, -1, 0, 0], \
+                                                 [0, 0, -1, 0], \
+                                                 [0, 0, 0, 1]]))])
+
+    assert isinstance(pg, geo.Pointgroup)
+    assert pg.__str__() == "Pointgroup\n" \
+                           "==========\n" \
+                           "x,y,z\n" \
+                           "-x,-y,-z\n"
+
+    assert pg.is_really_a_pointgroup()
+
+    pg1 = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                 [0, 1, 0, 0], \
+                                                 [0, 0, 1, 0], \
+                                                 [0, 0, 0, 1]])), \
+                         geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                 [0, -1, 0, 0], \
+                                                 [0, 0, -1, 0], \
+                                                 [0, 0, 0, 1]]))])
+
+    
+    pg2 = geo.Pointgroup([geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                  [0, -1, 0, 0], \
+                                                  [0, 0, -1, 0], \
+                                                  [0, 0, 0, 1]]))])
+
+    assert pg == pg1
+    assert not (pg == pg2)
+    assert not (pg == 2)
+
+    assert not pg2.is_really_a_pointgroup()
+
+    G = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]]))])
+              
+    assert G.is_really_a_pointgroup()
+
+    g = G.liste
+    # For this test, the order of the symmetry elements must not be
+    # completely arbitrary, because there are several valid possibilities
+    # to sort the symmetryelements.
+    G1 = geo.Pointgroup([g[6], g[7], g[0], g[14], g[15], g[9], g[10], g[11], \
+                         g[12], g[13], g[8], g[1], g[2], g[3], g[4], g[5]])
+
+    print(G1.sort())
+    print(G)
+    assert G1.sort() == G                      
+
+    H = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, 1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[-1, 0, 0, 0], \
+                                                [0, -1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[1, 0, 0, 0], \
+                                                [0, 1, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, 1, 0, 0], \
+                                                [-1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]])), \
+                        geo.Symmetry(nb.Matrix([[0, -1, 0, 0], \
+                                                [1, 0, 0, 0], \
+                                                [0, 0, -1, 0], \
+                                                [0, 0, 0, 1]]))])
+
+    assert H.is_really_a_pointgroup()
+    assert G1.coset_decomposition_with_respect_to(H) \
+        == "x,y,z\n" \
+           "-x,y,-z\n"
+
+
 
 def test_Transformation():
     t1 = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
