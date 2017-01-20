@@ -72,6 +72,13 @@ def spacegroup(number):
              fs("{-x +1/3,-y +2/3,-z +2/3}"), fs("{y    +1/3,-x+y +2/3,-z +2/3}"), fs("{x-y  +1/3,x    +2/3,-z +2/3}"), \
              fs("{-y +1/3,-x +2/3,z  +2/3}"), fs("{-x+y +1/3,y    +2/3,z  +2/3}"), fs("{x    +1/3,x-y  +2/3,z  +2/3}")])
 
+    if number == 186:
+        return geo.Spacegroup(geo.canonical, \
+            [fs("{x,y,z}"), fs("{-y,x-y,z}"), fs("{-x+y,-x,z}"), \
+             fs("{-x,-y,z+1/2}"), fs("{y,-x+y,z+1/2}"), fs("{x-y,x,z+1/2}"), \
+             fs("{-y,-x,z}"), fs("{-x+y,y,z}"), fs("{x,x-y,z}"), \
+             fs("{y,x,z+1/2}"), fs("{x-y,-y,z+1/2}"), fs("{-x,-x+y,z+1/2}")])
+
     if number == 198:
         return geo.Spacegroup(geo.canonical, \
             [fs("{x,y,z}"), fs("{-x+1/2,-y,z+1/2}"), fs("{-x,y+1/2,-z+1/2}"), fs("{x+1/2,-y+1/2,-z}"), \
