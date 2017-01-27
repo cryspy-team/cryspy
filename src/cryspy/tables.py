@@ -18,6 +18,11 @@ def spacegroup(number):
             [fs("{x,y,z}"), fs("{-x,-y,z}"), fs("{x+1/2,-y,z}"), fs("{-x+1/2,y,z}"), \
              fs("{x+1/2,y+1/2,z+1/2}"), fs("{-x+1/2,-y+1/2,z+1/2}"), fs("{x,-y+1/2,z+1/2}"), fs("{-x,y+1/2,z+1/2}")])
 
+    if number == 62:
+        return geo.Spacegroup(geo.canonical, \
+            [fs("{x,y,z}"), fs("{-x+1/2,-y,z+1/2}"), fs("{-x,y+1/2,-z}"), fs("{x+1/2,-y+1/2,-z+1/2}"), \
+             fs("{-x,-y,-z}"), fs("{x+1/2,y,-z+1/2}"), fs("{x,-y+1/2,z}"), fs("{-x+1/2,y+1/2,z+1/2}")])
+
     if number == 63:
         return geo.Spacegroup(geo.canonical, \
             [fs("{x,y,z}"), fs("{-x,-y,z+1/2}"), fs("{-x,y,-z+1/2}"), fs("{x,-y,-z}"), \
