@@ -1,5 +1,6 @@
 # cryspy
 Python3-module for crystallographic calculations.
+Render unit cells with Blender.
 
 # Authors
 
@@ -8,10 +9,10 @@ Python3-module for crystallographic calculations.
 
 # Contribute
 
-Setup Zim
+Setup zim
 
-* Open Zim
-* File -> open another Notebook -> Add -> select path to this Zim-Notebook.
+* Open zim
+* File -> open another Notebook -> Add -> select path to this zim-Notebook.
 
 
 
