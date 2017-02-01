@@ -45,4 +45,16 @@ Atom O1 O Pos /  0  \
               \  1  / 
 
 
+t = fs("O -> (1, 2, 3)\nthen\na' = a+b\nb' = a-b\nc' = c+a")
+
+A1 = cryspy.crystal.Atom("O1", "O", fs("p 1/2 1/2 1/2"))
+
+A2=t ** A1
+
+print(A2)
+Atom O1 O Pos /   1/4  \ 
+             |    7/4   |
+              \  -5/2  / 
+
+
 ```
