@@ -25,3 +25,24 @@ $ sudo pip3 install quicktions       # >= quicktions-1.2
 $ sudo pip3 install uncertainties    # >= uncertainties-2.4.8.1
 $ sudo pip3 install numpy            # >= numpy-1.11.0
 ```
+
+# Usage
+
+```py
+import cryspy
+from cryspy.fromstr import fromstr as fs
+
+a = fs("1.5+/-0.2")
+
+print(a)
+>> 1.50(20)
+
+A1 = cryspy.crystal.Atom("O1", "O", fs("p 0 0 1"))
+
+print(A1)
+Atom O1 O Pos /  0  \ 
+             |   0   |
+              \  1  / 
+
+
+```
