@@ -3,7 +3,7 @@ name="63"
 date=""
 source=""
 author=""
-offset=["0 0 0", "1/2 1/2 0"]
+centering=["x, y, z", "x+1/2, y+1/2, z+0"]
 WP="""x,y,z
 -x,-y,z+1/2
 -x,y,-z+1/2
