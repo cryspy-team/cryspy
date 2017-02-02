@@ -375,6 +375,7 @@ def test_Metric():
     assert abs(e2.y() - 0).value < 0.000001
     assert abs(e2.z() - 1).value < 0.000001
 
+    t = metric.schmidttransformation.inv()
 
 
     M = nb.Matrix([[9, 0, 0, 0], \

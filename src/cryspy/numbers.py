@@ -340,14 +340,17 @@ class Mixed(object):
             elif isinstance(right.value, float):
                 return Mixed(self.value / right.value)
         elif isinstance(self.value, int):
-            if isinstance(right.value, fr.Fraction):
-                return Mixed(self.value / right.value)
-            elif isinstance(right.value, uc.UFloat):
-                return Mixed(self.value / right.value)
-            elif isinstance(right.value, int):
-                return Mixed(fr.Fraction(self.value, right.value))
-            elif isinstance(right.value, float):
-                return Mixed(self.value / right.value)
+            if self.value == 0:
+                return Mixed(0)
+            else:
+                if isinstance(right.value, fr.Fraction):
+                    return Mixed(self.value / right.value)
+                elif isinstance(right.value, uc.UFloat):
+                    return Mixed(self.value / right.value)
+                elif isinstance(right.value, int):
+                    return Mixed(fr.Fraction(self.value, right.value))
+                elif isinstance(right.value, float):
+                    return Mixed(self.value / right.value)
         elif isinstance(self.value, float):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / float(right.value))
