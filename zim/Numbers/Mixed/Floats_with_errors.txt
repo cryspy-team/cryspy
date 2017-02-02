@@ -7,7 +7,20 @@ Created Sonntag 10 April 2016
 
 There exists the python-module uncertainties.
 
-Usage:
+
+===== Installation =====
+
+'''
+sudo aptitude install python3-pip
+sudo aptitude install python3-dev 
+sudo pip3 install setup-tools
+sudo pip3 install quicktions
+'''
+
+
+
+
+===== Usage =====
 
 '''
 import uncertainties as uc
@@ -18,3 +31,4 @@ b = uc.sin(a)
 
 
 Then a is the number 1.5 +/- 0.3, end b is the sinus of this (with appropriate error).
+

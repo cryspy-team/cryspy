@@ -291,6 +291,17 @@ def test_Transformation():
     assert isinstance(t2.inv(), geo.Transformation)
     assert t2 * t2.inv() == geo.Transformation(nb.Matrix.onematrix(4))
 
+    t3 = geo.Transformation(nb.Matrix([[1.0, 0, 0, 0], \
+                                       [0, 1, 0, 0], \
+                                       [0, 0, 1, 0], \
+                                       [0, 0, 0, 1]]))
+    print(t3.value)
+    assert t3.__str__() == "Transformation O -> (0, 0, 0)\n" \
+                           "               then\n" \
+                           "               a' = 1.0a\n" \
+                           "               b' = b\n" \
+                           "               c' = c"
+
     q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
     t = geo.Transformation(nb.Matrix([[0, 1, 0, 0], \
                                       [0, 0, 1, 0], \
@@ -347,6 +358,7 @@ def test_Metric():
                    [0, 0, 0, 1]])
     metric = geo.Metric(M)
     t =  metric.schmidttransformation
+
     assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
     assert t ** geo.canonical_e1 == geo.Dif(nb.Matrix([[0], [1], [0], [0]]))
     assert t ** geo.canonical_e2 == geo.Dif(nb.Matrix([[0], [0], [1], [0]]))

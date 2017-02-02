@@ -87,11 +87,10 @@ def test_Mixed():
     assert (nb.Mixed(1.0) == nb.Mixed(1)) == False
     assert nb.Mixed(1.0) == nb.Mixed(1.0)
     assert nb.Mixed(0) == 0
+    assert (nb.Mixed(0.1) == 0) == False
     assert nb.Mixed(fr.Fraction(2, 1)) == 2
 
     # Other relations
-
-
 
     # Addition
 
