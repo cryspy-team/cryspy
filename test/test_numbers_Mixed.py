@@ -806,6 +806,26 @@ def test_Mixed():
     assert isinstance((f1 / mf2).value, float)
     assert f1 / mf2 == nb.Mixed(0.9375)
 
+    # Dividing integer 0
+
+    q = fr.Fraction(2, 3)
+    e = uc.ufloat(1.2, 0.1)
+    i = 4
+    f = 3.5
+    mq = nb.Mixed(q)
+    me = nb.Mixed(e)
+    mi = nb.Mixed(i)
+    mf = nb.Mixed(f)
+    m0 = nb.Mixed(0)
+
+    for m in [mq, me, mi, mf]:
+        assert m0 / m  == m0
+        assert 0  / m  == m0
+
+    for z in [q, e, i, f]:
+        assert m0 / z == m0
+
+
     # negative
 
     q = fr.Fraction(3, 2)
