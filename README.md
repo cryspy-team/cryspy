@@ -57,4 +57,9 @@ print(A2)
 >>               \  -5/2  / 
 
 
+# prepare spacegroup
+sg = cryspy.tables.spacegroup(13)
+print(sg)
+
+
 ```
