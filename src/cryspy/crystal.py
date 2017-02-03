@@ -47,7 +47,10 @@ class Atom():
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        return int(hashlib.sha1(self.__str__().encode()).hexdigest(), 16)
+        string = "%s%s%s%s%s"%( \
+            self.name, self.typ, \
+            self.pos.x(), self.pos.y(), self.pos.z())
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
 class Atomset():
