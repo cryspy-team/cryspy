@@ -1,3 +1,4 @@
+import numpy as np
 from cryspy import geo
 from cryspy import crystal
 from cryspy.fromstr import fromstr as fs
@@ -145,21 +146,48 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 def add_arrow(structurename, x, y, z):
     b = 0.02 # half axes-width in Angstroem
     tip_length = 1 # length of arrow-tip in Angstroem
-    vertices = []
-    
+    outstr = add_cylinder(structurename, 0, 0, 0, x, y, z) 
 
-    outstr = ""
-    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-    outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
-    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
+#    outstr = ""
+#    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
+#    outstr += "myaxis = bpy.context.object\n"
+#    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
+#    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
+#    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
+#    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
+#    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
     return outstr
 
+def add_cylinder(structurename, x1, y1, z1, x2, y2, z2):
+    b = 0.1 # half cylinder width in Angstroem
+    outstr = ""
+    x = x2 - x1
+    y = y2 - y1
+    z = z2 - z1
+    l = np.sqrt(x*x + y*y + z*z)
+    theta = np.arccos(z)
+    phi = np.arctan2(y, x)
+    cosphi = np.cos(phi)
+    sinphi = np.sin(phi)
+    costheta = np.cos(theta)
+    sintheta = np.sin(theta)
+    M =  "[[%10.4f, %10.4f, %10.4f, %10.4f], " \
+         " [%10.4f, %10.4f, %10.4f, %10.4f], " \
+         " [%10.4f, %10.4f, %10.4f, %10.4f], " \
+         " [%10.4f, %10.4f, %10.4f, %10.4f]]\n"% \
+         (costheta*cosphi, -sinphi, cosphi*sintheta, x1, \
+         costheta*sinphi,  cosphi, sintheta*sinphi, y1, \
+         -sintheta,        0,      costheta,        z1, \
+         0,                0,      0       ,        1)
 
+    outstr += "bpy.ops.mesh.primitive_cylinder_add(location=(0, 0, 0))\n"
+    outstr += "a = bpy.context.object\n"
+    outstr += "a.name = '%s.XAxis'\n"%(structurename)
+    outstr += "a.data.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0, 1]])\n"
+    outstr += "a.data.transform([[%10.4f, 0, 0, 0], [0, %10.4f, 0, 0], [0, 0, %40.4f, 0], [0, 0, 0, 1]])\n"%(b, b, l/2)
+    outstr += "a.data.transform(%s)\n"%(M)
+    return outstr
