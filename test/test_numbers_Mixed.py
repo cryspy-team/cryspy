@@ -55,6 +55,12 @@ def test_Mixed():
     assert isinstance(nb.Mixed(f).__str__(), str)
     assert nb.Mixed(f).__str__() == "3.5"
 
+    # Hash
+    assert isinstance(hash(nb.Mixed(q)), int)
+    assert isinstance(hash(nb.Mixed(e)), int)
+    assert isinstance(hash(nb.Mixed(i)), int)
+    assert isinstance(hash(nb.Mixed(f)), int)
+
     # Equal
     assert nb.Mixed(q) == nb.Mixed(q)
     assert nb.Mixed(e) == nb.Mixed(e)

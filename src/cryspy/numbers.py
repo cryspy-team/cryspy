@@ -26,6 +26,7 @@
 #                cryspy.numbers.Matrix ,
 #                which represents a matrix of elements of type Mixed.
 
+import hashlib
 from copy import deepcopy
 import quicktions as fr
 import uncertainties as uc
@@ -80,6 +81,18 @@ class Mixed(object):
         else:
             raise(BaseException("Something is wrong with value of Mixed."))
             return ''
+
+    def __hash__(self):
+        if isinstance(self.value, fr.Fraction):
+            string = 'fr'
+        elif isinstance(self.value, uc.UFloat):
+            string = 'uf'
+        elif isinstance(self.value, int):
+            string = 'in'
+        elif isinstance(self.value, float):
+            string = 'fl'
+        string += str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16) 
 
     def __eq__(self, right):
         right = Mixed(right)

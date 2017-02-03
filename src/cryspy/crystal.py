@@ -49,7 +49,9 @@ class Atom():
     def __hash__(self):
         string = "%s%s%s%s%s"%( \
             self.name, self.typ, \
-            self.pos.x(), self.pos.y(), self.pos.z())
+            str(hash(self.pos.x())), \
+            str(hash(self.pos.y())), \
+            str(hash(self.pos.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -71,10 +73,18 @@ class Atomset():
             return False
 
     def __str__(self):
+        # The Atoms are printed in alphabetically order with regard to
+        # the name, and if name is equal, with regard to the type.
         strings = [["Atomset\n" \
                     "-------"],]
-        for atom in self.menge:
-            strings.append(["", atom.__str__() + "\n "])
+        liste = [atom for atom in self.menge]
+        types = [atom.typ for atom in liste]
+        print(types)
+        indexes = [i for (j, i) in sorted(zip(types, range(len(liste))))]
+        names = [atom.name for atom in liste]
+        indexes = [i for (j, i) in sorted(zip(names, indexes))]
+        for i in indexes:
+            strings.append(["", liste[i].__str__() + "\n "])
         return bp.block(strings)
 
 
