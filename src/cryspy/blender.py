@@ -37,17 +37,18 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-    outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
-    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
+    outstr += add_arrow(structurename, x, y, z)
+#    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
+#    outstr += "myaxis = bpy.context.object\n"
+#    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
+#    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
+#    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
+#    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
+#    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
+#    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
 
     pos = fs("p 0 1 0")
     x = float((t**pos).x())
@@ -139,4 +140,26 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outfile = open(outfilename, "w")
     outfile.write(outstr)
     outfile.close()
+
+
+def add_arrow(structurename, x, y, z):
+    b = 0.02 # half axes-width in Angstroem
+    tip_length = 1 # length of arrow-tip in Angstroem
+    vertices = []
+    
+
+    outstr = ""
+    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
+    outstr += "myaxis = bpy.context.object\n"
+    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
+    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
+    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
+    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
+    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
+    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
+    return outstr
+
 
