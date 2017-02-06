@@ -1,4 +1,5 @@
 import numpy as np
+from cryspy import const
 from cryspy import geo
 from cryspy import crystal
 from cryspy.fromstr import fromstr as fs
@@ -31,9 +32,6 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "        bpy.data.materials.remove(mat)\n"
 
 
-    # Plot the axes:
-    b = 0.02 # half axes-width in Angstroem
-    t = metric.schmidttransformation
  
     # Create non-shiny, black material
     outstr += "nonshinyblack = bpy.data.materials.new('%s.material.nonshinyblack')\n"\
@@ -41,7 +39,16 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "nonshinyblack.diffuse_color = (0, 0, 0)\n"
     outstr += "nonshinyblack.specular_color = (0, 0, 0)\n"
 
+    # Create axes material
+    outstr += "material_axes = bpy.data.materials.new('%s.material.axes')\n"\
+        %(structurename)
+    outstr += "material_axes.diffuse_color = %s\n"\
+        %(str(const.blender__axes_color))
+    outstr += "material_axes.specular_color = (0, 0, 0)\n"
 
+    # Plot the axes:
+    t = metric.schmidttransformation
+ 
     pos = fs("p 1 0 0")
     x = float((t**pos).x())
     y = float((t**pos).y())
@@ -121,19 +128,18 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
 
 def add_arrow(structurename, arrowname, x, y, z):
-    b = 0.02 # half axes-width in Angstroem
-    tip_length = 1 # length of arrow-tip in Angstroem
+    h = const.blender__height_of_arrow_tip
     l = np.sqrt(x*x + y*y + z*z)
-    xkurz = x * (1 - 0.5/l)
-    ykurz = y * (1 - 0.5/l)
-    zkurz = z * (1 - 0.5/l)
+    xkurz = x * (1 - h/l)
+    ykurz = y * (1 - h/l)
+    zkurz = z * (1 - h/l)
     outstr = add_cylinder(structurename, arrowname + "_cylinder", 0, 0, 0, xkurz, ykurz, zkurz)
     outstr += add_cone(structurename, arrowname + "_cone", 0, 0, 0, x, y, z)
     return outstr
 
 def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
-    b = 0.05 # half cylinder width in Angstroem
-    segments = 6
+    b = const.blender__thickness_of_arrow_shaft
+    segments = const.blender__num_of_segments_of_arrow_shaft
     outstr = ""
     x = x2 - x1
     y = y2 - y1
@@ -174,10 +180,9 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
                                     "depth = %10.4f)\n" \
                                     %(segments, b, b, l)
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l/2)
-#    outstr += "bmesh.ops.rotate(bm, verts=bm.verts, cent = (0.0, 0.0, 0.0), matrix = %s)\n"%(M)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "mesh.materials.append(nonshinyblack)\n"
+    outstr += "mesh.materials.append(material_axes)\n"
     outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
     outstr += "ob.data.transform(%s)\n"%(Mtheta)
     outstr += "ob.data.transform(%s)\n"%(Mphi)
@@ -185,9 +190,9 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
     return outstr
 
 def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
-    segments = 24
-    b = 0.2 # Thickness of cone in Angstroem
-    h = 0.5 # Height of cone in Anstroem
+    segments = const.blender__num_of_segments_of_arrow_tip
+    b = const.blender__thickness_of_arrow_tip
+    h = const.blender__height_of_arrow_tip
     outstr = ""
     x = x2 - x1
     y = y2 - y1
@@ -230,7 +235,7 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - h/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "mesh.materials.append(nonshinyblack)\n"
+    outstr += "mesh.materials.append(material_axes)\n"
     outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
     outstr += "ob.data.transform(%s)\n"%(Mtheta)
     outstr += "ob.data.transform(%s)\n"%(Mphi)

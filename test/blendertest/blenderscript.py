@@ -14,12 +14,15 @@ for mat in bpy.data.materials:
 nonshinyblack = bpy.data.materials.new('structure.material.nonshinyblack')
 nonshinyblack.diffuse_color = (0, 0, 0)
 nonshinyblack.specular_color = (0, 0, 0)
+material_axes = bpy.data.materials.new('structure.material.axes')
+material_axes.diffuse_color = (0, 0, 0)
+material_axes.specular_color = (0, 0, 0)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.0500, diameter2 =     0.0500, depth =     9.9416)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
 mesh = bpy.data.meshes.new('structure.meshXAxis_cylinder')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.XAxis_cylinder', mesh)
 ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
@@ -35,7 +38,7 @@ bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diame
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,    10.1916))
 mesh = bpy.data.meshes.new('structure.meshXAxis_cone')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.XAxis_cone', mesh)
 ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
@@ -51,7 +54,7 @@ bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diamet
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
 mesh = bpy.data.meshes.new('structure.meshYAxis_cylinder')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.YAxis_cylinder', mesh)
 ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
@@ -67,7 +70,7 @@ bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diame
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,    10.1916))
 mesh = bpy.data.meshes.new('structure.meshYAxis_cone')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.YAxis_cone', mesh)
 ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
@@ -83,7 +86,7 @@ bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diamet
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     2.9216))
 mesh = bpy.data.meshes.new('structure.meshZAxis_cylinder')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.ZAxis_cylinder', mesh)
 ob.data.transform([[    1.0000,     0.0000,    -0.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
@@ -99,7 +102,7 @@ bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diame
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     6.0932))
 mesh = bpy.data.meshes.new('structure.meshZAxis_cone')
 bm.to_mesh(mesh)
-mesh.materials.append(nonshinyblack)
+mesh.materials.append(material_axes)
 ob = bpy.data.objects.new('structure.ZAxis_cone', mesh)
 ob.data.transform([[    1.0000,     0.0000,    -0.0000,     0.0000], \
  [    0.0000,     1.0000,     0.0000,     0.0000], \
