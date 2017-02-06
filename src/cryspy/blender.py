@@ -53,19 +53,19 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += add_arrow(structurename, 'XAxis', x, y, z)
+    outstr += add_axis(structurename, 'XAxis', x, y, z)
 
     pos = fs("p 0 1 0")
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += add_arrow(structurename, 'YAxis', x, y, z)
+    outstr += add_axis(structurename, 'YAxis', x, y, z)
 
     pos = fs("p 0 0 1")
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += add_arrow(structurename, 'ZAxis', x, y, z)
+    outstr += add_axis(structurename, 'ZAxis', x, y, z)
 
     # Create empty mesh for the positions of the atoms
     outstr += "bpy.ops.mesh.primitive_cube_add(location=(0,0,0))\n"
@@ -127,20 +127,42 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outfile.write(outstr)
     outfile.close()
 
+def add_axis(structurename, arrowname, x, y, z):
+    outstr = add_arrow(structurename, arrowname, 0, 0, 0, x, y, z, \
+                       const.blender__thickness_of_axis_shaft, \
+                       const.blender__num_of_segments_of_axis_shaft, \
+                       const.blender__thickness_of_axis_tip, \
+                       const.blender__height_of_axis_tip, \
+                       const.blender__num_of_segments_of_axis_tip,
+                       const.blender__axes_color)
+    return outstr
+    
 
-def add_arrow(structurename, arrowname, x, y, z):
-    h = const.blender__height_of_arrow_tip
-    l = np.sqrt(x*x + y*y + z*z)
-    xkurz = x * (1 - h/l)
-    ykurz = y * (1 - h/l)
-    zkurz = z * (1 - h/l)
-    outstr = add_cylinder(structurename, arrowname + "_cylinder", 0, 0, 0, xkurz, ykurz, zkurz)
-    outstr += add_cone(structurename, arrowname + "_cone", 0, 0, 0, x, y, z)
+def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
+    thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft, \
+    thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip, color):
+    h = height_of_arrow_tip
+    l = np.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1))
+    x2kurz = x1 + (x2 - x1) * (1 - h/l)
+    y2kurz = y1 + (y2 - y1) * (1 - h/l)
+    z2kurz = z1 + (z2 - z1) * (1 - h/l)
+    outstr = add_cylinder(structurename, arrowname + "_cylinder", \
+        x1, y1, z1, x2kurz, y2kurz, z2kurz, \
+        thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft)
+    outstr += add_cone(structurename, arrowname + "_cone", x1, y1, z1, x2, y2, z2, \
+        thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip)
+    outstr += "bpy.ops.object.select_all(action='DESELECT')\n"
+    outstr += "ob1.select = True\n"
+    outstr += "ob2.select = True\n"
+    outstr += "bpy.context.scene.objects.active = ob1\n"
+    outstr += "bpy.ops.object.join()\n"
+    outstr += "ob1.data.materials.append(material_axes)\n" 
     return outstr
 
-def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
-    b = const.blender__thickness_of_arrow_shaft
-    segments = const.blender__num_of_segments_of_arrow_shaft
+def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
+    thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft):
+    b = thickness_of_arrow_shaft
+    segments = num_of_segments_of_arrow_shaft
     outstr = ""
     x = x2 - x1
     y = y2 - y1
@@ -183,17 +205,18 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "mesh.materials.append(material_axes)\n"
-    outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
-    outstr += "ob.data.transform(%s)\n"%(Mtheta)
-    outstr += "ob.data.transform(%s)\n"%(Mphi)
-    outstr += "bpy.context.scene.objects.link(ob)\n"
+#    outstr += "mesh.materials.append(material_axes)\n"
+    outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
+    outstr += "ob1.data.transform(%s)\n"%(Mtheta)
+    outstr += "ob1.data.transform(%s)\n"%(Mphi)
+    outstr += "bpy.context.scene.objects.link(ob1)\n"
     return outstr
 
-def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
-    segments = const.blender__num_of_segments_of_arrow_tip
-    b = const.blender__thickness_of_arrow_tip
-    h = const.blender__height_of_arrow_tip
+def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
+    thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip):
+    segments = num_of_segments_of_arrow_tip
+    b = thickness_of_arrow_tip
+    h = height_of_arrow_tip
     outstr = ""
     x = x2 - x1
     y = y2 - y1
@@ -236,9 +259,9 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - h/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "mesh.materials.append(material_axes)\n"
-    outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
-    outstr += "ob.data.transform(%s)\n"%(Mtheta)
-    outstr += "ob.data.transform(%s)\n"%(Mphi)
-    outstr += "bpy.context.scene.objects.link(ob)\n"
+#    outstr += "mesh.materials.append(material_axes)\n"
+    outstr += "ob2 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
+    outstr += "ob2.data.transform(%s)\n"%(Mtheta)
+    outstr += "ob2.data.transform(%s)\n"%(Mphi)
+    outstr += "bpy.context.scene.objects.link(ob2)\n"
     return outstr
