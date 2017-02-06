@@ -4,3 +4,5 @@ blender__thickness_of_arrow_shaft = 0.05
 blender__num_of_segments_of_arrow_shaft = 6
 blender__num_of_segments_of_arrow_tip = 24
 blender__axes_color = (0, 0, 0)
+blender__atom_icosphere_subdivisions = 3 # 1...4: rough...fine
+

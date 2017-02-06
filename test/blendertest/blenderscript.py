@@ -119,7 +119,7 @@ bpy.ops.mesh.delete(type='VERT')
 bpy.ops.object.mode_set(mode='OBJECT')
 posobject = bpy.context.object
 posobject.name = 'structure.Positions'
-bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.292400)
+bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.292400, subdivisions=3)
 ob = bpy.context.object
 me = ob.data
 me.name = 'structure.mesh.Mn'
@@ -127,7 +127,7 @@ bpy.ops.object.delete()
 mat = bpy.data.materials.new('structure.material.Mn')
 mat.diffuse_color = (0.6118, 0.4784, 0.7804)
 me.materials.append(mat)
-bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.200000)
+bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.200000, subdivisions=3)
 ob = bpy.context.object
 me = ob.data
 me.name = 'structure.mesh.O'
@@ -135,7 +135,7 @@ bpy.ops.object.delete()
 mat = bpy.data.materials.new('structure.material.O')
 mat.diffuse_color = (1.0, 0.051, 0.051)
 me.materials.append(mat)
-bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.271400)
+bpy.ops.mesh.primitive_ico_sphere_add(location=(0,0,0), size=0.271400, subdivisions=3)
 ob = bpy.context.object
 me = ob.data
 me.name = 'structure.mesh.Ca'
