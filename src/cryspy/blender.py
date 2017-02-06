@@ -34,7 +34,14 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     # Plot the axes:
     b = 0.02 # half axes-width in Angstroem
     t = metric.schmidttransformation
-   
+ 
+    # Create non-shiny, black material
+    outstr += "nonshinyblack = bpy.data.materials.new('%s.material.nonshinyblack')\n"\
+        %(structurename)
+    outstr += "nonshinyblack.diffuse_color = (0, 0, 0)\n"
+    outstr += "nonshinyblack.specular_color = (0, 0, 0)\n"
+
+
     pos = fs("p 1 0 0")
     x = float((t**pos).x())
     y = float((t**pos).y())
@@ -80,6 +87,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         outstr += "mat.diffuse_color = %s\n"%(color.__str__())
         outstr += "me.materials.append(mat)\n"
 
+
     # Create spheres for the atoms and add a vertex
     # to the position-mesh, respectively
     materialnumber = 0
@@ -124,7 +132,7 @@ def add_arrow(structurename, arrowname, x, y, z):
     return outstr
 
 def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
-    b = 0.1 # half cylinder width in Angstroem
+    b = 0.05 # half cylinder width in Angstroem
     segments = 6
     outstr = ""
     x = x2 - x1
@@ -169,6 +177,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
 #    outstr += "bmesh.ops.rotate(bm, verts=bm.verts, cent = (0.0, 0.0, 0.0), matrix = %s)\n"%(M)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
+    outstr += "mesh.materials.append(nonshinyblack)\n"
     outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
     outstr += "ob.data.transform(%s)\n"%(Mtheta)
     outstr += "ob.data.transform(%s)\n"%(Mphi)
@@ -176,9 +185,9 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
     return outstr
 
 def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
-    segments = 6
-    b = 0.5 # Thickness of cone in Angstroem
-    h = 1 # Height of cone in Anstroem
+    segments = 24
+    b = 0.2 # Thickness of cone in Angstroem
+    h = 0.5 # Height of cone in Anstroem
     outstr = ""
     x = x2 - x1
     y = y2 - y1
@@ -218,9 +227,10 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
                                     "diameter2 = %10.4f, " \
                                     "depth = %10.4f)\n" \
                                     %(segments, b, 0.01, h)
-    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - 0.5)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - h/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
+    outstr += "mesh.materials.append(nonshinyblack)\n"
     outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
     outstr += "ob.data.transform(%s)\n"%(Mtheta)
     outstr += "ob.data.transform(%s)\n"%(Mphi)
