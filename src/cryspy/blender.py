@@ -12,7 +12,8 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     assert isinstance(outfilename, str), \
         "outfilename must be of type str."
 
-    outstr = "import bpy \n" \
+    outstr = "import bpy\n" \
+             "import bmesh\n" \
              "\n"
 
     # Delete the old structure, if exists:
@@ -38,51 +39,19 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += add_arrow(structurename, x, y, z)
-#    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-#    outstr += "myaxis = bpy.context.object\n"
-#    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
-#    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
-#    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
-#    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
-#    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
+    outstr += add_arrow(structurename, 'XAxis', x, y, z)
 
     pos = fs("p 0 1 0")
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-    outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.name = '%s.YAxis'\n"%(structurename)
-    outstr += "myaxis.data.vertices[0].co = (-%f, 0.0, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[1].co = ( %f, 0.0, -%f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[2].co = (-%f, 0.0,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[3].co = ( %f, 0.0,  %f)\n"%(b, b)
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x - b, y, z - b)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x + b, y, z - b)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x - b, y, z + b)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x + b, y, z + b)
+    outstr += add_arrow(structurename, 'YAxis', x, y, z)
 
     pos = fs("p 0 0 1")
     x = float((t**pos).x())
     y = float((t**pos).y())
     z = float((t**pos).z())
-    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-    outstr += "myaxis = bpy.context.object\n"
-    outstr += "myaxis.name = '%s.ZAxis'\n"%(structurename)
-    outstr += "myaxis.data.vertices[0].co = (-%f, -%f, 0.0)\n"%(b, b)
-    outstr += "myaxis.data.vertices[1].co = (-%f,  %f, 0.0)\n"%(b, b)
-    outstr += "myaxis.data.vertices[2].co = ( %f, -%f, 0.0)\n"%(b, b)
-    outstr += "myaxis.data.vertices[3].co = ( %f,  %f, 0.0)\n"%(b, b)
-    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x - b, y - b, z)
-    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x - b, y + b, z)
-    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x + b, y - b, z)
-    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x + b, y + b, z)
-
+    outstr += add_arrow(structurename, 'ZAxis', x, y, z)
 
     # Create empty mesh for the positions of the atoms
     outstr += "bpy.ops.mesh.primitive_cube_add(location=(0,0,0))\n"
@@ -143,51 +112,117 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outfile.close()
 
 
-def add_arrow(structurename, x, y, z):
+def add_arrow(structurename, arrowname, x, y, z):
     b = 0.02 # half axes-width in Angstroem
     tip_length = 1 # length of arrow-tip in Angstroem
-    outstr = add_cylinder(structurename, 0, 0, 0, x, y, z) 
-
-#    outstr = ""
-#    outstr += "bpy.ops.mesh.primitive_cube_add(location = (0,0,0))\n"
-#    outstr += "myaxis = bpy.context.object\n"
-#    outstr += "myaxis.name = '%s.XAxis'\n"%(structurename)
-#    outstr += "myaxis.data.vertices[0].co = (0.0, -%f, -%f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[1].co = (0.0, -%f,  %f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[2].co = (0.0,  %f, -%f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[3].co = (0.0,  %f,  %f)\n"%(b, b)
-#    outstr += "myaxis.data.vertices[4].co = (%f, %f, %f)\n"%(x, y - b, z - b)
-#    outstr += "myaxis.data.vertices[5].co = (%f, %f, %f)\n"%(x, y - b, z + b)
-#    outstr += "myaxis.data.vertices[6].co = (%f, %f, %f)\n"%(x, y + b, z - b)
-#    outstr += "myaxis.data.vertices[7].co = (%f, %f, %f)\n"%(x, y + b, z + b)
+    l = np.sqrt(x*x + y*y + z*z)
+    xkurz = x * (1 - 0.5/l)
+    ykurz = y * (1 - 0.5/l)
+    zkurz = z * (1 - 0.5/l)
+    outstr = add_cylinder(structurename, arrowname + "_cylinder", 0, 0, 0, xkurz, ykurz, zkurz)
+    outstr += add_cone(structurename, arrowname + "_cone", 0, 0, 0, x, y, z)
     return outstr
 
-def add_cylinder(structurename, x1, y1, z1, x2, y2, z2):
+def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2):
     b = 0.1 # half cylinder width in Angstroem
+    segments = 6
     outstr = ""
     x = x2 - x1
     y = y2 - y1
     z = z2 - z1
     l = np.sqrt(x*x + y*y + z*z)
-    theta = np.arccos(z)
+    theta = np.arccos(z/l)
     phi = np.arctan2(y, x)
+    print("theta = " + str(theta/np.pi*180))
+    print("phi   = " + str(phi/np.pi*180))
     cosphi = np.cos(phi)
     sinphi = np.sin(phi)
     costheta = np.cos(theta)
     sintheta = np.sin(theta)
-    M =  "[[%10.4f, %10.4f, %10.4f, %10.4f], " \
-         " [%10.4f, %10.4f, %10.4f, %10.4f], " \
-         " [%10.4f, %10.4f, %10.4f, %10.4f], " \
-         " [%10.4f, %10.4f, %10.4f, %10.4f]]\n"% \
-         (costheta*cosphi, -sinphi, cosphi*sintheta, x1, \
-         costheta*sinphi,  cosphi, sintheta*sinphi, y1, \
-         -sintheta,        0,      costheta,        z1, \
-         0,                0,      0       ,        1)
+    Mtheta =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
+              (costheta, 0.0, -sintheta, 0.0, \
+               0.0,  1.0, 0.0, 0.0, \
+              sintheta,        0.0,      costheta, 0.0, \
+              0.0, 0.0, 0.0, 1.0)
+    Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
+             (cosphi, sinphi, 0.0, 0.0, \
+              -sinphi, cosphi, 0.0, 0.0, \
+              0.0,        0.0,   1.0, 0.0, \
+             0.0, 0.0, 0.0, 1.0)
+    
+    outstr += "bm = bmesh.new()\n"
+    outstr += "bmesh.ops.create_cone(bm, " \
+                                    "cap_ends = True, " \
+                                    "cap_tris = True, " \
+                                    "segments = %i, " \
+                                    "diameter1 = %10.4f, " \
+                                    "diameter2 = %10.4f, " \
+                                    "depth = %10.4f)\n" \
+                                    %(segments, b, b, l)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l/2)
+#    outstr += "bmesh.ops.rotate(bm, verts=bm.verts, cent = (0.0, 0.0, 0.0), matrix = %s)\n"%(M)
+    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
+    outstr += "bm.to_mesh(mesh)\n"
+    outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
+    outstr += "ob.data.transform(%s)\n"%(Mtheta)
+    outstr += "ob.data.transform(%s)\n"%(Mphi)
+    outstr += "bpy.context.scene.objects.link(ob)\n"
+    return outstr
 
-    outstr += "bpy.ops.mesh.primitive_cylinder_add(location=(0, 0, 0))\n"
-    outstr += "a = bpy.context.object\n"
-    outstr += "a.name = '%s.XAxis'\n"%(structurename)
-    outstr += "a.data.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0, 1]])\n"
-    outstr += "a.data.transform([[%10.4f, 0, 0, 0], [0, %10.4f, 0, 0], [0, 0, %40.4f, 0], [0, 0, 0, 1]])\n"%(b, b, l/2)
-    outstr += "a.data.transform(%s)\n"%(M)
+def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2):
+    segments = 6
+    b = 0.5 # Thickness of cone in Angstroem
+    h = 1 # Height of cone in Anstroem
+    outstr = ""
+    x = x2 - x1
+    y = y2 - y1
+    z = z2 - z1
+    l = np.sqrt(x*x + y*y + z*z)
+    theta = np.arccos(z/l)
+    phi = np.arctan2(y, x)
+    print("theta = " + str(theta/np.pi*180))
+    print("phi   = " + str(phi/np.pi*180))
+    cosphi = np.cos(phi)
+    sinphi = np.sin(phi)
+    costheta = np.cos(theta)
+    sintheta = np.sin(theta)
+    Mtheta =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+              " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
+              (costheta, 0.0, -sintheta, 0.0, \
+               0.0,  1.0, 0.0, 0.0, \
+              sintheta,        0.0,      costheta, 0.0, \
+              0.0, 0.0, 0.0, 1.0)
+    Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
+            " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
+             (cosphi, sinphi, 0.0, 0.0, \
+              -sinphi, cosphi, 0.0, 0.0, \
+              0.0,        0.0,   1.0, 0.0, \
+             0.0, 0.0, 0.0, 1.0)
+    
+    outstr += "bm = bmesh.new()\n"
+    outstr += "bmesh.ops.create_cone(bm, " \
+                                    "cap_ends = True, " \
+                                    "cap_tris = True, " \
+                                    "segments = %i, " \
+                                    "diameter1 = %10.4f, " \
+                                    "diameter2 = %10.4f, " \
+                                    "depth = %10.4f)\n" \
+                                    %(segments, b, 0.01, h)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - 0.5)
+    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
+    outstr += "bm.to_mesh(mesh)\n"
+    outstr += "ob = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
+    outstr += "ob.data.transform(%s)\n"%(Mtheta)
+    outstr += "ob.data.transform(%s)\n"%(Mphi)
+    outstr += "bpy.context.scene.objects.link(ob)\n"
     return outstr

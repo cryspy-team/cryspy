@@ -1,4 +1,5 @@
-import bpy 
+import bpy
+import bmesh
 
 for ob in bpy.data.objects:
     if ob.name.startswith('structure'):
@@ -10,35 +11,96 @@ for me in bpy.data.meshes:
 for mat in bpy.data.materials:
     if mat.name.startswith('structure'):
         bpy.data.materials.remove(mat)
-bpy.ops.mesh.primitive_cylinder_add(location=(0, 0, 0))
-a = bpy.context.object
-a.name = 'structure.XAxis'
-a.data.transform([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0, 1]])
-a.data.transform([[    0.1000, 0, 0, 0], [0,     0.1000, 0, 0], [0, 0,                                   5.2208, 0], [0, 0, 0, 1]])
-a.data.transform([[    0.0000,    -0.0000,     1.0000,     0.0000],  [    0.0000,     1.0000,     0.0000,     0.0000],  [   -1.0000,     0.0000,     0.0000,     0.0000],  [    0.0000,     0.0000,     0.0000,     1.0000]]
-)
-bpy.ops.mesh.primitive_cube_add(location = (0,0,0))
-myaxis = bpy.context.object
-myaxis.name = 'structure.YAxis'
-myaxis.data.vertices[0].co = (-0.020000, 0.0, -0.020000)
-myaxis.data.vertices[1].co = ( 0.020000, 0.0, -0.020000)
-myaxis.data.vertices[2].co = (-0.020000, 0.0,  0.020000)
-myaxis.data.vertices[3].co = ( 0.020000, 0.0,  0.020000)
-myaxis.data.vertices[4].co = (-5.240800, 9.042691, -0.020000)
-myaxis.data.vertices[5].co = (-5.200800, 9.042691, -0.020000)
-myaxis.data.vertices[6].co = (-5.240800, 9.042691, 0.020000)
-myaxis.data.vertices[7].co = (-5.200800, 9.042691, 0.020000)
-bpy.ops.mesh.primitive_cube_add(location = (0,0,0))
-myaxis = bpy.context.object
-myaxis.name = 'structure.ZAxis'
-myaxis.data.vertices[0].co = (-0.020000, -0.020000, 0.0)
-myaxis.data.vertices[1].co = (-0.020000,  0.020000, 0.0)
-myaxis.data.vertices[2].co = ( 0.020000, -0.020000, 0.0)
-myaxis.data.vertices[3].co = ( 0.020000,  0.020000, 0.0)
-myaxis.data.vertices[4].co = (-0.020000, -0.020000, 6.343200)
-myaxis.data.vertices[5].co = (-0.020000, 0.020000, 6.343200)
-myaxis.data.vertices[6].co = (0.020000, -0.020000, 6.343200)
-myaxis.data.vertices[7].co = (0.020000, 0.020000, 6.343200)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.1000, diameter2 =     0.1000, depth =     9.9416)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
+mesh = bpy.data.meshes.new('structure.meshXAxis_cylinder')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.XAxis_cylinder', mesh)
+ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
+ [   -0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.5000, diameter2 =     0.0100, depth =     1.0000)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     9.9416))
+mesh = bpy.data.meshes.new('structure.meshXAxis_cone')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.XAxis_cone', mesh)
+ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
+ [   -0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.1000, diameter2 =     0.1000, depth =     9.9416)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
+mesh = bpy.data.meshes.new('structure.meshYAxis_cylinder')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.YAxis_cylinder', mesh)
+ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[   -0.5000,     0.8660,     0.0000,     0.0000], \
+ [   -0.8660,    -0.5000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.5000, diameter2 =     0.0100, depth =     1.0000)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     9.9416))
+mesh = bpy.data.meshes.new('structure.meshYAxis_cone')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.YAxis_cone', mesh)
+ob.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[   -0.5000,     0.8660,     0.0000,     0.0000], \
+ [   -0.8660,    -0.5000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.1000, diameter2 =     0.1000, depth =     5.8432)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     2.9216))
+mesh = bpy.data.meshes.new('structure.meshZAxis_cylinder')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.ZAxis_cylinder', mesh)
+ob.data.transform([[    1.0000,     0.0000,    -0.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[    0.5000,     0.8660,     0.0000,     0.0000], \
+ [   -0.8660,     0.5000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.5000, diameter2 =     0.0100, depth =     1.0000)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     5.8432))
+mesh = bpy.data.meshes.new('structure.meshZAxis_cone')
+bm.to_mesh(mesh)
+ob = bpy.data.objects.new('structure.ZAxis_cone', mesh)
+ob.data.transform([[    1.0000,     0.0000,    -0.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob.data.transform([[    0.5000,     0.8660,     0.0000,     0.0000], \
+ [   -0.8660,     0.5000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+bpy.context.scene.objects.link(ob)
 bpy.ops.mesh.primitive_cube_add(location=(0,0,0))
 bpy.ops.object.mode_set(mode='EDIT')
 bpy.ops.mesh.delete(type='VERT')
