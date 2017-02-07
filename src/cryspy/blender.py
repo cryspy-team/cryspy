@@ -31,15 +31,27 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "    if mat.name.startswith('%s'):\n"%(structurename)
     outstr += "        bpy.data.materials.remove(mat)\n"
 
+    # Delete all existing lamps:
+    outstr += "bpy.ops.object.select_all(action='DESELECT')\n"
+    outstr += "for object in bpy.data.objects:\n"
+    outstr += "    if object.type == 'LAMP':\n"
+    outstr += "        object.select = True\n"
+    outstr += "bpy.ops.object.delete()\n"
 
- 
-    # Create non-shiny, black material
-    outstr += "nonshinyblack = bpy.data.materials.new('%s.material.nonshinyblack')\n"\
-        %(structurename)
-    outstr += "nonshinyblack.diffuse_color = (0, 0, 0)\n"
-    outstr += "nonshinyblack.specular_color = (0, 0, 0)\n"
+    # Set background color:
+    outstr += "bpy.data.worlds['World'].horizon_color = %s\n" \
+        %(str(const.blender__background_color))
 
-    # Create axes material
+    # Place some cool lamps:
+    outstr += "bpy.ops.object.lamp_add(type='POINT')\n"
+    outstr += "l = bpy.context.object\n"
+    outstr += "l.name = '%s.Lamp1'\n"%(structurename)
+    outstr += "l.location = %s\n"%(str(const.blender__location_of_lamp1))
+    outstr += "bpy.ops.object.lamp_add(type='HEMI')\n"
+    outstr += "l = bpy.context.object\n"
+    outstr += "l.name = '%s.LampHemi'\n"%(structurename)
+    outstr += "l.location = (-10, -10, 10)\n"
+    outstr += "l.data.energy = %10.4f\n"%(const.blender__diffuse_light)
 
     # Plot the axes:
     t = metric.schmidttransformation

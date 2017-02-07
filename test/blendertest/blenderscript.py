@@ -11,9 +11,21 @@ for me in bpy.data.meshes:
 for mat in bpy.data.materials:
     if mat.name.startswith('structure'):
         bpy.data.materials.remove(mat)
-nonshinyblack = bpy.data.materials.new('structure.material.nonshinyblack')
-nonshinyblack.diffuse_color = (0, 0, 0)
-nonshinyblack.specular_color = (0, 0, 0)
+bpy.ops.object.select_all(action='DESELECT')
+for object in bpy.data.objects:
+    if object.type == 'LAMP':
+        object.select = True
+bpy.ops.object.delete()
+bpy.data.worlds['World'].horizon_color = (1, 1, 1)
+bpy.ops.object.lamp_add(type='POINT')
+l = bpy.context.object
+l.name = 'structure.Lamp1'
+l.location = (5, -5, 10)
+bpy.ops.object.lamp_add(type='HEMI')
+l = bpy.context.object
+l.name = 'structure.LampHemi'
+l.location = (-10, -10, 10)
+l.data.energy =     0.5000
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.0500, diameter2 =     0.0500, depth =     9.9416)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
@@ -672,7 +684,7 @@ ob.location = (5.220800, 9.042691, 0.000000)
 bpy.ops.object.shade_smooth()
 bpy.context.scene.objects.link(ob)
 bm = bmesh.new()
-bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 12, diameter1 =     0.1000, diameter2 =     0.1000, depth =     1.4000)
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 32, diameter1 =     0.1000, diameter2 =     0.1000, depth =     1.4000)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     0.7000))
 mesh = bpy.data.meshes.new('structure.meshMomentum001_cylinder')
 bm.to_mesh(mesh)
