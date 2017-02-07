@@ -40,11 +40,6 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "nonshinyblack.specular_color = (0, 0, 0)\n"
 
     # Create axes material
-    outstr += "material_axes = bpy.data.materials.new('%s.material.axes')\n"\
-        %(structurename)
-    outstr += "material_axes.diffuse_color = %s\n"\
-        %(str(const.blender__axes_color))
-    outstr += "material_axes.specular_color = (0, 0, 0)\n"
 
     # Plot the axes:
     t = metric.schmidttransformation
@@ -78,9 +73,17 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
     # Create a mesh for each atom-type, respectively
     typs = []
-    for atom in atomset.menge:
+    atomlist = []
+    momentumlist = []
+    for item in atomset.menge:
+        if isinstance(item, crystal.Atom):
+            atomlist.append(item)
+        elif isinstance(item, crystal.Momentum):
+            momentumlist.append(item)
+
+    for atom in atomlist:
         if atom.typ not in typs:
-            typs.append(atom.typ)
+                typs.append(atom.typ)
 
     for typ in typs:
         (spheresize, color) = tables.colorscheme_jmol(typ)
@@ -100,7 +103,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     # to the position-mesh, respectively
     materialnumber = 0
     atomnumber = 0
-    for atom in atomset.menge:
+    for atom in atomlist:
         atomnumber += 1
         materialnumber += 1
         x = float((t**atom.pos).x())
@@ -115,6 +118,38 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         outstr += "bpy.ops.object.shade_smooth()\n"
         outstr += "bpy.context.scene.objects.link(ob)\n"
 
+    # Create arrows for the momentums:
+    momentumindex = 0
+    for momentum in momentumlist:
+        momentumindex += 1
+        momentumname = "Momentum%03i"%(momentumindex)
+        if momentum.has_plotlength:
+            plotlength = momentum.plotlength
+        else:
+            plotlength = const.blender__std_momentum_plotlength
+        if momentum.has_color:
+            color = momentum.color
+        else:
+            color = const.blender__std_momentum_color
+
+        x0 = float((t**momentum.pos).x())
+        y0 = float((t**momentum.pos).y())
+        z0 = float((t**momentum.pos).z())
+        dx = float((t**momentum.dir).x())
+        dy = float((t**momentum.dir).y())
+        dz = float((t**momentum.dir).z())
+
+        length = np.sqrt(dx*dx + dy*dy + dz*dz)
+        x1 = x0 - dx * plotlength/length
+        y1 = y0 - dy * plotlength/length
+        z1 = z0 - dz * plotlength/length
+        x2 = x0 + dx * plotlength/length
+        y2 = y0 + dy * plotlength/length
+        z2 = z0 + dz * plotlength/length
+
+        outstr += add_momentum(structurename, momentumname, \
+            x1, y1, z1, x2, y2, z2, color)
+
     # Make all atoms looking smooth:
     outstr += "for ob in bpy.data.objects:\n"
     outstr += "    if ob.name.startswith('%s.Atom'):\n"%(structurename)
@@ -127,6 +162,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outfile.write(outstr)
     outfile.close()
 
+
 def add_axis(structurename, arrowname, x, y, z):
     outstr = add_arrow(structurename, arrowname, 0, 0, 0, x, y, z, \
                        const.blender__thickness_of_axis_shaft, \
@@ -136,7 +172,18 @@ def add_axis(structurename, arrowname, x, y, z):
                        const.blender__num_of_segments_of_axis_tip,
                        const.blender__axes_color)
     return outstr
-    
+
+
+def add_momentum(structurename, momentumname, x1, y1, z1, x2, y2, z2, color):
+    outstr = add_arrow(structurename, momentumname, x1, y1, z1, x2, y2, z2, \
+                       const.blender__thickness_of_momentum_shaft, \
+                       const.blender__num_of_segments_of_momentum_shaft, \
+                       const.blender__thickness_of_momentum_tip, \
+                       const.blender__height_of_momentum_tip, \
+                       const.blender__num_of_segments_of_momentum_tip, \
+                       color)
+    return outstr
+
 
 def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
     thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft, \
@@ -156,7 +203,12 @@ def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
     outstr += "ob2.select = True\n"
     outstr += "bpy.context.scene.objects.active = ob1\n"
     outstr += "bpy.ops.object.join()\n"
-    outstr += "ob1.data.materials.append(material_axes)\n" 
+    outstr += "mat = bpy.data.materials.new('%s.material.%s')\n"\
+        %(structurename, arrowname)
+    outstr += "mat.diffuse_color = %s\n"\
+        %(str(color))
+    outstr += "mat.specular_color = (0, 0, 0)\n"
+    outstr += "ob1.data.materials.append(mat)\n" 
     return outstr
 
 def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
@@ -170,8 +222,6 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
     l = np.sqrt(x*x + y*y + z*z)
     theta = np.arccos(z/l)
     phi = np.arctan2(y, x)
-    print("theta = " + str(theta/np.pi*180))
-    print("phi   = " + str(phi/np.pi*180))
     cosphi = np.cos(phi)
     sinphi = np.sin(phi)
     costheta = np.cos(theta)
@@ -205,10 +255,10 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
-#    outstr += "mesh.materials.append(material_axes)\n"
     outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
     outstr += "ob1.data.transform(%s)\n"%(Mtheta)
     outstr += "ob1.data.transform(%s)\n"%(Mphi)
+    outstr += "ob1.location = (%10.4f, %10.4f, %10.4f)\n"%(x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob1)\n"
     return outstr
 
@@ -224,8 +274,6 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
     l = np.sqrt(x*x + y*y + z*z)
     theta = np.arccos(z/l)
     phi = np.arctan2(y, x)
-    print("theta = " + str(theta/np.pi*180))
-    print("phi   = " + str(phi/np.pi*180))
     cosphi = np.cos(phi)
     sinphi = np.sin(phi)
     costheta = np.cos(theta)
@@ -259,9 +307,9 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - h/2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
-#    outstr += "mesh.materials.append(material_axes)\n"
     outstr += "ob2 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
     outstr += "ob2.data.transform(%s)\n"%(Mtheta)
     outstr += "ob2.data.transform(%s)\n"%(Mphi)
+    outstr += "ob2.location = (%10.4f, %10.4f, %10.4f)\n"%(x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob2)\n"
     return outstr

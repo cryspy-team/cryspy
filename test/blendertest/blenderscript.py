@@ -14,9 +14,6 @@ for mat in bpy.data.materials:
 nonshinyblack = bpy.data.materials.new('structure.material.nonshinyblack')
 nonshinyblack.diffuse_color = (0, 0, 0)
 nonshinyblack.specular_color = (0, 0, 0)
-material_axes = bpy.data.materials.new('structure.material.axes')
-material_axes.diffuse_color = (0, 0, 0)
-material_axes.specular_color = (0, 0, 0)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.0500, diameter2 =     0.0500, depth =     9.9416)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
@@ -31,6 +28,7 @@ ob1.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
  [   -0.0000,     1.0000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob1)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diameter1 =     0.2000, diameter2 =     0.0100, depth =     0.5000)
@@ -46,13 +44,17 @@ ob2.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
  [   -0.0000,     1.0000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob2.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob2)
 bpy.ops.object.select_all(action='DESELECT')
 ob1.select = True
 ob2.select = True
 bpy.context.scene.objects.active = ob1
 bpy.ops.object.join()
-ob1.data.materials.append(material_axes)
+mat = bpy.data.materials.new('structure.material.XAxis')
+mat.diffuse_color = (0, 0, 0)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.0500, diameter2 =     0.0500, depth =     9.9416)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     4.9708))
@@ -67,6 +69,7 @@ ob1.data.transform([[   -0.5000,     0.8660,     0.0000,     0.0000], \
  [   -0.8660,    -0.5000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob1)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diameter1 =     0.2000, diameter2 =     0.0100, depth =     0.5000)
@@ -82,13 +85,17 @@ ob2.data.transform([[   -0.5000,     0.8660,     0.0000,     0.0000], \
  [   -0.8660,    -0.5000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob2.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob2)
 bpy.ops.object.select_all(action='DESELECT')
 ob1.select = True
 ob2.select = True
 bpy.context.scene.objects.active = ob1
 bpy.ops.object.join()
-ob1.data.materials.append(material_axes)
+mat = bpy.data.materials.new('structure.material.YAxis')
+mat.diffuse_color = (0, 0, 0)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 6, diameter1 =     0.0500, diameter2 =     0.0500, depth =     5.8432)
 bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     2.9216))
@@ -103,6 +110,7 @@ ob1.data.transform([[    0.5000,     0.8660,     0.0000,     0.0000], \
  [   -0.8660,     0.5000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob1)
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 24, diameter1 =     0.2000, diameter2 =     0.0100, depth =     0.5000)
@@ -118,13 +126,17 @@ ob2.data.transform([[    0.5000,     0.8660,     0.0000,     0.0000], \
  [   -0.8660,     0.5000,     0.0000,     0.0000], \
  [    0.0000,     0.0000,     1.0000,     0.0000], \
  [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob2.location = (    0.0000,     0.0000,     0.0000)
 bpy.context.scene.objects.link(ob2)
 bpy.ops.object.select_all(action='DESELECT')
 ob1.select = True
 ob2.select = True
 bpy.context.scene.objects.active = ob1
 bpy.ops.object.join()
-ob1.data.materials.append(material_axes)
+mat = bpy.data.materials.new('structure.material.ZAxis')
+mat.diffuse_color = (0, 0, 0)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
 bpy.ops.mesh.primitive_cube_add(location=(0,0,0))
 bpy.ops.object.mode_set(mode='EDIT')
 bpy.ops.mesh.delete(type='VERT')
@@ -659,6 +671,47 @@ ob = bpy.data.objects.new(             'structure.Atom084(Ca1)', bpy.data.meshes
 ob.location = (5.220800, 9.042691, 0.000000)
 bpy.ops.object.shade_smooth()
 bpy.context.scene.objects.link(ob)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 12, diameter1 =     0.1000, diameter2 =     0.1000, depth =     1.4000)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     0.7000))
+mesh = bpy.data.meshes.new('structure.meshMomentum001_cylinder')
+bm.to_mesh(mesh)
+ob1 = bpy.data.objects.new('structure.Momentum001_cylinder', mesh)
+ob1.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
+ [   -0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.location = (    1.6104,     4.5213,     3.1716)
+bpy.context.scene.objects.link(ob1)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 32, diameter1 =     0.3000, diameter2 =     0.0100, depth =     0.6000)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     1.7000))
+mesh = bpy.data.meshes.new('structure.meshMomentum001_cone')
+bm.to_mesh(mesh)
+ob2 = bpy.data.objects.new('structure.Momentum001_cone', mesh)
+ob2.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob2.data.transform([[    1.0000,     0.0000,     0.0000,     0.0000], \
+ [   -0.0000,     1.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob2.location = (    1.6104,     4.5213,     3.1716)
+bpy.context.scene.objects.link(ob2)
+bpy.ops.object.select_all(action='DESELECT')
+ob1.select = True
+ob2.select = True
+bpy.context.scene.objects.active = ob1
+bpy.ops.object.join()
+mat = bpy.data.materials.new('structure.material.Momentum001')
+mat.diffuse_color = (0, 0, 1)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
 for ob in bpy.data.objects:
     if ob.name.startswith('structure.Atom'):
         ob.select = True
