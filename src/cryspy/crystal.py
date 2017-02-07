@@ -55,14 +55,95 @@ class Atom():
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
+class Momentum():
+    def __init__(self, pos, dir):
+        assert isinstance(pos, geo.Pos), \
+            "First argument of crystal.Momentum(pos, dir) must be of type " \
+            " geo.Pos ."
+        assert isinstance(dir, geo.Dif), \
+            "Second argument of crystal.Momentum(pos, dir) must be of type" \
+            " geo.Dif ."
+        self.pos = pos
+        self.dir = dir
+        self.has_color = False
+        self.color = None
+        self.has_plotlength = False
+        self.plotlength = None
+
+    def set_color(self, color):
+        assert isinstance(color, tuple), \
+            "Argument of crystal.Momentum.set_color(color) must be of type " \
+            " tuple."
+        assert (len(color) == 3), \
+            "Argument of crystal.Momentum.set_color(color) must be of type "\
+            "tuple and must have three items."
+        for item in color:
+            assert isinstance(item, float) or isinstance(item, int) \
+                or isinstance(item, nb.Mixed), \
+                "Argument of crystal.Momentum.set_color(color) must be of " \
+                "type tuple with three numbers in it."
+        self.has_color = True
+        self.color = (float(color[0]), float(color[1]), float(color[2]))
+
+    def set_plotlength(self, plotlength):
+        assert isinstance(plotlength, float) or isinstance(plotlength, int) \
+            or isinstance(plotlength, nb.Mixed), \
+            "Argument of crystal.Momentum.set_plotlength(plotlength) must " \
+            "be of type float or int or numbers.Mixed."
+        self.has_plotlength = True
+        self.plotlength = float(plotlength)
+
+    def __str__(self):
+        return "Momentum"
+
+    def __eq__(self, right):
+        if isinstance(right, Momentum):
+            if (self.pos == right.pos) and (self.dir == right.dir):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def __add__(self, right):
+        if isinstance(right, geo.Dif):
+            result = Momentum(self.pos + right, self.dir)
+            if self.has_color:
+                result.set_color(self.color)
+            if self.has_plotlength:
+                result.set_plotlength(self.plotlength)
+            return result
+        else:
+            return NotImplemented
+
+    def __rpow__(self, left):
+        if isinstance(left, geo.Operator) \
+            or isinstance(left, geo.Coset):
+            result = Momentum(left ** self.pos, self.dir)
+            if self.has_color:
+                result.set_color(self.color)
+            if self.has_plotlength:
+                result.set_plotlength(self.plotlength)
+            return result
+
+    def __hash__(self):
+        string = "x%sy%sz%sdx%sdy%sdz%s" \
+            %(str(hash(self.pos.x())), \
+              str(hash(self.pos.y())), \
+              str(hash(self.pos.z())), \
+              str(hash(self.dir.x())), \
+              str(hash(self.dir.y())), \
+              str(hash(self.dir.z())))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
 class Atomset():
     def __init__(self, menge):
         assert isinstance(menge, set), \
             "Argument must be of type set."
         for item in menge:
-            assert isinstance(item, Atom), \
+            assert isinstance(item, Atom) or isinstance(item, Momentum), \
                 "Argument must be a set of "\
-                "objects of type Atom"
+                "objects of type Atom or of type Momentum."
         self.menge = menge
 
 
@@ -78,13 +159,23 @@ class Atomset():
         strings = [["Atomset\n" \
                     "-------"],]
         liste = [atom for atom in self.menge]
-        types = [atom.typ for atom in liste]
-        print(types)
-        indexes = [i for (j, i) in sorted(zip(types, range(len(liste))))]
-        names = [atom.name for atom in liste]
+        atomliste = []
+        momentumliste = []
+        for item in self.menge:
+            if isinstance(item, Atom):
+                atomliste.append(item)
+            elif isinstance(item, Momentum):
+                momentumliste.append(item)
+        types = [atom.typ for atom in atomliste]
+        indexes = [i for (j, i) in sorted(zip(types, range(len(atomliste))))]
+        names = [atomliste[i].name for i in indexes]
         indexes = [i for (j, i) in sorted(zip(names, indexes))]
+        print(indexes)
         for i in indexes:
-            strings.append(["", liste[i].__str__() + "\n "])
+            strings.append(["", atomliste[i].__str__()])
+            strings.append([""])
+        for momentum in momentumliste:
+            strings.append(["", str(momentum)])
         return bp.block(strings)
 
 
@@ -109,7 +200,8 @@ class Atomset():
             or isinstance(left, geo.Spacegroup), \
             "Argument must be of type Operator."
         if isinstance(left, geo.Operator):
-            return Atomset({left**atom for atom in self.menge})
+            menge = set([])
+            return Atomset({left**item for item in self.menge})
         if isinstance(left, geo.Spacegroup):
             atoms = set([])
             for atom in self.menge:
