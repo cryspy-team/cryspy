@@ -456,6 +456,27 @@ def rad2deg(number):
     return number / pi * 180
 
 
+def sin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Connot calculate cos of an object of type %s."%(type(number))
+    if isinstance(number.value, fr.Fraction):
+        return Mixed(np.sin(float(number.value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.sin(number.value).item())
+    elif isinstance(number.value, float):
+        return Mixed(np.sin(number.value))
+    elif isinstance(number.value, int):
+        return Mixed(np.sin(number.value))
+
+
 def cos(number):
     if isinstance(number, fr.Fraction):
         number = Mixed(number)
