@@ -56,15 +56,15 @@ class Atom():
 
 
 class Momentum():
-    def __init__(self, pos, dir):
+    def __init__(self, pos, direction):
         assert isinstance(pos, geo.Pos), \
             "First argument of crystal.Momentum(pos, dir) must be of type " \
             " geo.Pos ."
-        assert isinstance(dir, geo.Dif), \
+        assert isinstance(direction, geo.Dif), \
             "Second argument of crystal.Momentum(pos, dir) must be of type" \
             " geo.Dif ."
         self.pos = pos
-        self.dir = dir
+        self.direction = direction
         self.has_color = False
         self.color = None
         self.has_plotlength = False
@@ -98,7 +98,7 @@ class Momentum():
 
     def __eq__(self, right):
         if isinstance(right, Momentum):
-            if (self.pos == right.pos) and (self.dir == right.dir):
+            if (self.pos == right.pos) and (self.direction == right.direction):
                 return True
             else:
                 return False
@@ -107,7 +107,7 @@ class Momentum():
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
-            result = Momentum(self.pos + right, self.dir)
+            result = Momentum(self.pos + right, self.direction)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_plotlength:
@@ -119,7 +119,7 @@ class Momentum():
     def __rpow__(self, left):
         if isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset):
-            result = Momentum(left ** self.pos, self.dir)
+            result = Momentum(left ** self.pos, self.direction)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_plotlength:
@@ -131,9 +131,9 @@ class Momentum():
             %(str(hash(self.pos.x())), \
               str(hash(self.pos.y())), \
               str(hash(self.pos.z())), \
-              str(hash(self.dir.x())), \
-              str(hash(self.dir.y())), \
-              str(hash(self.dir.z())))
+              str(hash(self.direction.x())), \
+              str(hash(self.direction.y())), \
+              str(hash(self.direction.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 class Atomset():
