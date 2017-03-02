@@ -2,20 +2,13 @@ from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 from cryspy import geo as geo
+import re
 
 
 def removeletters(string):
     assert isinstance(string, str), \
         "Argument must be of type str."
-    for character in ["a", "b", "c", "d", "e", "f", "g", \
-                      "h", "i", "j", "k", "l", "m", "n", \
-                      "o", "p", "q", "r", "s", "t", "u", \
-                      "v", "w", "x", "y", "z", \
-                      "A", "B", "C", "D", "E", "F", "G", \
-                      "H", "I", "J", "K", "L", "M", "N", \
-                      "O", "P", "Q", "R", "S", "T", "U", \
-                      "V", "W", "X", "Y", "Z"]:
-        string =  string.replace(character, " ")
+    string = re.sub("[a-zA-Z]", " ", string)
     return string
 
 def str2linearterm(string, liste_variables):
@@ -108,21 +101,27 @@ def typefromstr(string):
 
     if ('Rec' in string):
         return geo.Rec
-    elif ('a' in string) or ('b' in string) or ('c' in string) \
-        or ("then" in string) or ('O' in string) or ("->" in string):
+    elif re.findall("[abc]|then|0|->", string) != []:
+        return geo.Transformation
+#    elif ('a' in string) or ('b' in string) or ('c' in string) \
+#       or ("then" in string) or ('O' in string) or ("->" in string):
         return geo.Transformation
     elif (words[0][0] == '/') and words[-1][-1] == '/':
         return nb.Matrix
     elif (words[0][0] == '<') and (words[-1][-1] == '>'):
         return nb.Matrix
-    elif ('p' in string) or ('P' in string) or \
-        ('r' in string) or ('R' in string):
+    elif re.findall("[pPrR]", string) != []:
         return geo.Pos
+#    elif ('p' in string) or ('P' in string) or \
+#        ('r' in string) or ('R' in string):
+#        return geo.Pos
     elif ('d' in string) or ('D' in string):
         return geo.Dif
-    elif ('k' in string) or ('K' in string) or \
-        ('q' in string) or ('Q' in string):
+    elif re.findall("[kKqQ]", string) != []:
         return geo.Rec
+#    elif ('k' in string) or ('K' in string) or \
+#        ('q' in string) or ('Q' in string):
+#        return geo.Rec
     elif ('{' in string) and ('}' in string):
         return geo.Coset
     elif ('x' in string) or ('y' in string) or ('z' in string):
