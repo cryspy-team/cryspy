@@ -404,7 +404,18 @@ def test_Metric():
     assert abs(float((metric.angle(q1, q2) - nb.deg2rad(90)))) < 0.00001
     assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
     assert metric.angle(q1, q1).__str__() == "0.0"
-    
+
+    metric = geo.Cellparameters(4.15, 4.15, 28.64, 90, 90, 120).to_Metric()
+    print(metric.angle(geo.Rec(nb.Matrix([[20, -10, 0, 0]])), \
+                       geo.Rec(nb.Matrix([[2,  -1,  0, 0]]))))
+    assert False
+
+    M = nb.Matrix([[9, 0, 0, 0], \
+                   [0, 4, 0, 0], \
+                   [0, 0, 1, 0], \
+                   [0, 0, 0, 1]])
+    metric = geo.Metric(M)
+
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
