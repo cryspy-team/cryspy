@@ -1,3 +1,0 @@
-numpy==1.11.0
-quicktions==1.2
-uncertainties==2.4.8.1

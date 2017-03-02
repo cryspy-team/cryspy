@@ -38,7 +38,8 @@ for atomseti in [atomset1, atomset2, atomset3, atomset4, \
             and -0.05 <= float(atom.pos.z()) <= 1.05:
             menge = menge.union({atom})
 
-
+momentum = cryspy.crystal.Momentum(fs("p 1/2 1/2 1/2"), fs("d 1 0 0"))
+menge.add(momentum)
 atomset = cryspy.crystal.Atomset(menge)
 cryspy.blender.make_blender_script(atomset, metric, "structure", "blenderscript.py")
 

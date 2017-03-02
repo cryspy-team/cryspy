@@ -284,14 +284,14 @@ def linearterm2str(liste_numbers, liste_variables):
     def prefactor(number, variablestr):
         assert isinstance(number, nb.Mixed), \
             "Argument must be of type Mixed."
-        if (number == 0):
+        if (float(number) == 0): 
             return ''
-        elif (number.value > 0):
+        elif (float(number.value) > 0):
             if (number == 1) and (variablestr != ''):
                 return '+' + variablestr
             else:
                 return '+' + number.__str__() + variablestr
-        elif (number.value < 0):
+        elif (float(number.value) < 0):
             if (number == -1) and (variablestr != ''):
                 return '-' + variablestr
             else:
@@ -485,6 +485,7 @@ class Transformation(Operator):
              nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], 1])])
         terms = []
         for i in range(3):
+            print(matrix.liste[i].liste[0], matrix.liste[i].liste[1], matrix.liste[i].liste[2], matrix.liste[i].liste[3])
             terms.append(linearterm2str(matrix.liste[i].liste, 
                 ["a", "b", "c", '']))
         return result + "               a' = " + terms[0] + "\n" \

@@ -26,6 +26,7 @@
 #                cryspy.numbers.Matrix ,
 #                which represents a matrix of elements of type Mixed.
 
+import hashlib
 from copy import deepcopy
 import quicktions as fr
 import uncertainties as uc
@@ -80,6 +81,18 @@ class Mixed(object):
         else:
             raise(BaseException("Something is wrong with value of Mixed."))
             return ''
+
+    def __hash__(self):
+        if isinstance(self.value, fr.Fraction):
+            string = 'fr'
+        elif isinstance(self.value, uc.UFloat):
+            string = 'uf'
+        elif isinstance(self.value, int):
+            string = 'in'
+        elif isinstance(self.value, float):
+            string = 'fl'
+        string += str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16) 
 
     def __eq__(self, right):
         right = Mixed(right)
@@ -340,14 +353,17 @@ class Mixed(object):
             elif isinstance(right.value, float):
                 return Mixed(self.value / right.value)
         elif isinstance(self.value, int):
-            if isinstance(right.value, fr.Fraction):
-                return Mixed(self.value / right.value)
-            elif isinstance(right.value, uc.UFloat):
-                return Mixed(self.value / right.value)
-            elif isinstance(right.value, int):
-                return Mixed(fr.Fraction(self.value, right.value))
-            elif isinstance(right.value, float):
-                return Mixed(self.value / right.value)
+            if self.value == 0:
+                return Mixed(0)
+            else:
+                if isinstance(right.value, fr.Fraction):
+                    return Mixed(self.value / right.value)
+                elif isinstance(right.value, uc.UFloat):
+                    return Mixed(self.value / right.value)
+                elif isinstance(right.value, int):
+                    return Mixed(fr.Fraction(self.value, right.value))
+                elif isinstance(right.value, float):
+                    return Mixed(self.value / right.value)
         elif isinstance(self.value, float):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value / float(right.value))
@@ -438,6 +454,27 @@ def rad2deg(number):
         "Argument must be of type Mixed, quicktions.Fraction, " \
         "uncertainties.UFloat, int or float."
     return number / pi * 180
+
+
+def sin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Connot calculate cos of an object of type %s."%(type(number))
+    if isinstance(number.value, fr.Fraction):
+        return Mixed(np.sin(float(number.value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.sin(number.value).item())
+    elif isinstance(number.value, float):
+        return Mixed(np.sin(number.value))
+    elif isinstance(number.value, int):
+        return Mixed(np.sin(number.value))
 
 
 def cos(number):

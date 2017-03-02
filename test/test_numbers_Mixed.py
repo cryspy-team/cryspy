@@ -55,6 +55,12 @@ def test_Mixed():
     assert isinstance(nb.Mixed(f).__str__(), str)
     assert nb.Mixed(f).__str__() == "3.5"
 
+    # Hash
+    assert isinstance(hash(nb.Mixed(q)), int)
+    assert isinstance(hash(nb.Mixed(e)), int)
+    assert isinstance(hash(nb.Mixed(i)), int)
+    assert isinstance(hash(nb.Mixed(f)), int)
+
     # Equal
     assert nb.Mixed(q) == nb.Mixed(q)
     assert nb.Mixed(e) == nb.Mixed(e)
@@ -87,11 +93,10 @@ def test_Mixed():
     assert (nb.Mixed(1.0) == nb.Mixed(1)) == False
     assert nb.Mixed(1.0) == nb.Mixed(1.0)
     assert nb.Mixed(0) == 0
+    assert (nb.Mixed(0.1) == 0) == False
     assert nb.Mixed(fr.Fraction(2, 1)) == 2
 
     # Other relations
-
-
 
     # Addition
 
@@ -807,6 +812,26 @@ def test_Mixed():
     assert isinstance((f1 / mf2).value, float)
     assert f1 / mf2 == nb.Mixed(0.9375)
 
+    # Dividing integer 0
+
+    q = fr.Fraction(2, 3)
+    e = uc.ufloat(1.2, 0.1)
+    i = 4
+    f = 3.5
+    mq = nb.Mixed(q)
+    me = nb.Mixed(e)
+    mi = nb.Mixed(i)
+    mf = nb.Mixed(f)
+    m0 = nb.Mixed(0)
+
+    for m in [mq, me, mi, mf]:
+        assert m0 / m  == m0
+        assert 0  / m  == m0
+
+    for z in [q, e, i, f]:
+        assert m0 / z == m0
+
+
     # negative
 
     q = fr.Fraction(3, 2)
@@ -980,6 +1005,41 @@ def test_Mixed():
     assert approx(a.value, 180.0)
     a = nb.rad2deg(3.1415926535897931)
     assert approx(a.value, 180.0)
+
+    a = nb.sin(nb.Mixed(fr.Fraction(1, 2)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.47942553860420301)
+    a = nb.sin(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.479425538604203)
+    a = nb.sin(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.479425538604203)
+    assert approx(a.value.s, 0.08775825618903728)
+    a = nb.sin(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.479425538604203)
+    assert approx(a.value.s, 0.08775825618903728)
+    a = nb.sin(nb.Mixed(1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8414709848078965)
+    a = nb.sin(1)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.8414709848078965)
+    a = nb.sin(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.479425538604203)
+    a = nb.sin(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.479425538604203)
 
     a = nb.cos(nb.Mixed(fr.Fraction(1, 2)))
     assert isinstance(a, nb.Mixed)

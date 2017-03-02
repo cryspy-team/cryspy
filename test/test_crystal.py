@@ -56,10 +56,31 @@ def test_Atom():
     atom3 = atom1 + d
     assert atom2 == atom3
 
+def test_Momentum():
+    m = cr.Momentum(fs("p 0 0 0"), fs("d 0 0 1"))
+    assert isinstance(m, cr.Momentum)
+    m.set_color((0, 0, 1))
+    m.set_color((fs("0.3"), 0.1, 1))
+    m.set_plotlength(1)
+    m.set_plotlength(0.5)
+    m.set_plotlength(fs("1/2"))
+    d = fs("d 0 0 1/2")
+    m1 = cr.Momentum(fs("p 0 0 0"), fs("d 0 0 1"))
+    m2 = cr.Momentum(fs("p 1 2 3"), fs("d 0 0 1"))
+    m3 = cr.Momentum(fs("p 0 0 0"), fs("d 1 2 3"))
+    assert m == m1
+    assert (m == m2) == False
+    assert (m == m3) == False
+    assert m + d == cr.Momentum(fs("p 0 0 1/2"), fs("d 0 0 1"))
+    assert fs("x+1/2,y,z") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
+    assert fs("{x+3/2,y,z}") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
+
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
     atom2 = cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0"))
-    atomset = cr.Atomset({atom1, atom2})
+    momentum = cr.Momentum(fs("p 0 0 0"), fs("d 0 0 1"))
+    atomset = cr.Atomset({atom1, atom2, momentum})
+    print(atomset)
     assert atomset.__str__() == \
         "Atomset                          \n" \
         "-------                          \n" \
@@ -70,7 +91,8 @@ def test_Atomset():
         "       Atom Cs2 Cs Pos /  1/4  \ \n" \
         "                      |   1/4   |\n" \
         "                       \    0  / \n" \
-        "                                 "
+        "                                 \n" \
+        "                         Momentum"
 
     transformation = fs("O->(0,0,1/4) \n" \
                         "then\n" \
@@ -79,7 +101,8 @@ def test_Atomset():
                         "c' = c")
     atomset1 = transformation**atomset
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
-                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4")), \
+                           cr.Momentum(fs("p 0 0 -1/4"), fs("d 0 0 1"))})
     assert atomset1 == atomset2
 
     spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"), \
@@ -87,7 +110,8 @@ def test_Atomset():
     atomset1 = spacegroup ** atomset
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
                            cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
-                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0"))})
+                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0")), \
+                           momentum})
     assert atomset1 == atomset2
 
     
