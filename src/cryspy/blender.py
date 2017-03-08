@@ -219,7 +219,7 @@ def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2,
     outstr += "mat.diffuse_color = %s\n"\
         % (str(color))
     outstr += "mat.specular_color = (0, 0, 0)\n"
-    outstr += "ob1.data.materials.append(mat)\n" 
+    outstr += "ob1.data.materials.append(mat)\n"
     return outstr
 
 

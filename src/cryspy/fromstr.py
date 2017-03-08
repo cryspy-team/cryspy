@@ -234,7 +234,7 @@ def transformationfromstr(string):
                         "b' = ... \n" \
                         "c' = ... \n" \
                         "in this Order!"
-                    words = line.split('=') 
+                    words = line.split('=')
                     row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
             liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),

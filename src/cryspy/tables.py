@@ -8,7 +8,7 @@ def spacegroup(number):
 
     if number == 13:
         return geo.Spacegroup(geo.canonical,
-                              [fs("{x,y,z}"), fs("{-x,y,-z+1/2}"), fs("{-x,-y,-z}"), fs("{x,-y,z+1/2}")]) 
+                              [fs("{x,y,z}"), fs("{-x,y,-z+1/2}"), fs("{-x,-y,-z}"), fs("{x,-y,z+1/2}")])
 
     if number == 15:
         return geo.Spacegroup(geo.canonical,

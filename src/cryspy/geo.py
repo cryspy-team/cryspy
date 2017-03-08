@@ -25,7 +25,7 @@
 #               Cellparameters in the following way (example is orthorhombic):
 #
 #                   >>> metric = cryspy.geo.Cellparameters( \
-#                           1.23, 3.45, 5.67, 90, 90, 90 \    
+#                           1.23, 3.45, 5.67, 90, 90, 90 \
 #                       ).to_Metric()
 #
 #               This metric can now be used to calculate scalarproduct:
@@ -35,7 +35,7 @@
 #               similar for Metric.angle and Metric.length .
 #
 #
-#               
+#
 
 from cryspy import numbers as nb
 from cryspy import blockprint as bp
@@ -235,7 +235,7 @@ class Rec:
 #     * Metric
 #
 # It is constructed via a 4x4-Matrix of the following form:
-# 
+#
 #     * * * *
 #     * * * *
 #     * * * *
@@ -275,7 +275,7 @@ def linearterm2str(liste_numbers, liste_variables):
         assert isinstance(item, nb.Mixed) or \
             isinstance(item, int) or \
             isinstance(item, float), \
-            "Argument must be a list of Mixed, int or flot." 
+            "Argument must be a list of Mixed, int or flot."
     assert isinstance(liste_variables, list), \
         "Argument must be of type list."
     for item in liste_variables:
@@ -286,7 +286,7 @@ def linearterm2str(liste_numbers, liste_variables):
     def prefactor(number, variablestr):
         assert isinstance(number, nb.Mixed), \
             "Argument must be of type Mixed."
-        if (float(number) == 0): 
+        if (float(number) == 0):
             return ''
         elif (float(number.value) > 0):
             if (number == 1) and (variablestr != ''):
@@ -382,7 +382,7 @@ class Pointgroup:
         # This is the sorting of algorithm A of:
         #     H. D. Flack
         #     "The Derivation of Twin Laws for
-        #      (Pseudo-)Merohedry by Coset 
+        #      (Pseudo-)Merohedry by Coset
         #      Decomposition"
         #     Acta Cryst. (1987) A43, 564-568
         #
@@ -431,7 +431,7 @@ class Pointgroup:
         # This is the algorithm A of:
         #     H. D. Flack
         #     "The Derivation of Twin Laws for
-        #      (Pseudo-)Merohedry by Coset 
+        #      (Pseudo-)Merohedry by Coset
         #      Decomposition"
         #     Acta Cryst. (1987) A43, 564-568
         assert isinstance(subgroup, Pointgroup), \
@@ -480,7 +480,7 @@ class Transformation(Operator):
         terms = []
         for i in range(3):
             print(matrix.liste[i].liste[0], matrix.liste[i].liste[1], matrix.liste[i].liste[2], matrix.liste[i].liste[3])
-            terms.append(linearterm2str(matrix.liste[i].liste, 
+            terms.append(linearterm2str(matrix.liste[i].liste,
                                         ["a", "b", "c", '']))
         return result + "               a' = " + terms[0] + "\n" \
                       + "               b' = " + terms[1] + "\n" \
@@ -831,7 +831,7 @@ class Spacegroup():
         for coset in self.liste_cosets:
             liste_strings.append(['', coset.symmetry.__str__()])
 
-        return bp.block(liste_strings) 
+        return bp.block(liste_strings)
 
     def __eq__(self, right):
         assert isinstance(right, Spacegroup), \

@@ -2,7 +2,7 @@
 #  Description:  Contains the number class Mixed which is used
 #                by all cryspy classes.
 #                Mixed can represent one of the following types:
-#                
+#
 #                    * an exact fraction of two integers
 #                    * a float with error
 #                    * an integer
@@ -10,15 +10,15 @@
 #
 #                In calculations with different types, the result
 #                will have a reasonable type, for example
-#                
+#
 #                    (float with error) + (exact fraction)
 #                    = (float with error) .
 #
 #                It is recommended, that cryspy classes using Mixed-numbers
 #                as arguments can use integers or floats instead, e.g.
-#                
+#
 #                    >>> m = cryspy.numbers.Matrix([[1, 2], [3, 4]])
-#           
+#
 #                is possible, the numbers need not to be converted
 #                to Mixed-objects by the user.
 #
@@ -92,7 +92,7 @@ class Mixed(object):
         elif isinstance(self.value, float):
             string = 'fl'
         string += str(hash(self.value))
-        return int(hashlib.sha1(string.encode()).hexdigest(), 16) 
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __eq__(self, right):
         right = Mixed(right)
@@ -822,7 +822,7 @@ class Matrix(object):
         assert (numrows == numcols), \
             "I can invert square matrices only (num of rows == num of cols)."
         dim = numrows
-        right = Matrix.onematrix(dim) 
+        right = Matrix.onematrix(dim)
         def make_triangle(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(dim - 1):
@@ -863,7 +863,7 @@ class Matrix(object):
         (self, right) = make_triangle(self, right)
         (self, right) = make_diagonal(self, right)
         (self, right) = make_one(self, right)
-        return right   
+        return right
 
     def transpose(self):
         shape = self.shape()
