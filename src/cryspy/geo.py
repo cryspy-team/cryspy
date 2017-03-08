@@ -142,7 +142,7 @@ class Dif:
             return Dif(self.value - right.value)
         else:
             raise(BaseException("I cannot subtract objects of type"
-                "%s and %s" % (type(self), type(right))))
+                                "%s and %s" % (type(self), type(right))))
 
     def __neg__(self):
         return Dif(-self.value)
@@ -311,7 +311,7 @@ class Symmetry(Operator):
         result = ''
         for i in range(3):
             result +=  linearterm2str(self.value.liste[i].liste,
-                ["x", "y", "z", '']) + ','
+                                      ["x", "y", "z", '']) + ','
         result = result[:-1]
         return result
 
@@ -489,7 +489,7 @@ class Transformation(Operator):
         for i in range(3):
             print(matrix.liste[i].liste[0], matrix.liste[i].liste[1], matrix.liste[i].liste[2], matrix.liste[i].liste[3])
             terms.append(linearterm2str(matrix.liste[i].liste, 
-                ["a", "b", "c", '']))
+                                        ["a", "b", "c", '']))
         return result + "               a' = " + terms[0] + "\n" \
                       + "               b' = " + terms[1] + "\n" \
                       + "               c' = " + terms[2]
@@ -521,7 +521,7 @@ class Transformation(Operator):
             return Metric(Minvtr * right.value * Minv)
         elif isinstance(right, Spacegroup):
             return Spacegroup(self ** right.transgen,
-                          [self ** coset for coset in right.liste_cosets])
+                              [self ** coset for coset in right.liste_cosets])
         elif isinstance(right, Rec):
             return Rec(right.value * self.inv().value.delete_translation())
         else:
@@ -572,7 +572,7 @@ class Metric(Operator):
         len1 = self.length(vector1)
         len2 = self.length(vector2)
         return nb.arccos(self.dot(vector1, vector2)
-            / (len1 * len2))
+                         / (len1 * len2))
 
     def calculate_schmidttransformation(self):
         a1 = canonical_e0
@@ -689,9 +689,9 @@ class Transgen():
             return "canonical"
         else:
             return bp.block([["Transgen",
-                self.liste[0].value.block(0,3,0,1).__str__(), ' ',
-                self.liste[1].value.block(0,3,0,1).__str__(), ' ',
-                self.liste[2].value.block(0,3,0,1).__str__()],])
+                              self.liste[0].value.block(0,3,0,1).__str__(), ' ',
+                              self.liste[1].value.block(0,3,0,1).__str__(), ' ',
+                              self.liste[2].value.block(0,3,0,1).__str__()],])
 
     def __rmod__(self, left):
         if isinstance(left, Pos):
@@ -717,17 +717,17 @@ class Transgen():
                 return Coset(left.symmetry % self, self)
             else:
                 raise(BaseException("If you try to calculate "
-                    "Coset % Transgen, but the coset has another "
-                    "transgen, then you come into devil's kitchen!"))
+                                    "Coset % Transgen, but the coset has another "
+                                    "transgen, then you come into devil's kitchen!"))
         elif isinstance(left, Spacegroup):
             if left.transgen == self:
                 return Spacegroup(self, [coset % self
-                    for coset in left.liste_cosets])
+                                         for coset in left.liste_cosets])
             else:
                 raise(BaseException("If you try to calculate "
-                    "Spacegroup % Transgen, but the spacegroup has "
-                    "another transgen, then you come into "
-                    "devil's kitchen!"))
+                                    "Spacegroup % Transgen, but the spacegroup has "
+                                    "another transgen, then you come into "
+                                    "devil's kitchen!"))
         else:
             return NotImplemented
 
@@ -799,8 +799,8 @@ class Coset():
         assert self.transgen == right.transgen, \
             "Can only multiply two Cosets with the same Transgen, "\
             "but " + bp.block([[self.transgen.__str__(),
-                               " != ",
-                               right.transgen.__str__()]])
+                                " != ",
+                                right.transgen.__str__()]])
         return Coset(self.symmetry * right.symmetry, self.transgen)
 
 

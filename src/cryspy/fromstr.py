@@ -184,7 +184,7 @@ def symmetryfromstr(string):
         row = nb.Row(str2linearterm(word, ['x', 'y', 'z']))
         liste.append(row)
     liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
-        fromstr("1")]))
+                         fromstr("1")]))
     return geo.Symmetry(nb.Matrix(liste))
 
 
@@ -226,8 +226,8 @@ def transformationfromstr(string):
                     i += 1
                     words = line.split(' ')
                     assert  (    ((i == 1) and (words[0] == "a'"))
-                              or ((i == 2) and (words[0] == "b'"))
-                              or ((i == 3) and (words[0] == "c'"))  )\
+                                 or ((i == 2) and (words[0] == "b'"))
+                                 or ((i == 3) and (words[0] == "c'"))  )\
                         and (words[1] == '='), \
                         "The Transformation must have the following form: \n" \
                         "a' = ... \n" \
@@ -238,7 +238,7 @@ def transformationfromstr(string):
                     row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
             liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
-                fromstr("1")]))
+                                 fromstr("1")]))
             m = nb.Matrix(liste)
             matrix = nb.Matrix(
                 [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]),

@@ -548,7 +548,7 @@ class Row(object):
         if isinstance(right, Row):
             if len(self) == len(right):
                 return min([(self.liste[i] == right.liste[i])
-                    for i in range(len(self))])
+                            for i in range(len(self))])
             else:
                 return False
         else:
@@ -640,7 +640,7 @@ class Matrix(object):
         if isinstance(right, Matrix):
             if (self.shape() == right.shape()):
                 return min([(self.liste[i] == right.liste[i])
-                    for i in range(self.shape()[0])])
+                            for i in range(self.shape()[0])])
             else:
                 return False
         else:
@@ -684,7 +684,7 @@ class Matrix(object):
             (numrows, numcolumns) = self.shape()
             return Matrix([
                 Row([self.liste[i].liste[j] + right.liste[i].liste[j]
-                for j in range(numcolumns)])
+                     for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented
@@ -696,7 +696,7 @@ class Matrix(object):
             (numrows, numcolumns) = self.shape()
             return Matrix([
                 Row([self.liste[i].liste[j] - right.liste[i].liste[j]
-                for j in range(numcolumns)])
+                     for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented

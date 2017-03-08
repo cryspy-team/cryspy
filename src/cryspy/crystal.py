@@ -130,11 +130,11 @@ class Momentum():
     def __hash__(self):
         string = "x%sy%sz%sdx%sdy%sdz%s" \
             % (str(hash(self.pos.x())),
-              str(hash(self.pos.y())),
-              str(hash(self.pos.z())),
-              str(hash(self.direction.x())),
-              str(hash(self.direction.y())),
-              str(hash(self.direction.z())))
+               str(hash(self.pos.y())),
+               str(hash(self.pos.z())),
+               str(hash(self.direction.x())),
+               str(hash(self.direction.y())),
+               str(hash(self.direction.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
