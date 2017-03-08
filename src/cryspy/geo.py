@@ -479,7 +479,7 @@ class Transformation(Operator):
                             [0, 0, 0, 1]])
         result = "Transformation O -> (%s, %s, %s)\n" \
                  "               then\n" % \
-                     (Ox.__str__(), Oy.__str__(), Oz.__str__())
+        (Ox.__str__(), Oy.__str__(), Oz.__str__())
         matrix = nb.Matrix(
             [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]),
              nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]),
@@ -508,8 +508,8 @@ class Transformation(Operator):
             return Symmetry(self.value * right.value * self.value.inv())
         elif isinstance(right, Transgen):
             return Transgen(self ** right.liste[0],
-                                self ** right.liste[1],
-                                self ** right.liste[2])
+                            self ** right.liste[1],
+                            self ** right.liste[2])
         elif isinstance(right, Pos):
             return Pos(self.value * right.value)
         elif isinstance(right, Dif):

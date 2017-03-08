@@ -252,20 +252,20 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f]]" % \
-             (cosphi, sinphi, 0.0, 0.0,
-              -sinphi, cosphi, 0.0, 0.0,
-              0.0, 0.0, 1.0, 0.0,
-              0.0, 0.0, 0.0, 1.0)
+    (cosphi, sinphi, 0.0, 0.0,
+     -sinphi, cosphi, 0.0, 0.0,
+     0.0, 0.0, 1.0, 0.0,
+     0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"
     outstr += "bmesh.ops.create_cone(bm, " \
-                                    "cap_ends = True, " \
-                                    "cap_tris = True, " \
-                                    "segments = %i, " \
-                                    "diameter1 = %10.4f, " \
-                                    "diameter2 = %10.4f, " \
-                                    "depth = %10.4f)\n" \
-                                    % (segments, b, b, l)
+    "cap_ends = True, " \
+    "cap_tris = True, " \
+    "segments = %i, " \
+    "diameter1 = %10.4f, " \
+    "diameter2 = %10.4f, " \
+    "depth = %10.4f)\n" \
+    % (segments, b, b, l)
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l /2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" % (structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
@@ -305,20 +305,20 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f]]" % \
-             (cosphi, sinphi, 0.0, 0.0,
-              -sinphi, cosphi, 0.0, 0.0,
-              0.0, 0.0, 1.0, 0.0,
-              0.0, 0.0, 0.0, 1.0)
+    (cosphi, sinphi, 0.0, 0.0,
+     -sinphi, cosphi, 0.0, 0.0,
+     0.0, 0.0, 1.0, 0.0,
+     0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"
     outstr += "bmesh.ops.create_cone(bm, " \
-                                    "cap_ends = True, " \
-                                    "cap_tris = True, " \
-                                    "segments = %i, " \
-                                    "diameter1 = %10.4f, " \
-                                    "diameter2 = %10.4f, " \
-                                    "depth = %10.4f)\n" \
-                                    % (segments, b, 0.01, h)
+    "cap_ends = True, " \
+    "cap_tris = True, " \
+    "segments = %i, " \
+    "diameter1 = %10.4f, " \
+    "diameter2 = %10.4f, " \
+    "depth = %10.4f)\n" \
+    % (segments, b, 0.01, h)
     outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l - h /2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" % (structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"

@@ -148,10 +148,10 @@ def formfactor(atomtype, sintl):
     [a1, b1, a2, b2, a3, b3, a4, b4, c] = formfactorparameters(atomtype)
     sintl2 = float(sintl) **2
     f = a1 * np.exp(-b1 * sintl2) \
-      + a2 * np.exp(-b2 * sintl2) \
-      + a3 * np.exp(-b3 * sintl2) \
-      + a4 * np.exp(-b4 * sintl2) \
-      + c
+    + a2 * np.exp(-b2 * sintl2) \
+    + a3 * np.exp(-b3 * sintl2) \
+    + a4 * np.exp(-b4 * sintl2) \
+    + c
 
     return f
 

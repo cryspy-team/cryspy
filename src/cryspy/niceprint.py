@@ -107,11 +107,11 @@ def print_cif_without_symmetries(liste, atomset, metric):
     string += "_symmetry_space_group_name_H-M 'P 1'"
     string += "\n"
     string += "loop_ \n" \
-             " _atom_site_label \n" \
-             " _atom_site_type_symbol \n" \
-             " _atom_site_fract_x \n" \
-             " _atom_site_fract_y \n" \
-             " _atom_site_fract_z \n"
+    " _atom_site_label \n" \
+    " _atom_site_type_symbol \n" \
+    " _atom_site_fract_x \n" \
+    " _atom_site_fract_y \n" \
+    " _atom_site_fract_z \n"
     for atomname in liste:
         how_often = 0
         for atom in atomset.menge:
