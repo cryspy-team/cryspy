@@ -20,7 +20,7 @@ class Atom():
 
     def __str__(self):
         return bp.block([["Atom", " " + self.name,
-                          " " + self.typ, " " +  self.pos.__str__()],])
+                          " " + self.typ, " " +  self.pos.__str__()], ])
 
     def __eq__(self, right):
         if (self.typ == right.typ) and (self.pos == right.pos):
@@ -158,7 +158,7 @@ class Atomset():
         # The Atoms are printed in alphabetically order with regard to
         # the name, and if name is equal, with regard to the type.
         strings = [["Atomset\n"
-                    "-------"],]
+                    "-------"], ]
         liste = [atom for atom in self.menge]
         atomliste = []
         momentumliste = []

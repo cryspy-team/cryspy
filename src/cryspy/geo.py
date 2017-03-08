@@ -57,7 +57,7 @@ class Pos:
         self.value = value
 
     def __str__(self):
-        return bp.block([["Pos", self.value.block(0, 3, 0, 1).__str__()],])
+        return bp.block([["Pos", self.value.block(0, 3, 0, 1).__str__()], ])
 
     def x(self):
         return self.value.liste[0].liste[0]
@@ -121,7 +121,7 @@ class Dif:
         return self.value.liste[2].liste[0]
 
     def __str__(self):
-        return bp.block([["Dif", self.value.block(0, 3, 0, 1).__str__()],])
+        return bp.block([["Dif", self.value.block(0, 3, 0, 1).__str__()], ])
 
     def __eq__(self, right):
         if isinstance(right, Dif):
@@ -188,7 +188,7 @@ class Rec:
         self.value = value
 
     def __str__(self):
-        return bp.block([["Rec", self.value.block(0, 1, 0, 3).__str__()],])
+        return bp.block([["Rec", self.value.block(0, 1, 0, 3).__str__()], ])
 
     def __eq__(self, right):
         if isinstance(right, Rec):
@@ -256,7 +256,7 @@ class Operator:
         self.value = value
 
     def __str__(self):
-        return bp.block([["Operator", self.value.__str__()],])
+        return bp.block([["Operator", self.value.__str__()], ])
 
     def __eq__(self, right):
         if isinstance(right, Operator):
@@ -443,7 +443,7 @@ class Pointgroup:
 
         n = len(G.liste)
         m = len(H.liste)
-        flags = [True,] * n
+        flags = [True, ] * n
         for i in range(n):
             if flags[i]:
                 for j in range(1, m):
@@ -679,9 +679,9 @@ class Transgen():
             return "canonical"
         else:
             return bp.block([["Transgen",
-                              self.liste[0].value.block(0,3,0,1).__str__(), ' ',
-                              self.liste[1].value.block(0,3,0,1).__str__(), ' ',
-                              self.liste[2].value.block(0,3,0,1).__str__()],])
+                              self.liste[0].value.block(0, 3, 0, 1).__str__(), ' ',
+                              self.liste[1].value.block(0, 3, 0, 1).__str__(), ' ',
+                              self.liste[2].value.block(0, 3, 0, 1).__str__()], ])
 
     def __rmod__(self, left):
         if isinstance(left, Pos):
@@ -756,8 +756,8 @@ class Coset():
             transgenblock = bp.block(
                 [[self.transgen.liste[j].value.liste[i].liste[0].__str__() + "  "
                     for j in range(3)] for i in range(3)])
-            return bp.block([["{" +self.symmetry.__str__() +"}",],
-                             [transgenblock,]])
+            return bp.block([["{" +self.symmetry.__str__() +"}", ],
+                             [transgenblock, ]])
 
     def __eq__(self, right):
         if isinstance(right, Coset):
