@@ -476,7 +476,7 @@ class Transformation(Operator):
         matrix = nb.Matrix([[1, 0, 0, Ox],
                             [0, 1, 0, Oy],
                             [0, 0, 1, Oz],
-                            [0, 0, 0,  1]])
+                            [0, 0, 0, 1]])
         result = "Transformation O -> (%s, %s, %s)\n" \
                  "               then\n"% \
                      (Ox.__str__(), Oy.__str__(), Oz.__str__())
@@ -648,7 +648,7 @@ class Cellparameters():
         return Metric(nb.Matrix([nb.Row([aa, ab, ac, 0]),
                                  nb.Row([ab, bb, bc, 0]),
                                  nb.Row([ac, bc, cc, 0]),
-                                 nb.Row([0,  0,  0,  1])]))
+                                 nb.Row([0, 0, 0, 1])]))
 
     def __str__(self):
         return "Cellparameters\n" + \
@@ -681,7 +681,7 @@ class Transgen():
             [nb.Row([m00, m01, m02, 0]),
              nb.Row([m10, m11, m12, 0]),
              nb.Row([m20, m21, m22, 0]),
-             nb.Row([  0,   0,   0, 1])]))
+             nb.Row([  0, 0, 0, 1])]))
         self.transformationinv = self.transformation.inv()
 
     def __str__(self):

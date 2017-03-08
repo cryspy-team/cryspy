@@ -245,8 +245,8 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
               (costheta, 0.0, -sintheta, 0.0,
-               0.0,  1.0, 0.0, 0.0,
-              sintheta,        0.0,      costheta, 0.0,
+               0.0, 1.0, 0.0, 0.0,
+              sintheta, 0.0, costheta, 0.0,
               0.0, 0.0, 0.0, 1.0)
     Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
@@ -254,7 +254,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
             " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
              (cosphi, sinphi, 0.0, 0.0,
               -sinphi, cosphi, 0.0, 0.0,
-              0.0,        0.0,   1.0, 0.0,
+              0.0, 0.0, 1.0, 0.0,
              0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"
@@ -298,8 +298,8 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
               (costheta, 0.0, -sintheta, 0.0,
-               0.0,  1.0, 0.0, 0.0,
-              sintheta,        0.0,      costheta, 0.0,
+               0.0, 1.0, 0.0, 0.0,
+              sintheta, 0.0, costheta, 0.0,
               0.0, 0.0, 0.0, 1.0)
     Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
@@ -307,7 +307,7 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
             " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
              (cosphi, sinphi, 0.0, 0.0,
               -sinphi, cosphi, 0.0, 0.0,
-              0.0,        0.0,   1.0, 0.0,
+              0.0, 0.0, 1.0, 0.0,
              0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"
