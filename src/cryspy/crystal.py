@@ -20,7 +20,7 @@ class Atom():
 
     def __str__(self):
         return bp.block([["Atom", " " + self.name,
-                          " " + self.typ, " " +  self.pos.__str__()], ])
+                          " " + self.typ, " " + self.pos.__str__()], ])
 
     def __eq__(self, right):
         if (self.typ == right.typ) and (self.pos == right.pos):

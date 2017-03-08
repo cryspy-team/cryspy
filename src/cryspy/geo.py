@@ -299,7 +299,7 @@ def linearterm2str(liste_numbers, liste_variables):
                 return '-' + variablestr
             else:
                 return '-' + (-number).__str__() + variablestr
-    result =  ''
+    result = ''
     for i in range(len(liste_numbers)):
         result += prefactor(liste_numbers[i], liste_variables[i])
     if result[0] == '+':
@@ -311,7 +311,7 @@ class Symmetry(Operator):
     def __str__(self):
         result = ''
         for i in range(3):
-            result +=  linearterm2str(self.value.liste[i].liste,
+            result += linearterm2str(self.value.liste[i].liste,
                                       ["x", "y", "z", '']) + ','
         result = result[:-1]
         return result
