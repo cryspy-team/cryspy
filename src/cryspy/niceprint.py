@@ -8,6 +8,7 @@ from cryspy import numbers as nb
 from cryspy import geo as geo
 from cryspy import crystal as cr
 
+
 def atomtable(liste, atomset):
     assert isinstance(liste, list), \
         "First Argument must be of type list."

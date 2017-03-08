@@ -5,6 +5,7 @@ from cryspy import geo as geo
 from cryspy import blockprint as bp
 from cryspy import tables
 
+
 class Atom():
     def __init__(self, name, typ, pos):
         assert isinstance(name, str), \
@@ -135,6 +136,7 @@ class Momentum():
               str(hash(self.direction.y())), \
               str(hash(self.direction.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
 
 class Atomset():
     def __init__(self, menge):

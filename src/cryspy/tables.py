@@ -3,6 +3,7 @@ import cryspy.numbers as numbers
 from cryspy import geo as geo
 import numpy as np
 
+
 def spacegroup(number):
 
     if number == 13:
@@ -133,6 +134,7 @@ def spacegroup(number):
         )
         return sg
 
+
 def formfactor(atomtype, sintl):
     assert isinstance(atomtype, str), \
         "atomtype must be of type str."
@@ -178,6 +180,7 @@ def formfactorparameters(atomtype):
 
 
     return pars
+
 
 def colorscheme_jmol(typ):
     assert isinstance(typ, str), \

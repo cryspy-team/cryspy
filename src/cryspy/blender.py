@@ -5,6 +5,7 @@ from cryspy import crystal
 from cryspy.fromstr import fromstr as fs
 from cryspy import tables
 
+
 def make_blender_script(atomset, metric, structurename, outfilename):
     assert isinstance(atomset, crystal.Atomset), \
         "atomset must be of type crystal.Atomset."
@@ -223,6 +224,7 @@ def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
     outstr += "ob1.data.materials.append(mat)\n" 
     return outstr
 
+
 def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
     thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft):
     b = thickness_of_arrow_shaft
@@ -273,6 +275,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
     outstr += "ob1.location = (%10.4f, %10.4f, %10.4f)\n"%(x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob1)\n"
     return outstr
+
 
 def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
     thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip):

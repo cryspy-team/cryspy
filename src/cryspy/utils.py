@@ -1,6 +1,7 @@
 import cryspy.numbers as nb
 import cryspy.geo as geo
 
+
 class Karussell:
     def __init__(self, metric, zerodirection, positivedirection):
 

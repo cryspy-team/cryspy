@@ -44,6 +44,8 @@ from cryspy import blockprint as bp
 # An object of this class represents a position in 3D direct space.
 # It is constructed via a 4x1-numbers.Matrix, wherein the last entry
 # must be 1.
+
+
 class Pos:
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -657,6 +659,7 @@ class Cellparameters():
                           " " + self.alpha.__str__(), \
                           " " + self.beta.__str__(), \
                           " " + self.gamma.__str__()]])
+
 
 class Transgen():
     def __init__(self, b1, b2, b3):
