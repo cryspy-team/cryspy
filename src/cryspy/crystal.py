@@ -38,17 +38,17 @@ class Atom():
         assert isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset), \
             "I cannot apply an object of type %s " \
-            "to an object of type Atom." %(type(left))
+            "to an object of type Atom." % (type(left))
         return Atom(self.name, self.typ, left ** self.pos)
 
     def __mod__(self, right):
         assert isinstance(right, geo.Transgen), \
             "I cannot take an object of type Atom " \
-            "modulo an object of type %s" %(type(right))
+            "modulo an object of type %s" % (type(right))
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s%s" %(
+        string = "%s%s%s%s%s" % (
             self.name, self.typ,
             str(hash(self.pos.x())),
             str(hash(self.pos.y())),
@@ -129,7 +129,7 @@ class Momentum():
 
     def __hash__(self):
         string = "x%sy%sz%sdx%sdy%sdz%s" \
-            %(str(hash(self.pos.x())),
+            % (str(hash(self.pos.x())),
               str(hash(self.pos.y())),
               str(hash(self.pos.z())),
               str(hash(self.direction.x())),
@@ -214,7 +214,7 @@ class Atomset():
     def __mod__(self, right):
         assert isinstance(right, geo.Transgen), \
             "I cannot take an object of type Atomset " \
-            "modulo an object of type" %(type(right))
+            "modulo an object of type" % (type(right))
         atoms = set([])
         for atom in self.menge:
             atoms |= set([atom % right])

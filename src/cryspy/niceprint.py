@@ -22,7 +22,7 @@ def atomtable(liste, atomset):
     for atom in atomset.menge:
         assert (atom.name in liste), \
             "The list does not contain an atom " \
-            "named %s ." %atom.name
+            "named %s ." % atom.name
 
     stringliste = [["  name", "  type", "   x ", "   y ", "   z "],
                    ["  ----", "  ----", "  ---", "  ---", "  ---"]]
@@ -40,7 +40,7 @@ def atomtable(liste, atomset):
         assert (how_often == 1), \
             "There are %i atoms named "\
             "%s in the atomset" \
-            %(how_often, atomname)
+            % (how_often, atomname)
     string = bp.block(stringliste)
     return string
 
@@ -58,7 +58,7 @@ def atomtable_equalnames(liste, atomset):
     for atom in atomset.menge:
         assert (atom.name in liste), \
             "The list does not contain an atom " \
-            "named %s ." %atom.name
+            "named %s ." % atom.name
 
     stringliste = [["  name", "  type", "   x ", "   y ", "   z "],
                    ["  ----", "  ----", "  ---", "  ---", "  ---"]]
@@ -94,7 +94,7 @@ def print_cif_without_symmetries(liste, atomset, metric):
     for atom in atomset.menge:
         assert (atom.name in liste), \
             "The list does not contain an atom " \
-            "named %s ." %atom.name
+            "named %s ." % atom.name
 
     cell = metric.to_Cellparameters()
     string = "data_global _chemical_name 'noname' \n"
@@ -117,12 +117,12 @@ def print_cif_without_symmetries(liste, atomset, metric):
         for atom in atomset.menge:
             if (atom.name == atomname):
                 how_often += 1
-                atomname_extended = "%s_%i" %(atomname, how_often)
+                atomname_extended = "%s_%i" % (atomname, how_often)
                 string += "  " + atomname_extended
                 string += " " + atom.typ
-                string += " %f" %(float(atom.pos.x()))
-                string += " %f" %(float(atom.pos.y()))
-                string += " %f" %(float(atom.pos.z()))
+                string += " %f" % (float(atom.pos.x()))
+                string += " %f" % (float(atom.pos.y()))
+                string += " %f" % (float(atom.pos.z()))
                 string += "\n"
 
     return string

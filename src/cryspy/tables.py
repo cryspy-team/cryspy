@@ -128,8 +128,8 @@ def spacegroup(number):
         sg = geo.Spacegroup(
             geo.canonical,
             sg.liste_cosets +
-            [fs("{x,y+1/2,z+1/2}")*coset for coset in sg.liste_cosets]+
-            [fs("{x+1/2,y,z+1/2}")*coset for coset in sg.liste_cosets]+
+            [fs("{x,y+1/2,z+1/2}")*coset for coset in sg.liste_cosets] +
+            [fs("{x+1/2,y,z+1/2}")*coset for coset in sg.liste_cosets] +
             [fs("{x+1/2,y+1/2,z}")*coset for coset in sg.liste_cosets]
         )
         return sg

@@ -50,7 +50,7 @@ def fromstr(string):
             result = mixedfromstr(string)
             assert isinstance(result, nb.Mixed), \
                 "The following string looks like a number, but I "\
-                "cannot convert it: %s" %(string)
+                "cannot convert it: %s" % (string)
             return result
         except:
             pass
@@ -59,44 +59,44 @@ def fromstr(string):
             return matrixfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Matrix, "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Symmetry:
         try:
             return symmetryfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Symmetry, "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Transformation:
         try:
             return transformationfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a "
                             "Transformation, but I cannot convert it: %s"
-                            %(string)))
+                            % (string)))
     elif typ == geo.Coset:
         try:
             return cosetfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Coset "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Pos:
         try:
             return posfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Pos "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Dif:
         try:
             return diffromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Dif "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Rec:
         try:
             return recfromstr(string)
         except ValueError:
             raise(Exception("The following string looks like a Rec "
-                            "but I cannot convert it: %s" %(string)))
+                            "but I cannot convert it: %s" % (string)))
 
 
 def typefromstr(string):
@@ -149,7 +149,7 @@ def mixedfromstr(string):
                     return nb.Mixed(uc.ufloat_fromstr(string))
                 except ValueError:
                     raise(Exception("The following string looks like a number, "
-                                    "but I can't convert it: %s" %(string)))
+                                    "but I can't convert it: %s" % (string)))
 
 
 def matrixfromstr(string):
@@ -178,7 +178,7 @@ def symmetryfromstr(string):
     words = string.split(',')
     assert len(words) == 3, \
         "The following string looks like a Symmetry, but it has not "\
-        "three comma-separated terms: %s" %(string)
+        "three comma-separated terms: %s" % (string)
     liste = []
     for word in words:
         row = nb.Row(str2linearterm(word, ['x', 'y', 'z']))
@@ -218,7 +218,7 @@ def transformationfromstr(string):
             lines = string.split('\n')
             assert len(lines) == 3, \
                 "The following string looks like a Transformation, " \
-                "but it has not exactly three lines: %s" %(string)
+                "but it has not exactly three lines: %s" % (string)
             liste = []
             i = 0
             for line in lines:

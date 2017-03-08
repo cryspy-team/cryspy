@@ -57,9 +57,9 @@ def block(liste):
                     else:
                         stringpart = ''
                     code = '%'
-                    code += "%i" %(maxwidths[j])
+                    code += "%i" % (maxwidths[j])
                     code += 's'
-                    string += code %stringpart
+                    string += code % stringpart
                 else:
                     string += maxwidths[j] * ' '
             string += '\n'
