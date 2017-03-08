@@ -569,6 +569,7 @@ class Row(object):
             "Canonical Row must be cretated by a dimension > 0."
         assert (i >= 0) and (i < dim), \
             "Canonical Row must be created by an index i with 0 <= i < dim."
+
         def kronecker(i, j):
             if (i == j):
                 return Mixed(fr.Fraction(1, 1))
@@ -721,6 +722,7 @@ class Matrix(object):
             assert (numcols1 == numrows2), \
                 "Matrix-Multiplication needs two matrices, with "\
                 " width of first matrix equals height of second matrix."
+
             def matrixitem(i, j):
                 s = Mixed(fr.Fraction(0, 1))
                 for k in range(numcols1):
@@ -805,6 +807,7 @@ class Matrix(object):
         assert (numcols1 == numcols2), \
             "I cannot vglue (vertical glue) Matrices with different numbers " \
             "of cols."
+
         def row(i):
             if i < numrows1:
                 return left.liste[i]
@@ -823,6 +826,7 @@ class Matrix(object):
             "I can invert square matrices only (num of rows == num of cols)."
         dim = numrows
         right = Matrix.onematrix(dim)
+
         def make_triangle(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(dim - 1):
@@ -843,6 +847,7 @@ class Matrix(object):
                     self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
                     right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return (self, right)
+
         def make_diagonal(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(1, dim):
@@ -852,6 +857,7 @@ class Matrix(object):
                     self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
                     right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return(self, right)
+
         def make_one(self, right):
             new = deepcopy(self)
             (dim, dim) = self.shape()

@@ -283,6 +283,7 @@ def linearterm2str(liste_numbers, liste_variables):
             "Argument must be a list of str."
     assert len(liste_numbers) == len(liste_variables), \
         "Arguments must have the same length."
+
     def prefactor(number, variablestr):
         assert isinstance(number, nb.Mixed), \
             "Argument must be of type Mixed."
@@ -768,6 +769,7 @@ class Coset():
 
     def gohome(self):
         return Coset(self.symmetry % self.transgen, self.transgen)
+
     def __pow__(self, right):
         if isinstance(right, Pos):
             return (self.symmetry ** right) % self.transgen
