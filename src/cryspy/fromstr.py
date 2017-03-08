@@ -146,28 +146,28 @@ def mixedfromstr(string):
                 except ValueError:
                     raise(Exception("The following string looks like a number, "\
                                     "but I can't convert it: %s"%(string)))
-        
+
 
 def matrixfromstr(string):
-     string = string.replace('|', '\\')
-     string = string.replace('/ ', ' ')
-     string = string.replace('<', ' ')
-     string = string.replace('>', ' ')
-     string = string.replace(' /', ' ')
-     string = string.replace('\n', '\\')
-     for i in range(4):
+    string = string.replace('|', '\\')
+    string = string.replace('/ ', ' ')
+    string = string.replace('<', ' ')
+    string = string.replace('>', ' ')
+    string = string.replace(' /', ' ')
+    string = string.replace('\n', '\\')
+    for i in range(4):
         string = string.replace('\\ \\', '\\')
         string = string.replace('\\  \\', '\\')
         string = string.replace('\\   \\', '\\')
-     rowwords = string.split('\\')
-     rowliste = []
-     for rowword in rowwords:
-         words = rowword.split()
-         liste = []
-         for word in words:
-             liste.append(mixedfromstr(word))
-         rowliste.append(nb.Row(liste))
-     return nb.Matrix(rowliste)
+    rowwords = string.split('\\')
+    rowliste = []
+    for rowword in rowwords:
+        words = rowword.split()
+        liste = []
+        for word in words:
+            liste.append(mixedfromstr(word))
+        rowliste.append(nb.Row(liste))
+    return nb.Matrix(rowliste)
 
 
 def symmetryfromstr(string):
@@ -241,7 +241,7 @@ def transformationfromstr(string):
                  nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
                  nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
                  nb.Row([0, 0, 0, 1])])
-        
+
         return geo.Transformation(matrix.inv())
 
 def cosetfromstr(string):

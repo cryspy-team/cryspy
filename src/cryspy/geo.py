@@ -329,7 +329,7 @@ class Symmetry(Operator):
             return Dif(self.value * right.value)
         else:
             return NotImplemented
-            
+
 
 # **** class Pointgroup ****
 # An object of this class represents a point group.
@@ -399,7 +399,7 @@ class Pointgroup:
                                 [0, -1, 0, 0], \
                                 [0, 0, -1, 0], \
                                 [0, 0, 0, 1]]))
-                                
+
         for symmetry in self.liste:
             if symmetry == id:
                 identity.append(symmetry)
@@ -424,7 +424,7 @@ class Pointgroup:
             mirror_reflections + \
             non_twofold_second_kind
         )
-                
+
 
 
 
@@ -458,7 +458,7 @@ class Pointgroup:
                 string += G.liste[i].__str__() + "\n"
 
         return string
-                    
+
 
 
 
@@ -546,7 +546,7 @@ class Metric(Operator):
         self.valueinv = value.inv()
         self.schmidttransformation = self.calculate_schmidttransformation()
 
-    
+
     def dot(self, vector1, vector2):
         assert  (isinstance(vector1, Dif) and isinstance(vector2, Dif) ) \
             or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
@@ -579,7 +579,7 @@ class Metric(Operator):
 
         a2 = a1
         a3 = a2 * (1/self.length(a2))
-        
+
         b2 = b1 - a3*self.dot(a3, b1)
         b3 = b2 * (1/self.length(b2))
 
@@ -595,7 +595,7 @@ class Metric(Operator):
                        [M.liste[2].liste[0], M.liste[2].liste[1], M.liste[2].liste[2], 0], \
                        [0   , 0   , 0   , 1]]) \
             )
-            
+
         return transformation
 
 #    def cartesian(self, pos):
@@ -680,7 +680,7 @@ class Transgen():
              nb.Row([m20, m21, m22, 0]), \
              nb.Row([  0,   0,   0, 1])]))
         self.transformationinv = self.transformation.inv()
-        
+
     def __str__(self):
         if self == canonical:
             return "canonical"
@@ -756,7 +756,7 @@ class Coset():
             "Second argument must be of type Transgen."
         self.symmetry = symmetry % transgen
         self.transgen = transgen
-    
+
     def __str__(self):
         if self.transgen == canonical:
             return "{"+self.symmetry.__str__()+"}"
@@ -850,4 +850,4 @@ class Spacegroup():
                (self.liste_cosets == right.liste_cosets)
 
 
-    
+

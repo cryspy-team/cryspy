@@ -16,7 +16,7 @@ class Atom():
         self.name = name
         self.typ = typ
         self.pos = pos
-    
+
     def __str__(self):
         return bp.block([["Atom", " " + self.name, \
                           " " + self.typ, " " +  self.pos.__str__()],])
@@ -186,8 +186,8 @@ class Atomset():
             return Atomset(self.menge.union(right.menge))
         else:
             return NotImplemented
-            
-           
+
+
     def __radd__(self, left):
         if isinstance(left, geo.Dif):
             return self + left

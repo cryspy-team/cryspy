@@ -42,7 +42,7 @@ def atomtable(liste, atomset):
             %(how_often, atomname)
     string = bp.block(stringliste)
     return string
-       
+
 
 def atomtable_equalnames(liste, atomset):
     assert isinstance(liste, list), \

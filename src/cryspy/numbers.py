@@ -307,7 +307,7 @@ class Mixed(object):
                     return Mixed(self.value * right.value)
             elif isinstance(right.value, float):
                 return Mixed(self.value * right.value)
-            
+
 
     def __rmul__(self, left):
         if isinstance(left, fr.Fraction):
@@ -444,7 +444,7 @@ def deg2rad(number):
         "uncertainties.UFloat, int or float."
     return number * pi / 180
 
-    
+
 def rad2deg(number):
     assert isinstance(number, Mixed) \
         or isinstance(number, fr.Fraction) \
@@ -540,7 +540,7 @@ class Row(object):
             assert isinstance(item, Mixed), \
                 "Object of type Row cannot be created by an object of type " \
                 "%s in the list"%(type(item))
-    
+
     def __len__(self):
         return len(self.liste)
 
@@ -553,7 +553,7 @@ class Row(object):
                 return False
         else:
             return False
-   
+
     def __str__(self):
         str = "(  "
         for item in self.liste:
@@ -561,7 +561,7 @@ class Row(object):
             str += "  "
         str += ")"
         return str
-    
+
     def canonical(dim, i):
         assert isinstance(dim, int), \
             "Canonical Row must be created by a dimension of type int."
@@ -577,7 +577,7 @@ class Row(object):
             else:
                 return Mixed(fr.Fraction(0, 1))
         return Row([kronecker(i, j) for j in range(dim)])
-    
+
     def block(self, i1, i2):
         length = len(self)
         assert isinstance(i1, int) and isinstance(i2, int), \
@@ -701,7 +701,7 @@ class Matrix(object):
         else:
             return NotImplemented
 
- 
+
     def __mul__(self, right):
         if isinstance(right, fr.Fraction):
             right = Mixed(right)
@@ -762,7 +762,7 @@ class Matrix(object):
         assert (dim > 0), \
             "Dimension for creating onematrix must be > 0."
         return Matrix([Row.canonical(dim, i) for i in range(dim)])
-        
+
     def block(self, i1, i2, j1, j2):
         """
             >>> a = Mixed(fr.Fraction(1, 4))
@@ -835,14 +835,14 @@ class Matrix(object):
                 while (self.liste[i].liste[rownumber] == Mixed(0)) \
                     and (i < dim):
                     i += 1
-                
+
                 assert (i < dim), \
                     "Cannot transform matrix to triangle matrix."
-                
+
                 self = self.swap_rows(rownumber, i)
                 right = right.swap_rows(rownumber, i)
 
-                
+
                 for i in range(rownumber + 1, dim):
                     x = self.liste[i].liste[rownumber] \
                     / self.liste[rownumber].liste[rownumber]
@@ -915,7 +915,7 @@ class Matrix(object):
                 result += self.liste[i].liste[0] * (-1)**i * M.det()
 
             return result
-        
+
 
     def delete_translation(self):
         # If a 4x4-Matrix has the shape

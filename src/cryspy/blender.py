@@ -55,7 +55,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
     # Plot the axes:
     t = metric.schmidttransformation
- 
+
     pos = fs("p 1 0 0")
     x = float((t**pos).x())
     y = float((t**pos).y())
@@ -95,7 +95,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
     for atom in atomlist:
         if atom.typ not in typs:
-                typs.append(atom.typ)
+            typs.append(atom.typ)
 
     for typ in typs:
         (spheresize, color) = tables.colorscheme_jmol(typ)
@@ -254,7 +254,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
               -sinphi, cosphi, 0.0, 0.0, \
               0.0,        0.0,   1.0, 0.0, \
              0.0, 0.0, 0.0, 1.0)
-    
+
     outstr += "bm = bmesh.new()\n"
     outstr += "bmesh.ops.create_cone(bm, " \
                                     "cap_ends = True, " \
@@ -306,7 +306,7 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
               -sinphi, cosphi, 0.0, 0.0, \
               0.0,        0.0,   1.0, 0.0, \
              0.0, 0.0, 0.0, 1.0)
-    
+
     outstr += "bm = bmesh.new()\n"
     outstr += "bmesh.ops.create_cone(bm, " \
                                     "cap_ends = True, " \
