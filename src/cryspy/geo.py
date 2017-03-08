@@ -841,6 +841,3 @@ class Spacegroup():
             "to object of type Spacegroup only."
         return (self.transgen == right.transgen) and \
                (self.liste_cosets == right.liste_cosets)
-
-
-

@@ -18,4 +18,3 @@ blender__diffuse_light = 0.5
 
 # Difference of the cases, whether you make segments 4 or 128,
 # is for the *.blend-file a difference of ca. 50 KB per arrow.
-

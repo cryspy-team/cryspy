@@ -953,4 +953,3 @@ class Matrix(object):
                        [d, e, f, 0],
                        [g, h, i, 0],
                        [0, 0, 0, 1]])
-
