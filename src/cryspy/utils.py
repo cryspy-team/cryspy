@@ -5,9 +5,9 @@ import cryspy.geo as geo
 class Karussell:
     def __init__(self, metric, zerodirection, positivedirection):
 
-        self.zerodir = zerodirection * (1 /metric.length(zerodirection))
+        self.zerodir = zerodirection * (1 / metric.length(zerodirection))
         self.positivedir = positivedirection - self.zerodir * metric.dot(positivedirection, self.zerodir)
-        self.positivedir *= 1 /metric.length(self.positivedir)
+        self.positivedir *= 1 / metric.length(self.positivedir)
         self.metric = metric
 
     def direction(self, angle):

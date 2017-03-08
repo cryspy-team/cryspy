@@ -58,21 +58,21 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     t = metric.schmidttransformation
 
     pos = fs("p 1 0 0")
-    x = float((t **pos).x())
-    y = float((t **pos).y())
-    z = float((t **pos).z())
+    x = float((t ** pos).x())
+    y = float((t ** pos).y())
+    z = float((t ** pos).z())
     outstr += add_axis(structurename, 'XAxis', x, y, z)
 
     pos = fs("p 0 1 0")
-    x = float((t **pos).x())
-    y = float((t **pos).y())
-    z = float((t **pos).z())
+    x = float((t ** pos).x())
+    y = float((t ** pos).y())
+    z = float((t ** pos).z())
     outstr += add_axis(structurename, 'YAxis', x, y, z)
 
     pos = fs("p 0 0 1")
-    x = float((t **pos).x())
-    y = float((t **pos).y())
-    z = float((t **pos).z())
+    x = float((t ** pos).x())
+    y = float((t ** pos).y())
+    z = float((t ** pos).z())
     outstr += add_axis(structurename, 'ZAxis', x, y, z)
 
     # Create empty mesh for the positions of the atoms
@@ -117,9 +117,9 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     for atom in atomlist:
         atomnumber += 1
         materialnumber += 1
-        x = float((t **atom.pos).x())
-        y = float((t **atom.pos).y())
-        z = float((t **atom.pos).z())
+        x = float((t ** atom.pos).x())
+        y = float((t ** atom.pos).y())
+        z = float((t ** atom.pos).z())
         outstr += "posobject.data.vertices.add(1)\n"
         outstr += "posobject.data.vertices[-1].co = (%f, %f, %f)\n" % (x, y, z)
         outstr += "ob = bpy.data.objects.new( \
@@ -143,20 +143,20 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         else:
             color = const.blender__std_momentum_color
 
-        x0 = float((t **momentum.pos).x())
-        y0 = float((t **momentum.pos).y())
-        z0 = float((t **momentum.pos).z())
-        dx = float((t **momentum.dir).x())
-        dy = float((t **momentum.dir).y())
-        dz = float((t **momentum.dir).z())
+        x0 = float((t ** momentum.pos).x())
+        y0 = float((t ** momentum.pos).y())
+        z0 = float((t ** momentum.pos).z())
+        dx = float((t ** momentum.dir).x())
+        dy = float((t ** momentum.dir).y())
+        dz = float((t ** momentum.dir).z())
 
-        length = np.sqrt(dx *dx + dy *dy + dz *dz)
-        x1 = x0 - dx * plotlength /length
-        y1 = y0 - dy * plotlength /length
-        z1 = z0 - dz * plotlength /length
-        x2 = x0 + dx * plotlength /length
-        y2 = y0 + dy * plotlength /length
-        z2 = z0 + dz * plotlength /length
+        length = np.sqrt(dx * dx + dy * dy + dz * dz)
+        x1 = x0 - dx * plotlength / length
+        y1 = y0 - dy * plotlength / length
+        z1 = z0 - dz * plotlength / length
+        x2 = x0 + dx * plotlength / length
+        y2 = y0 + dy * plotlength / length
+        z2 = z0 + dz * plotlength / length
 
         outstr += add_momentum(structurename, momentumname,
                                x1, y1, z1, x2, y2, z2, color)
@@ -200,10 +200,10 @@ def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2,
               thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft,
               thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip, color):
     h = height_of_arrow_tip
-    l = np.sqrt((x2 -x1) *(x2 -x1) + (y2 -y1) *(y2 -y1) + (z2 -z1) *(z2 -z1))
-    x2kurz = x1 + (x2 - x1) * (1 - h /l)
-    y2kurz = y1 + (y2 - y1) * (1 - h /l)
-    z2kurz = z1 + (z2 - z1) * (1 - h /l)
+    l = np.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1))
+    x2kurz = x1 + (x2 - x1) * (1 - h / l)
+    y2kurz = y1 + (y2 - y1) * (1 - h / l)
+    z2kurz = z1 + (z2 - z1) * (1 - h / l)
     outstr = add_cylinder(structurename, arrowname + "_cylinder",
                           x1, y1, z1, x2kurz, y2kurz, z2kurz,
                           thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft)
@@ -231,8 +231,8 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
     x = x2 - x1
     y = y2 - y1
     z = z2 - z1
-    l = np.sqrt(x *x + y *y + z *z)
-    theta = np.arccos(z /l)
+    l = np.sqrt(x * x + y * y + z * z)
+    theta = np.arccos(z / l)
     phi = np.arctan2(y, x)
     cosphi = np.cos(phi)
     sinphi = np.sin(phi)
@@ -264,7 +264,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
     "diameter2 = %10.4f, " \
     "depth = %10.4f)\n" \
     % (segments, b, b, l)
-    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l /2)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l / 2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" % (structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
     outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh)\n" % (structurename, cylindername)
@@ -284,8 +284,8 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
     x = x2 - x1
     y = y2 - y1
     z = z2 - z1
-    l = np.sqrt(x *x + y *y + z *z)
-    theta = np.arccos(z /l)
+    l = np.sqrt(x * x + y * y + z * z)
+    theta = np.arccos(z / l)
     phi = np.arctan2(y, x)
     cosphi = np.cos(phi)
     sinphi = np.sin(phi)
@@ -317,7 +317,7 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
     "diameter2 = %10.4f, " \
     "depth = %10.4f)\n" \
     % (segments, b, 0.01, h)
-    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l - h /2)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" % (l - h / 2)
     outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" % (structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
     outstr += "ob2 = bpy.data.objects.new('%s.%s', mesh)\n" % (structurename, conename)

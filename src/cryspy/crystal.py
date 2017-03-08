@@ -199,7 +199,7 @@ class Atomset():
             "Argument must be of type Operator."
         if isinstance(left, geo.Operator):
             menge = set([])
-            return Atomset({left **item for item in self.menge})
+            return Atomset({left ** item for item in self.menge})
         if isinstance(left, geo.Spacegroup):
             atoms = set([])
             for atom in self.menge:

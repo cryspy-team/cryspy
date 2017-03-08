@@ -647,7 +647,7 @@ class Matrix(object):
 
     def __str__(self):
         str = ''
-        length = [0] *self.shape()[1]
+        length = [0] * self.shape()[1]
         for row in self.liste:
             for (i, item) in zip(range(len(row)), row.liste):
                 length[i] = max(length[i], len(item.__str__()))
@@ -910,7 +910,7 @@ class Matrix(object):
             result = 0
             for i in range(0, shape[0]):
                 M = self.delete_ith_row_and_first_column(i)
-                result += self.liste[i].liste[0] * (-1) **i * M.det()
+                result += self.liste[i].liste[0] * (-1) ** i * M.det()
 
             return result
 

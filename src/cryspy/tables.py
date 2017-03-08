@@ -128,9 +128,9 @@ def spacegroup(number):
         sg = geo.Spacegroup(
             geo.canonical,
             sg.liste_cosets +
-            [fs("{x,y+1/2,z+1/2}") *coset for coset in sg.liste_cosets] +
-            [fs("{x+1/2,y,z+1/2}") *coset for coset in sg.liste_cosets] +
-            [fs("{x+1/2,y+1/2,z}") *coset for coset in sg.liste_cosets]
+            [fs("{x,y+1/2,z+1/2}") * coset for coset in sg.liste_cosets] +
+            [fs("{x+1/2,y,z+1/2}") * coset for coset in sg.liste_cosets] +
+            [fs("{x+1/2,y+1/2,z}") * coset for coset in sg.liste_cosets]
         )
         return sg
 
@@ -146,7 +146,7 @@ def formfactor(atomtype, sintl):
     # Formula from [international tables C, S565 eq. 6.1.1.15].
 
     [a1, b1, a2, b2, a3, b3, a4, b4, c] = formfactorparameters(atomtype)
-    sintl2 = float(sintl) **2
+    sintl2 = float(sintl) ** 2
     f = a1 * np.exp(-b1 * sintl2) \
     + a2 * np.exp(-b2 * sintl2) \
     + a3 * np.exp(-b3 * sintl2) \
