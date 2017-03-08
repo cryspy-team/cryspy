@@ -19,7 +19,7 @@ class Atom():
         self.pos = pos
 
     def __str__(self):
-        return bp.block([["Atom", " " + self.name, \
+        return bp.block([["Atom", " " + self.name,
                           " " + self.typ, " " +  self.pos.__str__()],])
 
     def __eq__(self, right):
@@ -48,10 +48,10 @@ class Atom():
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s%s"%( \
-            self.name, self.typ, \
-            str(hash(self.pos.x())), \
-            str(hash(self.pos.y())), \
+        string = "%s%s%s%s%s"%(
+            self.name, self.typ,
+            str(hash(self.pos.x())),
+            str(hash(self.pos.y())),
             str(hash(self.pos.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
@@ -129,11 +129,11 @@ class Momentum():
 
     def __hash__(self):
         string = "x%sy%sz%sdx%sdy%sdz%s" \
-            %(str(hash(self.pos.x())), \
-              str(hash(self.pos.y())), \
-              str(hash(self.pos.z())), \
-              str(hash(self.direction.x())), \
-              str(hash(self.direction.y())), \
+            %(str(hash(self.pos.x())),
+              str(hash(self.pos.y())),
+              str(hash(self.pos.z())),
+              str(hash(self.direction.x())),
+              str(hash(self.direction.y())),
               str(hash(self.direction.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
@@ -158,7 +158,7 @@ class Atomset():
     def __str__(self):
         # The Atoms are printed in alphabetically order with regard to
         # the name, and if name is equal, with regard to the type.
-        strings = [["Atomset\n" \
+        strings = [["Atomset\n"
                     "-------"],]
         liste = [atom for atom in self.menge]
         atomliste = []

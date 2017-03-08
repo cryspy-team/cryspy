@@ -161,7 +161,7 @@ class Mixed(object):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, uc.UFloat):
-                return Mixed( \
+                return Mixed(
                     uc.ufloat(self.value + right.value.n, right.value.s))
             if isinstance(right.value, int):
                 return Mixed(self.value + right.value)
@@ -547,7 +547,7 @@ class Row(object):
     def __eq__(self, right):
         if isinstance(right, Row):
             if len(self) == len(right):
-                return min([(self.liste[i] == right.liste[i]) \
+                return min([(self.liste[i] == right.liste[i])
                     for i in range(len(self))])
             else:
                 return False
@@ -639,7 +639,7 @@ class Matrix(object):
     def __eq__(self, right):
         if isinstance(right, Matrix):
             if (self.shape() == right.shape()):
-                return min([(self.liste[i] == right.liste[i]) \
+                return min([(self.liste[i] == right.liste[i])
                     for i in range(self.shape()[0])])
             else:
                 return False
@@ -682,9 +682,9 @@ class Matrix(object):
             assert self.shape() == right.shape(), \
                 "Two Matrices must have the same shape for Operator +"
             (numrows, numcolumns) = self.shape()
-            return Matrix([\
-                Row([self.liste[i].liste[j] + right.liste[i].liste[j] \
-                for j in range(numcolumns)]) \
+            return Matrix([
+                Row([self.liste[i].liste[j] + right.liste[i].liste[j]
+                for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented
@@ -694,9 +694,9 @@ class Matrix(object):
             assert self.shape() == right.shape(), \
                 "Two Matrices must have the same shape for Operator +"
             (numrows, numcolumns) = self.shape()
-            return Matrix([\
-                Row([self.liste[i].liste[j] - right.liste[i].liste[j] \
-                for j in range(numcolumns)]) \
+            return Matrix([
+                Row([self.liste[i].liste[j] - right.liste[i].liste[j]
+                for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented
@@ -713,11 +713,11 @@ class Matrix(object):
             right = Mixed(right)
         if isinstance(right, Mixed):
             (numrows, numcols) = self.shape()
-            return Matrix( \
-                [ \
-                    Row([self.liste[i].liste[j] * right for j in range(numcols)]) \
-                    for i in range(numrows) \
-                ] \
+            return Matrix(
+                [
+                    Row([self.liste[i].liste[j] * right for j in range(numcols)])
+                    for i in range(numrows)
+                ]
             )
         elif isinstance(right, Matrix):
             (numrows1, numcols1) = self.shape()
@@ -730,11 +730,11 @@ class Matrix(object):
                 for k in range(numcols1):
                     s += self.liste[i].liste[k] * right.liste[k].liste[j]
                 return s
-            return Matrix( \
-                [ \
-                   Row([matrixitem(i, j) for j in range(numcols2)]) \
-                   for i in range(numrows1) \
-                ] \
+            return Matrix(
+                [
+                   Row([matrixitem(i, j) for j in range(numcols2)])
+                   for i in range(numrows1)
+                ]
             )
         else:
             return NotImplemented
@@ -873,12 +873,12 @@ class Matrix(object):
 
     def transpose(self):
         shape = self.shape()
-        return Matrix([ \
-                   Row([ \
-                       self.liste[j].liste[i] \
-                       for j in range(shape[0]) \
-                   ]) \
-                   for i in range(shape[1]) \
+        return Matrix([
+                   Row([
+                       self.liste[j].liste[i]
+                       for j in range(shape[0])
+                   ])
+                   for i in range(shape[1])
                ])
 
     def delete_ith_row_and_first_column(self, i):
@@ -952,8 +952,8 @@ class Matrix(object):
         h = self.liste[2].liste[1]
         i = self.liste[2].liste[2]
 
-        return Matrix([[a, b, c, 0], \
-                       [d, e, f, 0], \
-                       [g, h, i, 0], \
+        return Matrix([[a, b, c, 0],
+                       [d, e, f, 0],
+                       [g, h, i, 0],
                        [0, 0, 0, 1]])
 

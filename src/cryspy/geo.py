@@ -78,8 +78,8 @@ class Pos:
         if isinstance(right, Dif):
             return Pos(self.value + right.value)
         else:
-            raise(BaseException(\
-                "I cannot add objects of types %s and %s"% \
+            raise(BaseException(
+                "I cannot add objects of types %s and %s"%
                 (type(self), type(right))))
         return 0
 
@@ -89,8 +89,8 @@ class Pos:
         elif isinstance(right, Pos):
             return Dif(self.value - right.value)
         else:
-            raise(BaseException(\
-                "I cannot subtract objects of type %s and %s"% \
+            raise(BaseException(
+                "I cannot subtract objects of type %s and %s"%
                 (typen(self), type(right))))
 
 origin = Pos(nb.Matrix([[0], [0], [0], [1]]))
@@ -141,7 +141,7 @@ class Dif:
         if isinstance(right, Dif):
             return Dif(self.value - right.value)
         else:
-            raise(BaseException("I cannot subtract objects of type"\
+            raise(BaseException("I cannot subtract objects of type"
                 "%s and %s"%(type(self), type(right))))
 
     def __neg__(self):
@@ -149,26 +149,26 @@ class Dif:
 
     def __mul__(self, right):
         if isinstance(right, nb.Mixed):
-            return Dif(nb.Matrix([[right * self.x()], \
-                                  [right * self.y()], \
-                                  [right * self.z()], \
+            return Dif(nb.Matrix([[right * self.x()],
+                                  [right * self.y()],
+                                  [right * self.z()],
                                   [0               ]]))
         else:
             return NotImplemented
 
-canonical_e0 = Dif(nb.Matrix([nb.Row([1]), \
-                              nb.Row([0]), \
-                              nb.Row([0]), \
+canonical_e0 = Dif(nb.Matrix([nb.Row([1]),
+                              nb.Row([0]),
+                              nb.Row([0]),
                               nb.Row([0])]))
 
-canonical_e1 = Dif(nb.Matrix([nb.Row([0]), \
-                              nb.Row([1]), \
-                              nb.Row([0]), \
+canonical_e1 = Dif(nb.Matrix([nb.Row([0]),
+                              nb.Row([1]),
+                              nb.Row([0]),
                               nb.Row([0])]))
 
-canonical_e2 = Dif(nb.Matrix([nb.Row([0]), \
-                              nb.Row([0]), \
-                              nb.Row([1]), \
+canonical_e2 = Dif(nb.Matrix([nb.Row([0]),
+                              nb.Row([0]),
+                              nb.Row([1]),
                               nb.Row([0])]))
 
 
@@ -393,13 +393,13 @@ class Pointgroup:
         mirror_reflections = []
         non_twofold_second_kind = []
 
-        id = Symmetry(nb.Matrix([[1, 0, 0, 0], \
-                                 [0, 1, 0, 0], \
-                                 [0, 0, 1, 0], \
+        id = Symmetry(nb.Matrix([[1, 0, 0, 0],
+                                 [0, 1, 0, 0],
+                                 [0, 0, 1, 0],
                                  [0, 0, 0, 1]]))
-        I = Symmetry(nb.Matrix([[-1, 0, 0, 0], \
-                                [0, -1, 0, 0], \
-                                [0, 0, -1, 0], \
+        I = Symmetry(nb.Matrix([[-1, 0, 0, 0],
+                                [0, -1, 0, 0],
+                                [0, 0, -1, 0],
                                 [0, 0, 0, 1]]))
 
         for symmetry in self.liste:
@@ -419,11 +419,11 @@ class Pointgroup:
                     non_twofold_second_kind.append(symmetry)
 
         return Pointgroup(
-            identity + \
-            twofold_rotations + \
-            non_twofold_rotations + \
-            inversion + \
-            mirror_reflections + \
+            identity +
+            twofold_rotations +
+            non_twofold_rotations +
+            inversion +
+            mirror_reflections +
             non_twofold_second_kind
         )
 
@@ -473,17 +473,17 @@ class Transformation(Operator):
         Ox = m.liste[0].liste[3]
         Oy = m.liste[1].liste[3]
         Oz = m.liste[2].liste[3]
-        matrix = nb.Matrix([[1, 0, 0, Ox], \
-                            [0, 1, 0, Oy], \
-                            [0, 0, 1, Oz], \
+        matrix = nb.Matrix([[1, 0, 0, Ox],
+                            [0, 1, 0, Oy],
+                            [0, 0, 1, Oz],
                             [0, 0, 0,  1]])
         result = "Transformation O -> (%s, %s, %s)\n" \
                  "               then\n"% \
                      (Ox.__str__(), Oy.__str__(), Oz.__str__())
-        matrix = nb.Matrix( \
-            [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
-             nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
-             nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+        matrix = nb.Matrix(
+            [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]),
+             nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]),
+             nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]),
              nb.Row([m.liste[3].liste[0], m.liste[3].liste[1], m.liste[3].liste[2], 1])])
         terms = []
         for i in range(3):
@@ -507,8 +507,8 @@ class Transformation(Operator):
         if isinstance(right, Symmetry):
             return Symmetry(self.value * right.value * self.value.inv())
         elif isinstance(right, Transgen):
-            return Transgen(self ** right.liste[0], \
-                                self ** right.liste[1], \
+            return Transgen(self ** right.liste[0],
+                                self ** right.liste[1],
                                 self ** right.liste[2])
         elif isinstance(right, Pos):
             return Pos(self.value * right.value)
@@ -520,7 +520,7 @@ class Transformation(Operator):
             Minvtr = Minv.transpose()
             return Metric(Minvtr * right.value * Minv)
         elif isinstance(right, Spacegroup):
-            return Spacegroup(self ** right.transgen, \
+            return Spacegroup(self ** right.transgen,
                           [self ** coset for coset in right.liste_cosets])
         elif isinstance(right, Rec):
             return Rec(right.value * self.inv().value.delete_translation())
@@ -571,7 +571,7 @@ class Metric(Operator):
             "Both arguments must be of type Dif."
         len1 = self.length(vector1)
         len2 = self.length(vector2)
-        return nb.arccos(self.dot(vector1, vector2) \
+        return nb.arccos(self.dot(vector1, vector2)
             / (len1 * len2))
 
     def calculate_schmidttransformation(self):
@@ -588,14 +588,14 @@ class Metric(Operator):
         c2 = c1 - a3*self.dot(a3, c1) - b3*self.dot(b3, c1)
         c3 = c2 * (1/self.length(c2))
 
-        M = nb.Matrix([[a3.x(), b3.x(), c3.x()], \
-                       [a3.y(), b3.y(), c3.y()], \
+        M = nb.Matrix([[a3.x(), b3.x(), c3.x()],
+                       [a3.y(), b3.y(), c3.y()],
                        [a3.z(), b3.z(), c3.z()]]).inv()
         transformation = Transformation(
-            nb.Matrix([[M.liste[0].liste[0], M.liste[0].liste[1], M.liste[0].liste[2], 0], \
-                       [M.liste[1].liste[0], M.liste[1].liste[1], M.liste[1].liste[2], 0], \
-                       [M.liste[2].liste[0], M.liste[2].liste[1], M.liste[2].liste[2], 0], \
-                       [0   , 0   , 0   , 1]]) \
+            nb.Matrix([[M.liste[0].liste[0], M.liste[0].liste[1], M.liste[0].liste[2], 0],
+                       [M.liste[1].liste[0], M.liste[1].liste[1], M.liste[1].liste[2], 0],
+                       [M.liste[2].liste[0], M.liste[2].liste[1], M.liste[2].liste[2], 0],
+                       [0   , 0   , 0   , 1]])
             )
 
         return transformation
@@ -645,19 +645,19 @@ class Cellparameters():
         ab = a * b * nb.cos(nb.deg2rad(gamma))
         ac = a * c * nb.cos(nb.deg2rad(beta))
         bc = b * c * nb.cos(nb.deg2rad(alpha))
-        return Metric(nb.Matrix([nb.Row([aa, ab, ac, 0]), \
-                                 nb.Row([ab, bb, bc, 0]), \
-                                 nb.Row([ac, bc, cc, 0]), \
+        return Metric(nb.Matrix([nb.Row([aa, ab, ac, 0]),
+                                 nb.Row([ab, bb, bc, 0]),
+                                 nb.Row([ac, bc, cc, 0]),
                                  nb.Row([0,  0,  0,  1])]))
 
     def __str__(self):
         return "Cellparameters\n" + \
-               bp.block([["a", " b", " c", " alpha", " beta", " gamma"], \
-                         [self.a.__str__(), \
-                          " " + self.b.__str__(), \
-                          " " + self.c.__str__(), \
-                          " " + self.alpha.__str__(), \
-                          " " + self.beta.__str__(), \
+               bp.block([["a", " b", " c", " alpha", " beta", " gamma"],
+                         [self.a.__str__(),
+                          " " + self.b.__str__(),
+                          " " + self.c.__str__(),
+                          " " + self.alpha.__str__(),
+                          " " + self.beta.__str__(),
                           " " + self.gamma.__str__()]])
 
 
@@ -677,10 +677,10 @@ class Transgen():
         m20 = b1.value.liste[2].liste[0]
         m21 = b2.value.liste[2].liste[0]
         m22 = b3.value.liste[2].liste[0]
-        self.transformation = Transformation(nb.Matrix( \
-            [nb.Row([m00, m01, m02, 0]), \
-             nb.Row([m10, m11, m12, 0]), \
-             nb.Row([m20, m21, m22, 0]), \
+        self.transformation = Transformation(nb.Matrix(
+            [nb.Row([m00, m01, m02, 0]),
+             nb.Row([m10, m11, m12, 0]),
+             nb.Row([m20, m21, m22, 0]),
              nb.Row([  0,   0,   0, 1])]))
         self.transformationinv = self.transformation.inv()
 
@@ -688,9 +688,9 @@ class Transgen():
         if self == canonical:
             return "canonical"
         else:
-            return bp.block([["Transgen", \
-                self.liste[0].value.block(0,3,0,1).__str__(), ' ', \
-                self.liste[1].value.block(0,3,0,1).__str__(), ' ', \
+            return bp.block([["Transgen",
+                self.liste[0].value.block(0,3,0,1).__str__(), ' ',
+                self.liste[1].value.block(0,3,0,1).__str__(), ' ',
                 self.liste[2].value.block(0,3,0,1).__str__()],])
 
     def __rmod__(self, left):
@@ -716,17 +716,17 @@ class Transgen():
             if left.transgen == self:
                 return Coset(left.symmetry % self, self)
             else:
-                raise(BaseException("If you try to calculate " \
-                    "Coset % Transgen, but the coset has another " \
+                raise(BaseException("If you try to calculate "
+                    "Coset % Transgen, but the coset has another "
                     "transgen, then you come into devil's kitchen!"))
         elif isinstance(left, Spacegroup):
             if left.transgen == self:
-                return Spacegroup(self, [coset % self \
+                return Spacegroup(self, [coset % self
                     for coset in left.liste_cosets])
             else:
-                raise(BaseException("If you try to calculate " \
-                    "Spacegroup % Transgen, but the spacegroup has " \
-                    "another transgen, then you come into " \
+                raise(BaseException("If you try to calculate "
+                    "Spacegroup % Transgen, but the spacegroup has "
+                    "another transgen, then you come into "
                     "devil's kitchen!"))
         else:
             return NotImplemented
@@ -742,12 +742,12 @@ class Transgen():
 
 
 
-canonical = Transgen( \
-    Dif(nb.Matrix( \
-    [nb.Row([1]), nb.Row([0]), nb.Row([0]), nb.Row([0])])), \
-    Dif(nb.Matrix( \
-    [nb.Row([0]), nb.Row([1]), nb.Row([0]), nb.Row([0])])), \
-    Dif(nb.Matrix( \
+canonical = Transgen(
+    Dif(nb.Matrix(
+    [nb.Row([1]), nb.Row([0]), nb.Row([0]), nb.Row([0])])),
+    Dif(nb.Matrix(
+    [nb.Row([0]), nb.Row([1]), nb.Row([0]), nb.Row([0])])),
+    Dif(nb.Matrix(
     [nb.Row([0]), nb.Row([0]), nb.Row([1]), nb.Row([0])])))
 
 
@@ -764,10 +764,10 @@ class Coset():
         if self.transgen == canonical:
             return "{"+self.symmetry.__str__()+"}"
         else:
-            transgenblock = bp.block( \
-                [[self.transgen.liste[j].value.liste[i].liste[0].__str__() + "  " \
+            transgenblock = bp.block(
+                [[self.transgen.liste[j].value.liste[i].liste[0].__str__() + "  "
                     for j in range(3)] for i in range(3)])
-            return bp.block([["{"+self.symmetry.__str__()+"}",],\
+            return bp.block([["{"+self.symmetry.__str__()+"}",],
                              [transgenblock,]])
 
     def __eq__(self, right):
@@ -798,8 +798,8 @@ class Coset():
             "Cannot multiply Coset with %s ."%(type(right))
         assert self.transgen == right.transgen, \
             "Can only multiply two Cosets with the same Transgen, "\
-            "but " + bp.block([[self.transgen.__str__(), \
-                               " != ", \
+            "but " + bp.block([[self.transgen.__str__(),
+                               " != ",
                                right.transgen.__str__()]])
         return Coset(self.symmetry * right.symmetry, self.transgen)
 
@@ -828,17 +828,17 @@ class Spacegroup():
             for coset2 in self.liste_cosets:
                 coset3 = coset1*coset2
                 if not (coset3 in self.liste_cosets):
-                    print("%s * %s = %s"%( \
-                        coset1.__str__(), \
-                        coset2.__str__(), \
-                        coset3.__str__() \
+                    print("%s * %s = %s"%(
+                        coset1.__str__(),
+                        coset2.__str__(),
+                        coset3.__str__()
                     ))
                     return False
         return True
 
     def __str__(self):
-        liste_strings = [["Spacegroup", ''], \
-                         ["----------", ''], \
+        liste_strings = [["Spacegroup", ''],
+                         ["----------", ''],
                          [self.transgen.__str__(), '']]
         for coset in self.liste_cosets:
             liste_strings.append(['', coset.symmetry.__str__()])

@@ -160,7 +160,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         y2 = y0 + dy * plotlength/length
         z2 = z0 + dz * plotlength/length
 
-        outstr += add_momentum(structurename, momentumname, \
+        outstr += add_momentum(structurename, momentumname,
             x1, y1, z1, x2, y2, z2, color)
 
     # Make all atoms looking smooth:
@@ -177,39 +177,39 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
 
 def add_axis(structurename, arrowname, x, y, z):
-    outstr = add_arrow(structurename, arrowname, 0, 0, 0, x, y, z, \
-                       const.blender__thickness_of_axis_shaft, \
-                       const.blender__num_of_segments_of_axis_shaft, \
-                       const.blender__thickness_of_axis_tip, \
-                       const.blender__height_of_axis_tip, \
+    outstr = add_arrow(structurename, arrowname, 0, 0, 0, x, y, z,
+                       const.blender__thickness_of_axis_shaft,
+                       const.blender__num_of_segments_of_axis_shaft,
+                       const.blender__thickness_of_axis_tip,
+                       const.blender__height_of_axis_tip,
                        const.blender__num_of_segments_of_axis_tip,
                        const.blender__axes_color)
     return outstr
 
 
 def add_momentum(structurename, momentumname, x1, y1, z1, x2, y2, z2, color):
-    outstr = add_arrow(structurename, momentumname, x1, y1, z1, x2, y2, z2, \
-                       const.blender__thickness_of_momentum_shaft, \
-                       const.blender__num_of_segments_of_momentum_shaft, \
-                       const.blender__thickness_of_momentum_tip, \
-                       const.blender__height_of_momentum_tip, \
-                       const.blender__num_of_segments_of_momentum_tip, \
+    outstr = add_arrow(structurename, momentumname, x1, y1, z1, x2, y2, z2,
+                       const.blender__thickness_of_momentum_shaft,
+                       const.blender__num_of_segments_of_momentum_shaft,
+                       const.blender__thickness_of_momentum_tip,
+                       const.blender__height_of_momentum_tip,
+                       const.blender__num_of_segments_of_momentum_tip,
                        color)
     return outstr
 
 
-def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
-    thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft, \
+def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2,
+    thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft,
     thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip, color):
     h = height_of_arrow_tip
     l = np.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1))
     x2kurz = x1 + (x2 - x1) * (1 - h/l)
     y2kurz = y1 + (y2 - y1) * (1 - h/l)
     z2kurz = z1 + (z2 - z1) * (1 - h/l)
-    outstr = add_cylinder(structurename, arrowname + "_cylinder", \
-        x1, y1, z1, x2kurz, y2kurz, z2kurz, \
+    outstr = add_cylinder(structurename, arrowname + "_cylinder",
+        x1, y1, z1, x2kurz, y2kurz, z2kurz,
         thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft)
-    outstr += add_cone(structurename, arrowname + "_cone", x1, y1, z1, x2, y2, z2, \
+    outstr += add_cone(structurename, arrowname + "_cone", x1, y1, z1, x2, y2, z2,
         thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip)
     outstr += "bpy.ops.object.select_all(action='DESELECT')\n"
     outstr += "ob1.select = True\n"
@@ -225,7 +225,7 @@ def add_arrow(structurename, arrowname, x1, y1, z1, x2, y2, z2, \
     return outstr
 
 
-def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
+def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
     thickness_of_arrow_shaft, num_of_segments_of_arrow_shaft):
     b = thickness_of_arrow_shaft
     segments = num_of_segments_of_arrow_shaft
@@ -244,17 +244,17 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
-              (costheta, 0.0, -sintheta, 0.0, \
-               0.0,  1.0, 0.0, 0.0, \
-              sintheta,        0.0,      costheta, 0.0, \
+              (costheta, 0.0, -sintheta, 0.0,
+               0.0,  1.0, 0.0, 0.0,
+              sintheta,        0.0,      costheta, 0.0,
               0.0, 0.0, 0.0, 1.0)
     Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
-             (cosphi, sinphi, 0.0, 0.0, \
-              -sinphi, cosphi, 0.0, 0.0, \
-              0.0,        0.0,   1.0, 0.0, \
+             (cosphi, sinphi, 0.0, 0.0,
+              -sinphi, cosphi, 0.0, 0.0,
+              0.0,        0.0,   1.0, 0.0,
              0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"
@@ -277,7 +277,7 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2, \
     return outstr
 
 
-def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
+def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
     thickness_of_arrow_tip, height_of_arrow_tip, num_of_segments_of_arrow_tip):
     segments = num_of_segments_of_arrow_tip
     b = thickness_of_arrow_tip
@@ -297,17 +297,17 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2, \
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
               " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
-              (costheta, 0.0, -sintheta, 0.0, \
-               0.0,  1.0, 0.0, 0.0, \
-              sintheta,        0.0,      costheta, 0.0, \
+              (costheta, 0.0, -sintheta, 0.0,
+               0.0,  1.0, 0.0, 0.0,
+              sintheta,        0.0,      costheta, 0.0,
               0.0, 0.0, 0.0, 1.0)
     Mphi =  "[[%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f], \\\n" \
             " [%10.4f, %10.4f, %10.4f, %10.4f]]"% \
-             (cosphi, sinphi, 0.0, 0.0, \
-              -sinphi, cosphi, 0.0, 0.0, \
-              0.0,        0.0,   1.0, 0.0, \
+             (cosphi, sinphi, 0.0, 0.0,
+              -sinphi, cosphi, 0.0, 0.0,
+              0.0,        0.0,   1.0, 0.0,
              0.0, 0.0, 0.0, 1.0)
 
     outstr += "bm = bmesh.new()\n"

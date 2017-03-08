@@ -58,44 +58,44 @@ def fromstr(string):
         try:
             return matrixfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Matrix, "\
+            raise(Exception("The following string looks like a Matrix, "
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Symmetry:
         try:
             return symmetryfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Symmetry, "\
+            raise(Exception("The following string looks like a Symmetry, "
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Transformation:
         try:
             return transformationfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a "\
-                            "Transformation, but I cannot convert it: %s"\
+            raise(Exception("The following string looks like a "
+                            "Transformation, but I cannot convert it: %s"
                             %(string)))
     elif typ == geo.Coset:
         try:
             return cosetfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Coset "\
+            raise(Exception("The following string looks like a Coset "
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Pos:
         try:
             return posfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Pos "\
+            raise(Exception("The following string looks like a Pos "
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Dif:
         try:
             return diffromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Dif "\
+            raise(Exception("The following string looks like a Dif "
                             "but I cannot convert it: %s"%(string)))
     elif typ == geo.Rec:
         try:
             return recfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Rec "\
+            raise(Exception("The following string looks like a Rec "
                             "but I cannot convert it: %s"%(string)))
 
 
@@ -148,7 +148,7 @@ def mixedfromstr(string):
                 try:
                     return nb.Mixed(uc.ufloat_fromstr(string))
                 except ValueError:
-                    raise(Exception("The following string looks like a number, "\
+                    raise(Exception("The following string looks like a number, "
                                     "but I can't convert it: %s"%(string)))
 
 
@@ -183,7 +183,7 @@ def symmetryfromstr(string):
     for word in words:
         row = nb.Row(str2linearterm(word, ['x', 'y', 'z']))
         liste.append(row)
-    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
         fromstr("1")]))
     return geo.Symmetry(nb.Matrix(liste))
 
@@ -208,9 +208,9 @@ def transformationfromstr(string):
             word = word.replace('\n', ' ')
             word = word.replace('(', ' ').replace(')', ' ').replace(',', ' ')
             threenumbers = fromstr(word)
-            matrix = nb.Matrix([[1, 0, 0, -threenumbers.liste[0].liste[0]], \
-                                [0, 1, 0, -threenumbers.liste[0].liste[1]], \
-                                [0, 0, 1, -threenumbers.liste[0].liste[2]], \
+            matrix = nb.Matrix([[1, 0, 0, -threenumbers.liste[0].liste[0]],
+                                [0, 1, 0, -threenumbers.liste[0].liste[1]],
+                                [0, 0, 1, -threenumbers.liste[0].liste[2]],
                                 [0, 0, 0, 1                             ]])
             return geo.Transformation(matrix)
         elif ('a' in string) or ('b' in string) or ('c' in string):
@@ -225,8 +225,8 @@ def transformationfromstr(string):
                 if len(line.split(' ')) > 0:
                     i += 1
                     words = line.split(' ')
-                    assert  (    ((i == 1) and (words[0] == "a'")) \
-                              or ((i == 2) and (words[0] == "b'")) \
+                    assert  (    ((i == 1) and (words[0] == "a'"))
+                              or ((i == 2) and (words[0] == "b'"))
                               or ((i == 3) and (words[0] == "c'"))  )\
                         and (words[1] == '='), \
                         "The Transformation must have the following form: \n" \
@@ -237,13 +237,13 @@ def transformationfromstr(string):
                     words = line.split('=') 
                     row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
-            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
+            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
                 fromstr("1")]))
             m = nb.Matrix(liste)
-            matrix = nb.Matrix( \
-                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
-                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
-                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+            matrix = nb.Matrix(
+                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]),
+                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]),
+                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]),
                  nb.Row([0, 0, 0, 1])])
 
         return geo.Transformation(matrix.inv())
