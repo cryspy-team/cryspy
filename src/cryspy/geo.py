@@ -427,10 +427,6 @@ class Pointgroup:
             non_twofold_second_kind
         )
 
-
-
-
-
     def coset_decomposition_with_respect_to(self, subgroup):
         # This is the algorithm A of:
         #     H. D. Flack
@@ -460,10 +456,6 @@ class Pointgroup:
                 string += G.liste[i].__str__() + "\n"
 
         return string
-
-
-
-
 
 
 class Transformation(Operator):
@@ -528,7 +520,6 @@ class Transformation(Operator):
             return NotImplemented
 
 
-
 class Metric(Operator):
     def __init__(self, value):
         assert isinstance(value, nb.Matrix), \
@@ -547,7 +538,6 @@ class Metric(Operator):
         self.value = value
         self.valueinv = value.inv()
         self.schmidttransformation = self.calculate_schmidttransformation()
-
 
     def dot(self, vector1, vector2):
         assert  (isinstance(vector1, Dif) and isinstance(vector2, Dif) ) \
@@ -741,7 +731,6 @@ class Transgen():
             and (self.liste[2] in right.liste)
 
 
-
 canonical = Transgen(
     Dif(nb.Matrix(
     [nb.Row([1]), nb.Row([0]), nb.Row([0]), nb.Row([0])])),
@@ -802,7 +791,6 @@ class Coset():
                                 " != ",
                                 right.transgen.__str__()]])
         return Coset(self.symmetry * right.symmetry, self.transgen)
-
 
 
 class Spacegroup():

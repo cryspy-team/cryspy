@@ -178,7 +178,6 @@ def formfactorparameters(atomtype):
         pars = [16.8819, 0.461100, 18.5913, 8.62160, 25.5582,
                 1.48260, 5.86000, 36.3956, 12.0658]
 
-
     return pars
 
 

@@ -83,7 +83,6 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "posobject = bpy.context.object\n"
     outstr += "posobject.name = '%s.Positions'\n" % (structurename)
 
-
     # Create a mesh for each atom-type, respectively
     typs = []
     atomlist = []
@@ -110,7 +109,6 @@ def make_blender_script(atomset, metric, structurename, outfilename):
             % (structurename, typ)
         outstr += "mat.diffuse_color = %s\n" % (color.__str__())
         outstr += "me.materials.append(mat)\n"
-
 
     # Create spheres for the atoms and add a vertex
     # to the position-mesh, respectively

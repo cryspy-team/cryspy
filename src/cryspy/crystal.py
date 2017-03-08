@@ -148,7 +148,6 @@ class Atomset():
                 "objects of type Atom or of type Momentum."
         self.menge = menge
 
-
     def __eq__(self, right):
         if isinstance(right, Atomset):
             return (self.menge == right.menge)
@@ -180,7 +179,6 @@ class Atomset():
             strings.append(["", str(momentum)])
         return bp.block(strings)
 
-
     def __add__(self, right):
         if isinstance(right, geo.Dif):
             return Atomset({atom + right for atom in self.menge})
@@ -189,13 +187,11 @@ class Atomset():
         else:
             return NotImplemented
 
-
     def __radd__(self, left):
         if isinstance(left, geo.Dif):
             return self + left
         else:
             return NotImplemented
-
 
     def __rpow__(self, left):
         assert isinstance(left, geo.Operator) \

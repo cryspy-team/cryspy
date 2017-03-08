@@ -308,7 +308,6 @@ class Mixed(object):
             elif isinstance(right.value, float):
                 return Mixed(self.value * right.value)
 
-
     def __rmul__(self, left):
         if isinstance(left, fr.Fraction):
             left = Mixed(left)
@@ -390,7 +389,6 @@ class Mixed(object):
 
     def __neg__(self):
         return (-1) * self
-
 
     def __mod__(self, right):
         if isinstance(right, int):
@@ -676,7 +674,6 @@ class Matrix(object):
         str = str[:-1]
         return str
 
-
     def __add__(self, right):
         if isinstance(right, Matrix):
             assert self.shape() == right.shape(), \
@@ -700,7 +697,6 @@ class Matrix(object):
                 for i in range(numrows)])
         else:
             return NotImplemented
-
 
     def __mul__(self, right):
         if isinstance(right, fr.Fraction):
@@ -816,7 +812,6 @@ class Matrix(object):
                 return right.liste[i - numrows1]
         return Matrix([row(i) for i in range(numrows1 + numrows2)])
 
-
     def subtract_x_times_rowj_from_rowi(self, x, i, j):
         new = deepcopy(self)
         new.liste[i] = self.liste[i] + self.liste[j] * (Mixed(-1) * x)
@@ -841,7 +836,6 @@ class Matrix(object):
 
                 self = self.swap_rows(rownumber, i)
                 right = right.swap_rows(rownumber, i)
-
 
                 for i in range(rownumber + 1, dim):
                     x = self.liste[i].liste[rownumber] \
@@ -897,8 +891,6 @@ class Matrix(object):
 
         return Matrix(liste)
 
-
-
     def det(self):
         # Returns the determinant.
         shape = self.shape()
@@ -915,7 +907,6 @@ class Matrix(object):
                 result += self.liste[i].liste[0] * (-1) **i * M.det()
 
             return result
-
 
     def delete_translation(self):
         # If a 4x4-Matrix has the shape
