@@ -20,16 +20,16 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
     # Delete the old structure, if exists:
     outstr += "for ob in bpy.data.objects:\n"
-    outstr += "    if ob.name.startswith('%s'):\n"%(structurename)
+    outstr += "    if ob.name.startswith('%s'):\n" %(structurename)
     outstr += "        ob.select = True\n"
     outstr += "bpy.ops.object.delete()\n"
 
     outstr += "for me in bpy.data.meshes:\n"
-    outstr += "    if me.name.startswith('%s'):\n"%(structurename)
+    outstr += "    if me.name.startswith('%s'):\n" %(structurename)
     outstr += "        bpy.data.meshes.remove(me)\n"
 
     outstr += "for mat in bpy.data.materials:\n"
-    outstr += "    if mat.name.startswith('%s'):\n"%(structurename)
+    outstr += "    if mat.name.startswith('%s'):\n" %(structurename)
     outstr += "        bpy.data.materials.remove(mat)\n"
 
     # Delete all existing lamps:
@@ -46,13 +46,13 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     # Place some cool lamps:
     outstr += "bpy.ops.object.lamp_add(type='POINT')\n"
     outstr += "l = bpy.context.object\n"
-    outstr += "l.name = '%s.Lamp1'\n"%(structurename)
-    outstr += "l.location = %s\n"%(str(const.blender__location_of_lamp1))
+    outstr += "l.name = '%s.Lamp1'\n" %(structurename)
+    outstr += "l.location = %s\n" %(str(const.blender__location_of_lamp1))
     outstr += "bpy.ops.object.lamp_add(type='HEMI')\n"
     outstr += "l = bpy.context.object\n"
-    outstr += "l.name = '%s.LampHemi'\n"%(structurename)
+    outstr += "l.name = '%s.LampHemi'\n" %(structurename)
     outstr += "l.location = (-10, -10, 10)\n"
-    outstr += "l.data.energy = %10.4f\n"%(const.blender__diffuse_light)
+    outstr += "l.data.energy = %10.4f\n" %(const.blender__diffuse_light)
 
     # Plot the axes:
     t = metric.schmidttransformation
@@ -81,7 +81,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "bpy.ops.mesh.delete(type='VERT')\n"
     outstr += "bpy.ops.object.mode_set(mode='OBJECT')\n"
     outstr += "posobject = bpy.context.object\n"
-    outstr += "posobject.name = '%s.Positions'\n"%(structurename)
+    outstr += "posobject.name = '%s.Positions'\n" %(structurename)
 
 
     # Create a mesh for each atom-type, respectively
@@ -104,11 +104,11 @@ def make_blender_script(atomset, metric, structurename, outfilename):
             %(spheresize, const.blender__atom_icosphere_subdivisions)
         outstr += "ob = bpy.context.object\n"
         outstr += "me = ob.data\n"
-        outstr += "me.name = '%s.mesh.%s'\n"%(structurename, typ)
+        outstr += "me.name = '%s.mesh.%s'\n" %(structurename, typ)
         outstr += "bpy.ops.object.delete()\n"
         outstr += "mat = bpy.data.materials.new('%s.material.%s')\n" \
             %(structurename, typ)
-        outstr += "mat.diffuse_color = %s\n"%(color.__str__())
+        outstr += "mat.diffuse_color = %s\n" %(color.__str__())
         outstr += "me.materials.append(mat)\n"
 
 
@@ -123,11 +123,11 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         y = float((t**atom.pos).y())
         z = float((t**atom.pos).z())
         outstr += "posobject.data.vertices.add(1)\n"
-        outstr += "posobject.data.vertices[-1].co = (%f, %f, %f)\n"%(x, y, z)
+        outstr += "posobject.data.vertices[-1].co = (%f, %f, %f)\n" %(x, y, z)
         outstr += "ob = bpy.data.objects.new( \
             '%s.Atom%03i(%s)', bpy.data.meshes['%s.mesh.%s'])\n" \
             %(structurename, atomnumber, atom.name, structurename, atom.typ)
-        outstr += "ob.location = (%f, %f, %f)\n"%(x, y, z)
+        outstr += "ob.location = (%f, %f, %f)\n" %(x, y, z)
         outstr += "bpy.ops.object.shade_smooth()\n"
         outstr += "bpy.context.scene.objects.link(ob)\n"
 
@@ -135,7 +135,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     momentumindex = 0
     for momentum in momentumlist:
         momentumindex += 1
-        momentumname = "Momentum%03i"%(momentumindex)
+        momentumname = "Momentum%03i" %(momentumindex)
         if momentum.has_plotlength:
             plotlength = momentum.plotlength
         else:
@@ -165,7 +165,7 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
     # Make all atoms looking smooth:
     outstr += "for ob in bpy.data.objects:\n"
-    outstr += "    if ob.name.startswith('%s.Atom'):\n"%(structurename)
+    outstr += "    if ob.name.startswith('%s.Atom'):\n" %(structurename)
     outstr += "        ob.select = True\n"
     outstr += "    else:\n"
     outstr += "        ob.select = False\n"
@@ -266,13 +266,13 @@ def add_cylinder(structurename, cylindername, x1, y1, z1, x2, y2, z2,
                                     "diameter2 = %10.4f, " \
                                     "depth = %10.4f)\n" \
                                     %(segments, b, b, l)
-    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l/2)
-    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, cylindername)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" %(l/2)
+    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" %(structurename, cylindername)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, cylindername)
-    outstr += "ob1.data.transform(%s)\n"%(Mtheta)
-    outstr += "ob1.data.transform(%s)\n"%(Mphi)
-    outstr += "ob1.location = (%10.4f, %10.4f, %10.4f)\n"%(x1, y1, z1)
+    outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh)\n" %(structurename, cylindername)
+    outstr += "ob1.data.transform(%s)\n" %(Mtheta)
+    outstr += "ob1.data.transform(%s)\n" %(Mphi)
+    outstr += "ob1.location = (%10.4f, %10.4f, %10.4f)\n" %(x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob1)\n"
     return outstr
 
@@ -319,12 +319,12 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
                                     "diameter2 = %10.4f, " \
                                     "depth = %10.4f)\n" \
                                     %(segments, b, 0.01, h)
-    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n"%(l - h/2)
-    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n"%(structurename, conename)
+    outstr += "bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0, %10.4f))\n" %(l - h/2)
+    outstr += "mesh = bpy.data.meshes.new('%s.mesh%s')\n" %(structurename, conename)
     outstr += "bm.to_mesh(mesh)\n"
-    outstr += "ob2 = bpy.data.objects.new('%s.%s', mesh)\n"%(structurename, conename)
-    outstr += "ob2.data.transform(%s)\n"%(Mtheta)
-    outstr += "ob2.data.transform(%s)\n"%(Mphi)
-    outstr += "ob2.location = (%10.4f, %10.4f, %10.4f)\n"%(x1, y1, z1)
+    outstr += "ob2 = bpy.data.objects.new('%s.%s', mesh)\n" %(structurename, conename)
+    outstr += "ob2.data.transform(%s)\n" %(Mtheta)
+    outstr += "ob2.data.transform(%s)\n" %(Mphi)
+    outstr += "ob2.location = (%10.4f, %10.4f, %10.4f)\n" %(x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob2)\n"
     return outstr

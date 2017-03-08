@@ -129,7 +129,7 @@ class Mixed(object):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
             "Cannot add object of type %s " \
-            "to object of type Mixed."%(type(right))
+            "to object of type Mixed." %(type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
@@ -179,7 +179,7 @@ class Mixed(object):
             left = Mixed(left)
         assert isinstance(left, Mixed), \
             "Cannot add object of type Mixed to object " \
-            "of type %s."%(type(left))
+            "of type %s." %(type(left))
         return self + left
 
     def __sub__(self, right):
@@ -193,7 +193,7 @@ class Mixed(object):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
             "Cannot subtract object of type %s " \
-            "from object of type Mixed."%(type(right))
+            "from object of type Mixed." %(type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - right.value)
@@ -466,7 +466,7 @@ def sin(number):
     elif isinstance(number, int):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Connot calculate cos of an object of type %s."%(type(number))
+        "Connot calculate cos of an object of type %s." %(type(number))
     if isinstance(number.value, fr.Fraction):
         return Mixed(np.sin(float(number.value)))
     elif isinstance(number.value, uc.UFloat):
@@ -487,7 +487,7 @@ def cos(number):
     elif isinstance(number, int):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Connot calculate cos of an object of type %s."%(type(number))
+        "Connot calculate cos of an object of type %s." %(type(number))
     if isinstance(number.value, fr.Fraction):
         return Mixed(np.cos(float(number.value)))
     elif isinstance(number.value, uc.UFloat):
@@ -508,7 +508,7 @@ def arccos(number):
     elif isinstance(number, float):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Cannot calculate arccos of object of type %s."%(type(number))
+        "Cannot calculate arccos of object of type %s." %(type(number))
     if isinstance(number.value, uc.UFloat):
         return Mixed(unumpy.arccos(number.value).item())
     elif isinstance(number.value, fr.Fraction):
@@ -539,7 +539,7 @@ class Row(object):
         for item in self.liste:
             assert isinstance(item, Mixed), \
                 "Object of type Row cannot be created by an object of type " \
-                "%s in the list"%(type(item))
+                "%s in the list" %(type(item))
 
     def __len__(self):
         return len(self.liste)
@@ -662,8 +662,8 @@ class Matrix(object):
             else:
                 str += '|   '
             for (j, item) in zip(range(len(row)), row.liste):
-                codestr = '%' + '%i'%(length[j]) + 's  '
-                str += codestr%(item.__str__())
+                codestr = '%' + '%i' %(length[j]) + 's  '
+                str += codestr %(item.__str__())
             if self.shape()[0] == 1:
                 str += '> '
             elif i == 0:

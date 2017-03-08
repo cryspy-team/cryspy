@@ -142,7 +142,7 @@ class Dif:
             return Dif(self.value - right.value)
         else:
             raise(BaseException("I cannot subtract objects of type"
-                "%s and %s"%(type(self), type(right))))
+                "%s and %s" %(type(self), type(right))))
 
     def __neg__(self):
         return Dif(-self.value)
@@ -735,7 +735,7 @@ class Transgen():
         # Returns True even when the order is different.
         assert isinstance(right, Transgen), \
             "Cannot compare Object of type Transgen " \
-            "with object of type %s."%(type(right))
+            "with object of type %s." %(type(right))
         return  (self.liste[0] in right.liste) \
             and (self.liste[1] in right.liste) \
             and (self.liste[2] in right.liste)
@@ -795,7 +795,7 @@ class Coset():
 
     def __mul__(self, right):
         assert isinstance(right, Coset), \
-            "Cannot multiply Coset with %s ."%(type(right))
+            "Cannot multiply Coset with %s ." %(type(right))
         assert self.transgen == right.transgen, \
             "Can only multiply two Cosets with the same Transgen, "\
             "but " + bp.block([[self.transgen.__str__(),
@@ -828,7 +828,7 @@ class Spacegroup():
             for coset2 in self.liste_cosets:
                 coset3 = coset1*coset2
                 if not (coset3 in self.liste_cosets):
-                    print("%s * %s = %s"%(
+                    print("%s * %s = %s" %(
                         coset1.__str__(),
                         coset2.__str__(),
                         coset3.__str__()
