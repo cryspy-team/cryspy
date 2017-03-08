@@ -406,14 +406,14 @@ class Pointgroup:
             if symmetry == id:
                 identity.append(symmetry)
             elif symmetry.value.det() == 1:
-                if symmetry*symmetry == id:
+                if symmetry *symmetry == id:
                     twofold_rotations.append(symmetry)
                 else:
                     non_twofold_rotations.append(symmetry)
             else:
                 if symmetry == I:
                     inversion.append(symmetry)
-                elif symmetry*symmetry == id:
+                elif symmetry *symmetry == id:
                     mirror_reflections.append(symmetry)
                 else:
                     non_twofold_second_kind.append(symmetry)
@@ -451,8 +451,8 @@ class Pointgroup:
         for i in range(n):
             if flags[i]:
                 for j in range(1, m):
-                    for k in range(i+1, n):
-                        if G.liste[k] == G.liste[i]*H.liste[j]:
+                    for k in range(i +1, n):
+                        if G.liste[k] == G.liste[i] *H.liste[j]:
                             flags[k] = False
         string = ""
         for i in range(n):
@@ -580,13 +580,13 @@ class Metric(Operator):
         c1 = canonical_e2
 
         a2 = a1
-        a3 = a2 * (1/self.length(a2))
+        a3 = a2 * (1 /self.length(a2))
 
-        b2 = b1 - a3*self.dot(a3, b1)
-        b3 = b2 * (1/self.length(b2))
+        b2 = b1 - a3 *self.dot(a3, b1)
+        b3 = b2 * (1 /self.length(b2))
 
-        c2 = c1 - a3*self.dot(a3, c1) - b3*self.dot(b3, c1)
-        c3 = c2 * (1/self.length(c2))
+        c2 = c1 - a3 *self.dot(a3, c1) - b3 *self.dot(b3, c1)
+        c3 = c2 * (1 /self.length(c2))
 
         M = nb.Matrix([[a3.x(), b3.x(), c3.x()],
                        [a3.y(), b3.y(), c3.y()],
@@ -639,9 +639,9 @@ class Cellparameters():
         alpha = self.alpha
         beta  = self.beta
         gamma = self.gamma
-        aa = a*a
-        bb = b*b
-        cc = c*c
+        aa = a *a
+        bb = b *b
+        cc = c *c
         ab = a * b * nb.cos(nb.deg2rad(gamma))
         ac = a * c * nb.cos(nb.deg2rad(beta))
         bc = b * c * nb.cos(nb.deg2rad(alpha))
@@ -762,12 +762,12 @@ class Coset():
 
     def __str__(self):
         if self.transgen == canonical:
-            return "{"+self.symmetry.__str__()+"}"
+            return "{" +self.symmetry.__str__() +"}"
         else:
             transgenblock = bp.block(
                 [[self.transgen.liste[j].value.liste[i].liste[0].__str__() + "  "
                     for j in range(3)] for i in range(3)])
-            return bp.block([["{"+self.symmetry.__str__()+"}",],
+            return bp.block([["{" +self.symmetry.__str__() +"}",],
                              [transgenblock,]])
 
     def __eq__(self, right):
@@ -826,7 +826,7 @@ class Spacegroup():
     def is_really_a_spacegroup(self):
         for coset1 in self.liste_cosets:
             for coset2 in self.liste_cosets:
-                coset3 = coset1*coset2
+                coset3 = coset1 *coset2
                 if not (coset3 in self.liste_cosets):
                     print("%s * %s = %s" % (
                         coset1.__str__(),
