@@ -160,6 +160,7 @@ def test_typefromstr():
   string = "1/2"
   assert fromstr.typefromstr(string) == nb.Mixed
   string = "1.2+/-0.1"
+  print(fromstr.typefromstr(string))
   assert fromstr.typefromstr(string) == nb.Mixed
   string = "1.2(1)"
   assert fromstr.typefromstr(string) == nb.Mixed
