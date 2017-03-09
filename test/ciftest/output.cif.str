@@ -1,7 +1,0 @@
-titl imported
-import cif output.cif
-box 0.02 Black
-background White
-view 0. 0. 0.
-pack  -0.05 1.05 -0.05 1.05 -0.05 1.05
-end
