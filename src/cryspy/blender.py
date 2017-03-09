@@ -146,9 +146,9 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         x0 = float((t ** momentum.pos).x())
         y0 = float((t ** momentum.pos).y())
         z0 = float((t ** momentum.pos).z())
-        dx = float((t ** momentum.dir).x())
-        dy = float((t ** momentum.dir).y())
-        dz = float((t ** momentum.dir).z())
+        dx = float((t ** momentum.direction).x())
+        dy = float((t ** momentum.direction).y())
+        dz = float((t ** momentum.direction).z())
 
         length = np.sqrt(dx * dx + dy * dy + dz * dz)
         x1 = x0 - dx * plotlength / length
