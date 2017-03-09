@@ -5,6 +5,7 @@ from cryspy import geo as geo
 from cryspy import blockprint as bp
 from cryspy import tables
 
+
 class Atom():
     def __init__(self, name, typ, pos):
         assert isinstance(name, str), \
@@ -16,10 +17,10 @@ class Atom():
         self.name = name
         self.typ = typ
         self.pos = pos
-    
+
     def __str__(self):
-        return bp.block([["Atom", " " + self.name, \
-                          " " + self.typ, " " +  self.pos.__str__()],])
+        return bp.block([["Atom", " " + self.name,
+                          " " + self.typ, " " + self.pos.__str__()], ])
 
     def __eq__(self, right):
         if (self.typ == right.typ) and (self.pos == right.pos):
@@ -37,20 +38,20 @@ class Atom():
         assert isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset), \
             "I cannot apply an object of type %s " \
-            "to an object of type Atom."%(type(left))
+            "to an object of type Atom." % (type(left))
         return Atom(self.name, self.typ, left ** self.pos)
 
     def __mod__(self, right):
         assert isinstance(right, geo.Transgen), \
             "I cannot take an object of type Atom " \
-            "modulo an object of type %s"%(type(right))
+            "modulo an object of type %s" % (type(right))
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s%s"%( \
-            self.name, self.typ, \
-            str(hash(self.pos.x())), \
-            str(hash(self.pos.y())), \
+        string = "%s%s%s%s%s" % (
+            self.name, self.typ,
+            str(hash(self.pos.x())),
+            str(hash(self.pos.y())),
             str(hash(self.pos.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
@@ -128,13 +129,14 @@ class Momentum():
 
     def __hash__(self):
         string = "x%sy%sz%sdx%sdy%sdz%s" \
-            %(str(hash(self.pos.x())), \
-              str(hash(self.pos.y())), \
-              str(hash(self.pos.z())), \
-              str(hash(self.direction.x())), \
-              str(hash(self.direction.y())), \
-              str(hash(self.direction.z())))
+            % (str(hash(self.pos.x())),
+               str(hash(self.pos.y())),
+               str(hash(self.pos.z())),
+               str(hash(self.direction.x())),
+               str(hash(self.direction.y())),
+               str(hash(self.direction.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
 
 class Atomset():
     def __init__(self, menge):
@@ -146,7 +148,6 @@ class Atomset():
                 "objects of type Atom or of type Momentum."
         self.menge = menge
 
-
     def __eq__(self, right):
         if isinstance(right, Atomset):
             return (self.menge == right.menge)
@@ -156,8 +157,8 @@ class Atomset():
     def __str__(self):
         # The Atoms are printed in alphabetically order with regard to
         # the name, and if name is equal, with regard to the type.
-        strings = [["Atomset\n" \
-                    "-------"],]
+        strings = [["Atomset\n"
+                    "-------"], ]
         liste = [atom for atom in self.menge]
         atomliste = []
         momentumliste = []
@@ -178,7 +179,6 @@ class Atomset():
             strings.append(["", str(momentum)])
         return bp.block(strings)
 
-
     def __add__(self, right):
         if isinstance(right, geo.Dif):
             return Atomset({atom + right for atom in self.menge})
@@ -186,14 +186,12 @@ class Atomset():
             return Atomset(self.menge.union(right.menge))
         else:
             return NotImplemented
-            
-           
+
     def __radd__(self, left):
         if isinstance(left, geo.Dif):
             return self + left
         else:
             return NotImplemented
-
 
     def __rpow__(self, left):
         assert isinstance(left, geo.Operator) \
@@ -201,7 +199,7 @@ class Atomset():
             "Argument must be of type Operator."
         if isinstance(left, geo.Operator):
             menge = set([])
-            return Atomset({left**item for item in self.menge})
+            return Atomset({left ** item for item in self.menge})
         if isinstance(left, geo.Spacegroup):
             atoms = set([])
             for atom in self.menge:
@@ -212,7 +210,7 @@ class Atomset():
     def __mod__(self, right):
         assert isinstance(right, geo.Transgen), \
             "I cannot take an object of type Atomset " \
-            "modulo an object of type"%(type(right))
+            "modulo an object of type" % (type(right))
         atoms = set([])
         for atom in self.menge:
             atoms |= set([atom % right])

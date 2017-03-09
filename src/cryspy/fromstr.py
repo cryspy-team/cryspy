@@ -11,6 +11,7 @@ def removeletters(string):
     string = re.sub("[a-zA-Z]", " ", string)
     return string
 
+
 def str2linearterm(string, liste_variables):
     assert isinstance(string, str), \
         "Argument must be of type str."
@@ -39,6 +40,7 @@ def str2linearterm(string, liste_variables):
         liste_numbers[index] += fromstr(word)
     return liste_numbers
 
+
 def fromstr(string):
     assert isinstance(string, str), \
         "Function fromstr must have an argument of type string."
@@ -48,7 +50,7 @@ def fromstr(string):
             result = mixedfromstr(string)
             assert isinstance(result, nb.Mixed), \
                 "The following string looks like a number, but I "\
-                "cannot convert it: %s"%(string)
+                "cannot convert it: %s" % (string)
             return result
         except:
             pass
@@ -56,45 +58,46 @@ def fromstr(string):
         try:
             return matrixfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Matrix, "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Matrix, "
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Symmetry:
         try:
             return symmetryfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Symmetry, "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Symmetry, "
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Transformation:
         try:
             return transformationfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a "\
-                            "Transformation, but I cannot convert it: %s"\
-                            %(string)))
+            raise(Exception("The following string looks like a "
+                            "Transformation, but I cannot convert it: %s"
+                            % (string)))
     elif typ == geo.Coset:
         try:
             return cosetfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Coset "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Coset "
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Pos:
         try:
             return posfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Pos "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Pos "
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Dif:
         try:
             return diffromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Dif "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Dif "
+                            "but I cannot convert it: %s" % (string)))
     elif typ == geo.Rec:
         try:
             return recfromstr(string)
         except ValueError:
-            raise(Exception("The following string looks like a Rec "\
-                            "but I cannot convert it: %s"%(string)))
+            raise(Exception("The following string looks like a Rec "
+                            "but I cannot convert it: %s" % (string)))
+
 
 def typefromstr(string):
     words = string.split()
@@ -131,6 +134,7 @@ def typefromstr(string):
     else:
         return nb.Mixed
 
+
 def mixedfromstr(string):
     try:
         return nb.Mixed(int(string))
@@ -144,43 +148,43 @@ def mixedfromstr(string):
                 try:
                     return nb.Mixed(uc.ufloat_fromstr(string))
                 except ValueError:
-                    raise(Exception("The following string looks like a number, "\
-                                    "but I can't convert it: %s"%(string)))
-        
+                    raise(Exception("The following string looks like a number, "
+                                    "but I can't convert it: %s" % (string)))
+
 
 def matrixfromstr(string):
-     string = string.replace('|', '\\')
-     string = string.replace('/ ', ' ')
-     string = string.replace('<', ' ')
-     string = string.replace('>', ' ')
-     string = string.replace(' /', ' ')
-     string = string.replace('\n', '\\')
-     for i in range(4):
+    string = string.replace('|', '\\')
+    string = string.replace('/ ', ' ')
+    string = string.replace('<', ' ')
+    string = string.replace('>', ' ')
+    string = string.replace(' /', ' ')
+    string = string.replace('\n', '\\')
+    for i in range(4):
         string = string.replace('\\ \\', '\\')
         string = string.replace('\\  \\', '\\')
         string = string.replace('\\   \\', '\\')
-     rowwords = string.split('\\')
-     rowliste = []
-     for rowword in rowwords:
-         words = rowword.split()
-         liste = []
-         for word in words:
-             liste.append(mixedfromstr(word))
-         rowliste.append(nb.Row(liste))
-     return nb.Matrix(rowliste)
+    rowwords = string.split('\\')
+    rowliste = []
+    for rowword in rowwords:
+        words = rowword.split()
+        liste = []
+        for word in words:
+            liste.append(mixedfromstr(word))
+        rowliste.append(nb.Row(liste))
+    return nb.Matrix(rowliste)
 
 
 def symmetryfromstr(string):
     words = string.split(',')
     assert len(words) == 3, \
         "The following string looks like a Symmetry, but it has not "\
-        "three comma-separated terms: %s"%(string)
+        "three comma-separated terms: %s" % (string)
     liste = []
     for word in words:
         row = nb.Row(str2linearterm(word, ['x', 'y', 'z']))
         liste.append(row)
-    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
-        fromstr("1")]))
+    liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
+                         fromstr("1")]))
     return geo.Symmetry(nb.Matrix(liste))
 
 
@@ -204,9 +208,9 @@ def transformationfromstr(string):
             word = word.replace('\n', ' ')
             word = word.replace('(', ' ').replace(')', ' ').replace(',', ' ')
             threenumbers = fromstr(word)
-            matrix = nb.Matrix([[1, 0, 0, -threenumbers.liste[0].liste[0]], \
-                                [0, 1, 0, -threenumbers.liste[0].liste[1]], \
-                                [0, 0, 1, -threenumbers.liste[0].liste[2]], \
+            matrix = nb.Matrix([[1, 0, 0, -threenumbers.liste[0].liste[0]],
+                                [0, 1, 0, -threenumbers.liste[0].liste[1]],
+                                [0, 0, 1, -threenumbers.liste[0].liste[2]],
                                 [0, 0, 0, 1                             ]])
             return geo.Transformation(matrix)
         elif ('a' in string) or ('b' in string) or ('c' in string):
@@ -214,35 +218,36 @@ def transformationfromstr(string):
             lines = string.split('\n')
             assert len(lines) == 3, \
                 "The following string looks like a Transformation, " \
-                "but it has not exactly three lines: %s"%(string)
+                "but it has not exactly three lines: %s" % (string)
             liste = []
             i = 0
             for line in lines:
                 if len(line.split(' ')) > 0:
                     i += 1
                     words = line.split(' ')
-                    assert  (    ((i == 1) and (words[0] == "a'")) \
-                              or ((i == 2) and (words[0] == "b'")) \
-                              or ((i == 3) and (words[0] == "c'"))  )\
+                    assert  (    ((i == 1) and (words[0] == "a'"))
+                                 or ((i == 2) and (words[0] == "b'"))
+                                 or ((i == 3) and (words[0] == "c'"))  )\
                         and (words[1] == '='), \
                         "The Transformation must have the following form: \n" \
                         "a' = ... \n" \
                         "b' = ... \n" \
                         "c' = ... \n" \
                         "in this Order!"
-                    words = line.split('=') 
+                    words = line.split('=')
                     row = nb.Row(str2linearterm(words[1], ['a', 'b', 'c']))
                     liste.append(row)
-            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"), \
-                fromstr("1")]))
+            liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
+                                 fromstr("1")]))
             m = nb.Matrix(liste)
-            matrix = nb.Matrix( \
-                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]), \
-                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]), \
-                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]), \
+            matrix = nb.Matrix(
+                [nb.Row([m.liste[0].liste[0], m.liste[1].liste[0], m.liste[2].liste[0], 0]),
+                 nb.Row([m.liste[0].liste[1], m.liste[1].liste[1], m.liste[2].liste[1], 0]),
+                 nb.Row([m.liste[0].liste[2], m.liste[1].liste[2], m.liste[2].liste[2], 0]),
                  nb.Row([0, 0, 0, 1])])
-        
+
         return geo.Transformation(matrix.inv())
+
 
 def cosetfromstr(string):
     string = string.replace('{', ' ')
@@ -262,6 +267,7 @@ def posfromstr(string):
     string += "\n 1"
     return geo.Pos(matrixfromstr(string))
 
+
 def diffromstr(string):
     string = string.replace('\n', ' ')
     string = string.replace('\\', ' ')
@@ -273,6 +279,7 @@ def diffromstr(string):
     string = '\n'.join(words)
     string += "\n 0"
     return geo.Dif(matrixfromstr(string))
+
 
 def recfromstr(string):
     string = string.replace('\n', ' ')

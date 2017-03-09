@@ -3,11 +3,13 @@ def height_of_block(string):
         "Argument must be of type str."
     return string.count('\n') + 1
 
+
 def width_of_block(string):
     assert isinstance(string, str), \
         "Argument must be of type str."
     rows = string.split('\n')
     return max([len(row) for row in rows])
+
 
 def shape(liste):
     numrows = len(liste)
@@ -16,6 +18,7 @@ def shape(liste):
         numitems.append(len(row))
     numcols = max(numitems)
     return (numrows, numcols)
+
 
 def maxsizes(liste):
     (numrows, numcols) = shape(liste)
@@ -30,6 +33,7 @@ def maxsizes(liste):
                 maxwidth = max([width_of_block(row[i]), maxwidth])
         maxwidths.append(maxwidth)
     return (maxheights, maxwidths)
+
 
 def block(liste):
     assert isinstance(liste, list), \
@@ -53,9 +57,9 @@ def block(liste):
                     else:
                         stringpart = ''
                     code = '%'
-                    code += "%i"%(maxwidths[j])
+                    code += "%i" % (maxwidths[j])
                     code += 's'
-                    string += code%stringpart
+                    string += code % stringpart
                 else:
                     string += maxwidths[j] * ' '
             string += '\n'

@@ -2,7 +2,7 @@
 #  Description:  Contains the number class Mixed which is used
 #                by all cryspy classes.
 #                Mixed can represent one of the following types:
-#                
+#
 #                    * an exact fraction of two integers
 #                    * a float with error
 #                    * an integer
@@ -10,15 +10,15 @@
 #
 #                In calculations with different types, the result
 #                will have a reasonable type, for example
-#                
+#
 #                    (float with error) + (exact fraction)
 #                    = (float with error) .
 #
 #                It is recommended, that cryspy classes using Mixed-numbers
 #                as arguments can use integers or floats instead, e.g.
-#                
+#
 #                    >>> m = cryspy.numbers.Matrix([[1, 2], [3, 4]])
-#           
+#
 #                is possible, the numbers need not to be converted
 #                to Mixed-objects by the user.
 #
@@ -92,7 +92,7 @@ class Mixed(object):
         elif isinstance(self.value, float):
             string = 'fl'
         string += str(hash(self.value))
-        return int(hashlib.sha1(string.encode()).hexdigest(), 16) 
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __eq__(self, right):
         right = Mixed(right)
@@ -129,7 +129,7 @@ class Mixed(object):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
             "Cannot add object of type %s " \
-            "to object of type Mixed."%(type(right))
+            "to object of type Mixed." % (type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
@@ -161,7 +161,7 @@ class Mixed(object):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, uc.UFloat):
-                return Mixed( \
+                return Mixed(
                     uc.ufloat(self.value + right.value.n, right.value.s))
             if isinstance(right.value, int):
                 return Mixed(self.value + right.value)
@@ -179,7 +179,7 @@ class Mixed(object):
             left = Mixed(left)
         assert isinstance(left, Mixed), \
             "Cannot add object of type Mixed to object " \
-            "of type %s."%(type(left))
+            "of type %s." % (type(left))
         return self + left
 
     def __sub__(self, right):
@@ -193,7 +193,7 @@ class Mixed(object):
             right = Mixed(right)
         assert isinstance(right, Mixed), \
             "Cannot subtract object of type %s " \
-            "from object of type Mixed."%(type(right))
+            "from object of type Mixed." % (type(right))
         if isinstance(self.value, fr.Fraction):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value - right.value)
@@ -307,7 +307,6 @@ class Mixed(object):
                     return Mixed(self.value * right.value)
             elif isinstance(right.value, float):
                 return Mixed(self.value * right.value)
-            
 
     def __rmul__(self, left):
         if isinstance(left, fr.Fraction):
@@ -391,7 +390,6 @@ class Mixed(object):
     def __neg__(self):
         return (-1) * self
 
-
     def __mod__(self, right):
         if isinstance(right, int):
             right = Mixed(right)
@@ -444,7 +442,7 @@ def deg2rad(number):
         "uncertainties.UFloat, int or float."
     return number * pi / 180
 
-    
+
 def rad2deg(number):
     assert isinstance(number, Mixed) \
         or isinstance(number, fr.Fraction) \
@@ -466,7 +464,7 @@ def sin(number):
     elif isinstance(number, int):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Connot calculate cos of an object of type %s."%(type(number))
+        "Connot calculate cos of an object of type %s." % (type(number))
     if isinstance(number.value, fr.Fraction):
         return Mixed(np.sin(float(number.value)))
     elif isinstance(number.value, uc.UFloat):
@@ -487,7 +485,7 @@ def cos(number):
     elif isinstance(number, int):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Connot calculate cos of an object of type %s."%(type(number))
+        "Connot calculate cos of an object of type %s." % (type(number))
     if isinstance(number.value, fr.Fraction):
         return Mixed(np.cos(float(number.value)))
     elif isinstance(number.value, uc.UFloat):
@@ -508,7 +506,7 @@ def arccos(number):
     elif isinstance(number, float):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Cannot calculate arccos of object of type %s."%(type(number))
+        "Cannot calculate arccos of object of type %s." % (type(number))
     if isinstance(number.value, uc.UFloat):
         return Mixed(unumpy.arccos(number.value).item())
     elif isinstance(number.value, fr.Fraction):
@@ -539,21 +537,21 @@ class Row(object):
         for item in self.liste:
             assert isinstance(item, Mixed), \
                 "Object of type Row cannot be created by an object of type " \
-                "%s in the list"%(type(item))
-    
+                "%s in the list" % (type(item))
+
     def __len__(self):
         return len(self.liste)
 
     def __eq__(self, right):
         if isinstance(right, Row):
             if len(self) == len(right):
-                return min([(self.liste[i] == right.liste[i]) \
-                    for i in range(len(self))])
+                return min([(self.liste[i] == right.liste[i])
+                            for i in range(len(self))])
             else:
                 return False
         else:
             return False
-   
+
     def __str__(self):
         str = "(  "
         for item in self.liste:
@@ -561,7 +559,7 @@ class Row(object):
             str += "  "
         str += ")"
         return str
-    
+
     def canonical(dim, i):
         assert isinstance(dim, int), \
             "Canonical Row must be created by a dimension of type int."
@@ -571,13 +569,14 @@ class Row(object):
             "Canonical Row must be cretated by a dimension > 0."
         assert (i >= 0) and (i < dim), \
             "Canonical Row must be created by an index i with 0 <= i < dim."
+
         def kronecker(i, j):
             if (i == j):
                 return Mixed(fr.Fraction(1, 1))
             else:
                 return Mixed(fr.Fraction(0, 1))
         return Row([kronecker(i, j) for j in range(dim)])
-    
+
     def block(self, i1, i2):
         length = len(self)
         assert isinstance(i1, int) and isinstance(i2, int), \
@@ -639,8 +638,8 @@ class Matrix(object):
     def __eq__(self, right):
         if isinstance(right, Matrix):
             if (self.shape() == right.shape()):
-                return min([(self.liste[i] == right.liste[i]) \
-                    for i in range(self.shape()[0])])
+                return min([(self.liste[i] == right.liste[i])
+                            for i in range(self.shape()[0])])
             else:
                 return False
         else:
@@ -648,7 +647,7 @@ class Matrix(object):
 
     def __str__(self):
         str = ''
-        length = [0]*self.shape()[1]
+        length = [0] * self.shape()[1]
         for row in self.liste:
             for (i, item) in zip(range(len(row)), row.liste):
                 length[i] = max(length[i], len(item.__str__()))
@@ -662,8 +661,8 @@ class Matrix(object):
             else:
                 str += '|   '
             for (j, item) in zip(range(len(row)), row.liste):
-                codestr = '%' + '%i'%(length[j]) + 's  '
-                str += codestr%(item.__str__())
+                codestr = '%' + '%i' % (length[j]) + 's  '
+                str += codestr % (item.__str__())
             if self.shape()[0] == 1:
                 str += '> '
             elif i == 0:
@@ -676,15 +675,14 @@ class Matrix(object):
         str = str[:-1]
         return str
 
-
     def __add__(self, right):
         if isinstance(right, Matrix):
             assert self.shape() == right.shape(), \
                 "Two Matrices must have the same shape for Operator +"
             (numrows, numcolumns) = self.shape()
-            return Matrix([\
-                Row([self.liste[i].liste[j] + right.liste[i].liste[j] \
-                for j in range(numcolumns)]) \
+            return Matrix([
+                Row([self.liste[i].liste[j] + right.liste[i].liste[j]
+                     for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented
@@ -694,14 +692,13 @@ class Matrix(object):
             assert self.shape() == right.shape(), \
                 "Two Matrices must have the same shape for Operator +"
             (numrows, numcolumns) = self.shape()
-            return Matrix([\
-                Row([self.liste[i].liste[j] - right.liste[i].liste[j] \
-                for j in range(numcolumns)]) \
+            return Matrix([
+                Row([self.liste[i].liste[j] - right.liste[i].liste[j]
+                     for j in range(numcolumns)])
                 for i in range(numrows)])
         else:
             return NotImplemented
 
- 
     def __mul__(self, right):
         if isinstance(right, fr.Fraction):
             right = Mixed(right)
@@ -713,11 +710,11 @@ class Matrix(object):
             right = Mixed(right)
         if isinstance(right, Mixed):
             (numrows, numcols) = self.shape()
-            return Matrix( \
-                [ \
-                    Row([self.liste[i].liste[j] * right for j in range(numcols)]) \
-                    for i in range(numrows) \
-                ] \
+            return Matrix(
+                [
+                    Row([self.liste[i].liste[j] * right for j in range(numcols)])
+                    for i in range(numrows)
+                ]
             )
         elif isinstance(right, Matrix):
             (numrows1, numcols1) = self.shape()
@@ -725,16 +722,17 @@ class Matrix(object):
             assert (numcols1 == numrows2), \
                 "Matrix-Multiplication needs two matrices, with "\
                 " width of first matrix equals height of second matrix."
+
             def matrixitem(i, j):
                 s = Mixed(fr.Fraction(0, 1))
                 for k in range(numcols1):
                     s += self.liste[i].liste[k] * right.liste[k].liste[j]
                 return s
-            return Matrix( \
-                [ \
-                   Row([matrixitem(i, j) for j in range(numcols2)]) \
-                   for i in range(numrows1) \
-                ] \
+            return Matrix(
+                [
+                   Row([matrixitem(i, j) for j in range(numcols2)])
+                   for i in range(numrows1)
+                ]
             )
         else:
             return NotImplemented
@@ -762,7 +760,7 @@ class Matrix(object):
         assert (dim > 0), \
             "Dimension for creating onematrix must be > 0."
         return Matrix([Row.canonical(dim, i) for i in range(dim)])
-        
+
     def block(self, i1, i2, j1, j2):
         """
             >>> a = Mixed(fr.Fraction(1, 4))
@@ -809,13 +807,13 @@ class Matrix(object):
         assert (numcols1 == numcols2), \
             "I cannot vglue (vertical glue) Matrices with different numbers " \
             "of cols."
+
         def row(i):
             if i < numrows1:
                 return left.liste[i]
             else:
                 return right.liste[i - numrows1]
         return Matrix([row(i) for i in range(numrows1 + numrows2)])
-
 
     def subtract_x_times_rowj_from_rowi(self, x, i, j):
         new = deepcopy(self)
@@ -827,7 +825,8 @@ class Matrix(object):
         assert (numrows == numcols), \
             "I can invert square matrices only (num of rows == num of cols)."
         dim = numrows
-        right = Matrix.onematrix(dim) 
+        right = Matrix.onematrix(dim)
+
         def make_triangle(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(dim - 1):
@@ -835,20 +834,20 @@ class Matrix(object):
                 while (self.liste[i].liste[rownumber] == Mixed(0)) \
                     and (i < dim):
                     i += 1
-                
+
                 assert (i < dim), \
                     "Cannot transform matrix to triangle matrix."
-                
+
                 self = self.swap_rows(rownumber, i)
                 right = right.swap_rows(rownumber, i)
 
-                
                 for i in range(rownumber + 1, dim):
                     x = self.liste[i].liste[rownumber] \
                     / self.liste[rownumber].liste[rownumber]
                     self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
                     right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return (self, right)
+
         def make_diagonal(self, right):
             (dim, dim) = self.shape()
             for rownumber in range(1, dim):
@@ -858,6 +857,7 @@ class Matrix(object):
                     self = self.subtract_x_times_rowj_from_rowi(x, i, rownumber)
                     right = right.subtract_x_times_rowj_from_rowi(x, i, rownumber)
             return(self, right)
+
         def make_one(self, right):
             new = deepcopy(self)
             (dim, dim) = self.shape()
@@ -869,16 +869,16 @@ class Matrix(object):
         (self, right) = make_triangle(self, right)
         (self, right) = make_diagonal(self, right)
         (self, right) = make_one(self, right)
-        return right   
+        return right
 
     def transpose(self):
         shape = self.shape()
-        return Matrix([ \
-                   Row([ \
-                       self.liste[j].liste[i] \
-                       for j in range(shape[0]) \
-                   ]) \
-                   for i in range(shape[1]) \
+        return Matrix([
+                   Row([
+                       self.liste[j].liste[i]
+                       for j in range(shape[0])
+                   ])
+                   for i in range(shape[1])
                ])
 
     def delete_ith_row_and_first_column(self, i):
@@ -897,8 +897,6 @@ class Matrix(object):
 
         return Matrix(liste)
 
-
-
     def det(self):
         # Returns the determinant.
         shape = self.shape()
@@ -912,10 +910,9 @@ class Matrix(object):
             result = 0
             for i in range(0, shape[0]):
                 M = self.delete_ith_row_and_first_column(i)
-                result += self.liste[i].liste[0] * (-1)**i * M.det()
+                result += self.liste[i].liste[0] * (-1) ** i * M.det()
 
             return result
-        
 
     def delete_translation(self):
         # If a 4x4-Matrix has the shape
@@ -952,8 +949,7 @@ class Matrix(object):
         h = self.liste[2].liste[1]
         i = self.liste[2].liste[2]
 
-        return Matrix([[a, b, c, 0], \
-                       [d, e, f, 0], \
-                       [g, h, i, 0], \
+        return Matrix([[a, b, c, 0],
+                       [d, e, f, 0],
+                       [g, h, i, 0],
                        [0, 0, 0, 1]])
-

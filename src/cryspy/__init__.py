@@ -8,4 +8,3 @@ import cryspy.niceprint
 import cryspy.tables
 import cryspy.blender
 import cryspy.utils
-
