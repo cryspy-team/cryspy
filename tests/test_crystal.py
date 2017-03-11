@@ -8,12 +8,13 @@ from cryspy.fromstr import fromstr as fs
 from cryspy import crystal as cr
 from cryspy import tables
 
+
 def test_Atom():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
     assert atom1.__str__() == \
-    "Atom Cs1 Cs Pos /  0  \ \n" \
-    "               |   0   |\n" \
-    "                \  0  / "
+        "Atom Cs1 Cs Pos /  0  \ \n" \
+        "               |   0   |\n" \
+        "                \  0  / "
 
     atom2 = cr.Atom("Cs2", "Cs", fs("p 0 0 0"))
     assert atom2 == atom1
@@ -29,11 +30,11 @@ def test_Atom():
                         "b' = 2b \n"
                         "c' = c")
     atom_trans = cr.Atom("Cl1", "Cl", fs("p 1/2 1/4 1/2"))
-    assert (transformation**atom).__str__() == atom_trans.__str__()
+    assert (transformation ** atom).__str__() == atom_trans.__str__()
 
     sym = fs("-x+1/2,-y+1/2, z")
     atom_sym = cr.Atom("Cl1", "Cl", fs("p0 0 1/2"))
-    assert (sym**atom).__str__() == atom_sym.__str__()
+    assert (sym ** atom).__str__() == atom_sym.__str__()
 
     coset = fs("{x, -y, z+1}")
     atom = cr.Atom("Cl1", "Cl", fs("p 1/2 1/4 1/2"))
@@ -55,6 +56,7 @@ def test_Atom():
     atom3 = atom1 + d
     assert atom2 == atom3
 
+
 def test_Momentum():
     m = cr.Momentum(fs("p 0 0 0"), fs("d 0 0 1"))
     assert isinstance(m, cr.Momentum)
@@ -73,6 +75,7 @@ def test_Momentum():
     assert m + d == cr.Momentum(fs("p 0 0 1/2"), fs("d 0 0 1"))
     assert fs("x+1/2,y,z") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
     assert fs("{x+3/2,y,z}") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
+
 
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
@@ -98,7 +101,7 @@ def test_Atomset():
                         "a' = a+b \n"
                         "b' = b   \n"
                         "c' = c")
-    atomset1 = transformation**atomset
+    atomset1 = transformation ** atomset
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
                            cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4")),
                            cr.Momentum(fs("p 0 0 -1/4"), fs("d 0 0 1"))})
@@ -134,7 +137,7 @@ def test_Atomset():
     atomset7 = d + atomset1
     assert atomset5 == atomset6
     assert atomset5 == atomset7
-    
+
 
 def test_structurefactor():
     asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")),
@@ -161,5 +164,3 @@ def test_structurefactor():
     metric = cellparameters.to_Metric()
     q = fs("q 1 0 0")
     sintl = 0.5 * metric.length(q)
-
-

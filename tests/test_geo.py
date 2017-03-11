@@ -16,6 +16,7 @@ def test_Pos():
     x = geo.origin
     assert x == geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
 
+
 def test_Dif():
     x = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
     assert x.__str__() == "Dif /  1  \ \n   |   2   |\n    \  3  / "
@@ -23,12 +24,14 @@ def test_Dif():
     assert x.y() == 2
     assert x.z() == 3
 
+
 def test_Rec():
     q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
     assert q.__str__() == "Rec <  1  2  3  > "
     assert q.h() == 1
     assert q.k() == 2
     assert q.l() == 3
+
 
 def test_eq():
     r1 = geo.Pos(nb.Matrix([[1], [2], [3], [1]]))
@@ -41,7 +44,7 @@ def test_eq():
     q2 = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
     q3 = geo.Rec(nb.Matrix([[2, 3, 4, 0]]))
     assert not (r1 == d1)
-    assert     (r1 == r1) 
+    assert     (r1 == r1)
     assert     (r1 == r2)
     assert not (r1 == r3)
     assert     (d1 == d1)
@@ -71,10 +74,12 @@ def test_add_and_sub():
     assert -d1 == geo.Dif(nb.Matrix([[-4], [-5], [-6], [0]]))
     assert -q1 == geo.Rec(nb.Matrix([[-1, -2, -3, 0]]))
 
+
 def test_Skalarprodukt():
     d1 = geo.Dif(nb.Matrix([[1], [2], [3], [0]]))
     q1 = geo.Rec(nb.Matrix([[4, 5, 6, 0]]))
     assert q1 * d1 == 32
+
 
 def test_Operator():
     id = geo.Operator(nb.Matrix([[1, 0, 0, 0],
@@ -82,13 +87,13 @@ def test_Operator():
                                  [0, 0, 1, 0],
                                  [0, 0, 0, 1]]))
     g = geo.Operator(nb.Matrix([[-1,  0, 0, 0],
-                                [ 0, -1, 0, 0],
-                                [ 0,  0, 1, 0],
-                                [ 0,  0, 0, 1]]))
+                                [0, -1, 0, 0],
+                                [0,  0, 1, 0],
+                                [0,  0, 0, 1]]))
     g1 = geo.Operator(nb.Matrix([[-1,  0, 0, 0],
-                                 [ 0, -1, 0, 0],
-                                 [ 0,  0, 1, 0],
-                                 [ 0,  0, 0, 1]]))
+                                 [0, -1, 0, 0],
+                                 [0,  0, 1, 0],
+                                 [0,  0, 0, 1]]))
     assert g.__str__() == "Operator /  -1   0  0  0  \ \n"\
                           "        |    0  -1  0  0   |\n"\
                           "        |    0   0  1  0   |\n"\
@@ -209,7 +214,7 @@ def test_Pointgroup():
                                                 [1, 0, 0, 0],
                                                 [0, 0, -1, 0],
                                                 [0, 0, 0, 1]]))])
-              
+
     assert G.is_really_a_pointgroup()
 
     g = G.liste
@@ -221,7 +226,7 @@ def test_Pointgroup():
 
     print(G1.sort())
     print(G)
-    assert G1.sort() == G                      
+    assert G1.sort() == G
 
     H = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0],
                                                 [0, 1, 0, 0],
@@ -344,21 +349,21 @@ def test_Transformation():
     assert (t ** q1) == \
         geo.Rec(nb.Matrix([[0, nb.Mixed(fr.Fraction(1, 2)), 0, 0]]))
 
-    
+
 def test_Metric():
     M = nb.Matrix([[1, 0, 0, 0],
                    [0, 1, 0, 0],
                    [0, 0, 1, 0],
                    [0, 0, 0, 1]])
     metric = geo.Metric(M)
-    t =  metric.schmidttransformation
+    t = metric.schmidttransformation
 
     assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
     assert t ** geo.canonical_e1 == geo.Dif(nb.Matrix([[0], [1], [0], [0]]))
     assert t ** geo.canonical_e2 == geo.Dif(nb.Matrix([[0], [0], [1], [0]]))
 
     metric = geo.Cellparameters(1, 1, 1, 90, 90, 45).to_Metric()
-    t =  metric.schmidttransformation
+    t = metric.schmidttransformation
     assert t ** geo.canonical_e0 == geo.Dif(nb.Matrix([[1], [0], [0], [0]]))
     e1 = t ** geo.canonical_e1
     assert abs(e1.x() - 0.70710678).value < 0.000001
@@ -380,7 +385,7 @@ def test_Metric():
                                "      |   0  4  0  0   |\n" \
                                "      |   0  0  1  0   |\n" \
                                "       \  0  0  0  1  / "
-    o =  geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
+    o = geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
     p1 = geo.Pos(nb.Matrix([[1], [0], [0], [1]]))
     p2 = geo.Pos(nb.Matrix([[0], [1], [0], [1]]))
     q1 = geo.Rec(nb.Matrix([[1, 0, 0, 0]]))
@@ -420,6 +425,7 @@ def test_Metric():
                                                 [0, 0, 1, 0],
                                                 [0, 0, 0, 1]]))
 
+
 def test_Transgen():
     tg = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])),
                       geo.Dif(nb.Matrix([[0], [0], [2], [0]])),
@@ -455,42 +461,42 @@ def test_Coset():
     c = geo.Coset(g, geo.canonical)
     assert c.__str__() == "{x+2z,-2y,z}"
 
-  
+
 def test_Spacegroup():
     transgen = geo.canonical
     c1 = geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)),
                    transgen)
     c2 = geo.Coset(geo.Symmetry(nb.Matrix([[-1,  0,  0, 0],
-                                           [ 0, -1,  0, 0],
-                                           [ 0,  0, -1, 0],
-                                           [ 0,  0,  0, 1]])),
+                                           [0, -1,  0, 0],
+                                           [0,  0, -1, 0],
+                                           [0,  0,  0, 1]])),
                    transgen)
     sg = geo.Spacegroup(transgen, [c1, c2])
     assert sg.__str__() == \
-    "Spacegroup        \n"\
-    "----------        \n"\
-    " canonical        \n"\
-    "             x,y,z\n"\
-    "          -x,-y,-z"
+        "Spacegroup        \n"\
+        "----------        \n"\
+        " canonical        \n"\
+        "             x,y,z\n"\
+        "          -x,-y,-z"
     transgen = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])),
                             geo.Dif(nb.Matrix([[0], [1], [0], [0]])),
                             geo.Dif(nb.Matrix([[0], [0], [2], [0]])))
     c1 = geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)),
                    transgen)
     c2 = geo.Coset(geo.Symmetry(nb.Matrix([[-1,  0,  0, 0],
-                                           [ 0, -1,  0, 0],
-                                           [ 0,  0, -1, 0],
-                                           [ 0,  0,  0, 1]])),
+                                           [0, -1,  0, 0],
+                                           [0,  0, -1, 0],
+                                           [0,  0,  0, 1]])),
                    transgen)
     sg = geo.Spacegroup(transgen, [c1, c2])
     assert sg.__str__() == \
-    "                           Spacegroup        \n"\
-    "                           ----------        \n"\
-    "Transgen /  1  \   /  0  \   /  0  \         \n"\
-    "        |   0   | |   1   | |   0   |        \n"\
-    "         \  0  /   \  0  /   \  2  /         \n"\
-    "                                        x,y,z\n"\
-    "                                     -x,-y,-z"
+        "                           Spacegroup        \n"\
+        "                           ----------        \n"\
+        "Transgen /  1  \   /  0  \   /  0  \         \n"\
+        "        |   0   | |   1   | |   0   |        \n"\
+        "         \  0  /   \  0  /   \  2  /         \n"\
+        "                                        x,y,z\n"\
+        "                                     -x,-y,-z"
 
     sg = geo.Spacegroup(geo.canonical,
         [geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)), geo.canonical),
@@ -504,20 +510,20 @@ def test_Spacegroup():
                                                    [0, 0, 1, 0],
                                                    [0, 0, 0, 1]]))
     sg1 = transformation ** sg
-    sg2 = geo.Spacegroup(transformation**geo.canonical,
+    sg2 = geo.Spacegroup(transformation ** geo.canonical,
         [geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)), geo.canonical),
          geo.Coset(geo.Symmetry(nb.Matrix([[-1, 0, 0, 0],
-                                           [ 0, 1, 0, 0],
-                                           [ 0, 0, 1, 0],
-                                           [ 0, 0, 0, 1]])), geo.canonical)])
+                                           [0, 1, 0, 0],
+                                           [0, 0, 1, 0],
+                                           [0, 0, 0, 1]])), geo.canonical)])
 
     assert sg.is_really_a_spacegroup() == True
     sg_error = geo.Spacegroup(geo.canonical,
         [geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)), geo.canonical),
          geo.Coset(geo.Symmetry(nb.Matrix([[1, 0, 0, fr.Fraction(1, 4)],
-                                           [0, 1, 0, 0                ],
-                                           [0, 0, 1, 0                ],
-                                           [0, 0, 0, 1                ]])),
+                                           [0, 1, 0, 0],
+                                           [0, 0, 1, 0],
+                                           [0, 0, 0, 1]])),
                    geo.canonical)])
     assert sg_error.is_really_a_spacegroup() == False
     # Hier ist noch folgender Fehler:
@@ -571,12 +577,12 @@ def test_operations():
     #   Dif             |    -            -            Dif       -      -     -    -         -
     #   Metric          |    -            -             -        -      -     -    -         -
     #   Spacegroup      |    -            -          Spacegroup  -      -     -    -         -
-    
+
     # Coset needs some pow()-declarations, so first I test everything else:
     symmetry = geo.Symmetry(nb.Matrix([[-1,  0, 0, 0],
-                                       [ 0, -1, 0, 0],
-                                       [ 0,  0, 1, 0],
-                                       [ 0,  0, 0, 1]]))
+                                       [0, -1, 0, 0],
+                                       [0,  0, 1, 0],
+                                       [0,  0, 0, 1]]))
     transformation = geo.Transformation(nb.Matrix([[0, 1, 0, 0],
                                                    [1, 0, 0, 0],
                                                    [0, 0, 2, 0],
@@ -591,9 +597,9 @@ def test_operations():
     spacegroup = geo.Spacegroup(geo.canonical,
         [geo.Coset(geo.Symmetry(nb.Matrix.onematrix(4)), geo.canonical),
          geo.Coset(geo.Symmetry(nb.Matrix([[-1,  0,  0, 0],
-                                           [ 0, -1,  0, 0],
-                                           [ 0,  0, -1, 0],
-                                           [ 0,  0,  0, 1]])), geo.canonical)])
+                                           [0, -1,  0, 0],
+                                           [0,  0, -1, 0],
+                                           [0,  0,  0, 1]])), geo.canonical)])
 
     # * :
     #====
@@ -689,9 +695,9 @@ def test_operations():
     coset1 = geo.Coset(geo.Symmetry(nb.Matrix([[1, 0, 0, fr.Fraction(3, 2)],
                                                [0, 1, 0, fr.Fraction(3, 2)],
                                                [0, 0, 1, fr.Fraction(7, 2)],
-                                               [0, 0, 0, 1  ]])), transgen1)
+                                               [0, 0, 0, 1]])), transgen1)
     coset1_ = geo.Coset(geo.Symmetry(nb.Matrix([[1, 0, 0, fr.Fraction(1, 2)],
                                                 [0, 1, 0, fr.Fraction(1, 2)],
                                                 [0, 0, 1, fr.Fraction(3, 2)],
-                                                [0, 0, 0, 1  ]])), transgen1)
+                                                [0, 0, 0, 1]])), transgen1)
     assert coset1 % transgen1 == coset1_

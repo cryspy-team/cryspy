@@ -13,9 +13,11 @@ def test_removeletters():
     string = "hallo 1 2 3"
     assert fromstr.removeletters(string) == "      1 2 3"
 
+
 def test_str2linearterm():
     term = fromstr.str2linearterm("a + b", ['a', 'b', 'c'])
-    assert term == [1, 1, 0, 0] 
+    assert term == [1, 1, 0, 0]
+
 
 def test_fromstr():
     string = "1/2"
@@ -79,7 +81,7 @@ def test_fromstr():
                                       "0 1 0    0 \n"
                                       "0 0 1    0 \n"
                                       "0 0 0    1"))
-    
+
     string1 = "O -> (1/2, 0, 0) \n" \
               "then\n" \
               "a' = a \n" \
@@ -115,7 +117,7 @@ def test_fromstr():
     assert g ** fs("p 0 0 0") == fs("p -1/2 1/2 0")
 
     assert g * g.inv() == geo.Transformation(nb.Matrix.onematrix(4))
-    
+
     string = "p0 0 0"
     p = fs(string)
     assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))
@@ -148,6 +150,7 @@ def test_fromstr():
     assert q == geo.Rec(fs("0 0 0 0"))
     q = fs("Rec <  1  2  3  > ")
     assert q == geo.Rec(fs("1 2 3 0"))
+
 
 def test_typefromstr():
   string = "/ 1 2 \ \\n\ 3 4/"
@@ -185,5 +188,3 @@ def test_typefromstr():
   assert fromstr.typefromstr(string) == geo.Rec
   string = "Q0 0 0"
   assert fromstr.typefromstr(string) == geo.Rec
-  
-
