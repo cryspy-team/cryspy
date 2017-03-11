@@ -8,5 +8,5 @@ setup(name='cryspy',
       author='Tobias Froehlich',
       author_email='',
       url='https://github.com/cryspy-team/cryspy/',
-      packages=['distutils', 'distutils.command'],
+      packages=['cryspy'],
      )
