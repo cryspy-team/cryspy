@@ -102,7 +102,6 @@ def test_fromstr():
     g = fs(string)
     assert g == g2 * g1
 
-
     string = "O -> (1/2, 0, 0) \n" \
              "then\n" \
              "a' = a + b\n" \
@@ -117,8 +116,6 @@ def test_fromstr():
 
     assert g * g.inv() == geo.Transformation(nb.Matrix.onematrix(4))
     
-
-
     string = "p0 0 0"
     p = fs(string)
     assert p == geo.Pos(fs("0 \n 0 \n 0 \n 1"))

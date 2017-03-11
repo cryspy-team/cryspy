@@ -95,7 +95,6 @@ def test_Row():
     R = nb.Row([1, 2, 3, 4])
     assert R.block(1, 3) == nb.Row([2, 3])
 
-
     # Addition
 
     R1 = nb.Row([1, 2, fr.Fraction(1, 2)])
@@ -144,7 +143,6 @@ def test_Matrix():
     assert (M1 == M5) == False
     assert (M1 == M6) == False
     assert M1 == M7
-
 
     # print
 
@@ -260,7 +258,6 @@ def test_Matrix():
     assert approx(M.liste[1].liste[0].value, 7.5)
     assert approx(M.liste[1].liste[1].value, 10.0)
 
-
     # onematrix
 
     assert nb.Matrix.onematrix(2) == nb.Matrix([[1, 0], [0, 1]])
@@ -313,7 +310,6 @@ def test_Matrix():
                       [1, 0, 0, 0],
                       [0, 0, 0, 1]])
 
-
     # transpose
 
     assert nb.Matrix([[1, 2, 3], [4, 5, 6]]).transpose() == \
@@ -342,7 +338,6 @@ def test_Matrix():
                    [13, 14, 15, 17]])
     assert M.det() == -16
     
-
     # delete_translation
 
     M = nb.Matrix([[1,  2,  3,  4],

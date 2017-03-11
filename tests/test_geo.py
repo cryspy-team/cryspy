@@ -96,7 +96,6 @@ def test_Operator():
     assert g == g1
 
 
-
 def test_Symmetry():
     g = geo.Symmetry(nb.Matrix([[1,  0, 2, -1],
                                 [0, -2, 0,  0],
@@ -135,7 +134,6 @@ def test_Pointgroup():
                                                  [0, 0, -1, 0],
                                                  [0, 0, 0, 1]]))])
 
-    
     pg2 = geo.Pointgroup([geo.Symmetry(nb.Matrix([[-1, 0, 0, 0],
                                                   [0, -1, 0, 0],
                                                   [0, 0, -1, 0],
@@ -264,7 +262,6 @@ def test_Pointgroup():
            "-x,y,-z\n"
 
 
-
 def test_Transformation():
     t1 = geo.Transformation(nb.Matrix([[0, 1, 0, 0],
                                        [1, 0, 0, 0],
@@ -348,9 +345,6 @@ def test_Transformation():
         geo.Rec(nb.Matrix([[0, nb.Mixed(fr.Fraction(1, 2)), 0, 0]]))
 
     
-
-
-                               
 def test_Metric():
     M = nb.Matrix([[1, 0, 0, 0],
                    [0, 1, 0, 0],
@@ -376,7 +370,6 @@ def test_Metric():
     assert abs(e2.z() - 1).value < 0.000001
 
     t = metric.schmidttransformation.inv()
-
 
     M = nb.Matrix([[9, 0, 0, 0],
                    [0, 4, 0, 0],
@@ -416,7 +409,6 @@ def test_Metric():
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
         geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
-
 
     t = geo.Transformation(nb.Matrix([[0, 1, 0, 0],
                                       [1, 0, 0, 0],
@@ -580,7 +572,6 @@ def test_operations():
     #   Metric          |    -            -             -        -      -     -    -         -
     #   Spacegroup      |    -            -          Spacegroup  -      -     -    -         -
     
-
     # Coset needs some pow()-declarations, so first I test everything else:
     symmetry = geo.Symmetry(nb.Matrix([[-1,  0, 0, 0],
                                        [ 0, -1, 0, 0],
@@ -603,7 +594,6 @@ def test_operations():
                                            [ 0, -1,  0, 0],
                                            [ 0,  0, -1, 0],
                                            [ 0,  0,  0, 1]])), geo.canonical)])
-
 
     # * :
     #====
@@ -678,7 +668,6 @@ def test_operations():
 
     # Here comes Coset:
     #==================
-
 
     coset = geo.Coset(symmetry, transgen)
 

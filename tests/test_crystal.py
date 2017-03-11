@@ -41,7 +41,6 @@ def test_Atom():
     atom2 = cr.Atom("Cl1", "Cl", fs("p 1/2 3/4 1/2"))
     assert atom1.__str__() == atom2.__str__()
 
-
     transgen = geo.Transgen(fs("d 1 0 0"),
                             fs("d 0 1 0"),
                             fs("d 0 0 2"))
@@ -114,7 +113,6 @@ def test_Atomset():
                            momentum})
     assert atomset1 == atomset2
 
-    
     atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
     atomset1 = atomset % geo.canonical
@@ -137,8 +135,6 @@ def test_Atomset():
     assert atomset5 == atomset6
     assert atomset5 == atomset7
     
-
-
 
 def test_structurefactor():
     asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")),

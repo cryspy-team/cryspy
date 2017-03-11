@@ -831,7 +831,6 @@ def test_Mixed():
     for z in [q, e, i, f]:
         assert m0 / z == m0
 
-
     # negative
 
     q = fr.Fraction(3, 2)
@@ -860,7 +859,6 @@ def test_Mixed():
     assert -mf == nb.Mixed(-3.5)
 
     # Modulo
-
 
     q = fr.Fraction(5, 2)
     e = uc.ufloat(3.2, 0.1)
