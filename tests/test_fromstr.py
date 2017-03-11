@@ -36,17 +36,17 @@ def test_fromstr():
 
     string = "/ 1 2 \ \n \ 3 4 /"
     assert fs(string) == \
-        nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]), \
+        nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]),
                    nb.Row([nb.Mixed(3), nb.Mixed(4)])])
     string = "1 2 \n 3 4"
     assert fs(string) == \
-        nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]), \
+        nb.Matrix([nb.Row([nb.Mixed(1), nb.Mixed(2)]),
                    nb.Row([nb.Mixed(3), nb.Mixed(4)])])
     string = "x+y,y - x +1/3,2z"
     g = fs(string)
-    assert g == geo.Symmetry(fs("/ 1 1 0 0 \n"\
-                                " -1 1 0 1/3 \n"\
-                                "  0 0 2 0 \n"\
+    assert g == geo.Symmetry(fs("/ 1 1 0 0 \n"
+                                " -1 1 0 1/3 \n"
+                                "  0 0 2 0 \n"
                                 "  0 0 0 1"))
     string = "O->(0,0,0)\n" \
              "then\n" \
@@ -54,9 +54,9 @@ def test_fromstr():
              "b' = b+a \n" \
              "c' = 2c"
     g = fs(string)
-    assert g == geo.Transformation(fs(" 1 1 0 0 \n"\
-                                      "-1 1 0 0 \n"\
-                                      " 0 0 2 0 \n"\
+    assert g == geo.Transformation(fs(" 1 1 0 0 \n"
+                                      "-1 1 0 0 \n"
+                                      " 0 0 2 0 \n"
                                       " 0 0 0 1").inv())
 
     string = "O->(0,0,0) \n" \
@@ -65,9 +65,9 @@ def test_fromstr():
              "b' = a \n" \
              "c' = b"
     g = fs(string)
-    assert g == geo.Transformation(fs("0 1 0 0 \n" \
-                                      "0 0 1 0 \n" \
-                                      "1 0 0 0 \n" \
+    assert g == geo.Transformation(fs("0 1 0 0 \n"
+                                      "0 0 1 0 \n"
+                                      "1 0 0 0 \n"
                                       "0 0 0 1").inv())
     string = "O -> (1/2, 0, 0) \n" \
              "then\n" \
@@ -75,9 +75,9 @@ def test_fromstr():
              "b' = b \n" \
              "c' = c"
     g = fs(string)
-    assert g == geo.Transformation(fs("1 0 0 -1/2 \n" \
-                                      "0 1 0    0 \n" \
-                                      "0 0 1    0 \n" \
+    assert g == geo.Transformation(fs("1 0 0 -1/2 \n"
+                                      "0 1 0    0 \n"
+                                      "0 0 1    0 \n"
                                       "0 0 0    1"))
     
     string1 = "O -> (1/2, 0, 0) \n" \

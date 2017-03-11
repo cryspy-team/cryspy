@@ -23,10 +23,10 @@ def test_Atom():
     assert atom4 != atom1
 
     atom = cr.Atom("Cl1", "Cl", fs("p 1/2 1/2 1/2"))
-    transformation = fs("O->(0,0,0) \n" \
-                        "then\n" \
-                        "a' = a \n" \
-                        "b' = 2b \n" \
+    transformation = fs("O->(0,0,0) \n"
+                        "then\n"
+                        "a' = a \n"
+                        "b' = 2b \n"
                         "c' = c")
     atom_trans = cr.Atom("Cl1", "Cl", fs("p 1/2 1/4 1/2"))
     assert (transformation**atom).__str__() == atom_trans.__str__()
@@ -42,8 +42,8 @@ def test_Atom():
     assert atom1.__str__() == atom2.__str__()
 
 
-    transgen = geo.Transgen(fs("d 1 0 0"), \
-                            fs("d 0 1 0"), \
+    transgen = geo.Transgen(fs("d 1 0 0"),
+                            fs("d 0 1 0"),
                             fs("d 0 0 2"))
     atom = cr.Atom("Cl1", "Cl", fs("p 1/2 5/4 -1/2"))
     atom1 = atom % transgen
@@ -94,31 +94,31 @@ def test_Atomset():
         "                                 \n" \
         "                         Momentum"
 
-    transformation = fs("O->(0,0,1/4) \n" \
-                        "then\n" \
-                        "a' = a+b \n" \
-                        "b' = b   \n" \
+    transformation = fs("O->(0,0,1/4) \n"
+                        "then\n"
+                        "a' = a+b \n"
+                        "b' = b   \n"
                         "c' = c")
     atomset1 = transformation**atomset
-    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
-                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4")), \
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4")),
                            cr.Momentum(fs("p 0 0 -1/4"), fs("d 0 0 1"))})
     assert atomset1 == atomset2
 
-    spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"), \
+    spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"),
                                                 fs("{-x, -y, -z}")])
     atomset1 = spacegroup ** atomset
-    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
-                           cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
-                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0")), \
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")),
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")),
+                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0")),
                            momentum})
     assert atomset1 == atomset2
 
     
-    atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
+    atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
     atomset1 = atomset % geo.canonical
-    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 3/4")), \
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 3/4")),
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 3/4"))})
 
     assert atomset1 == atomset2
@@ -126,7 +126,7 @@ def test_Atomset():
     atomset1 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0"))})
     atomset2 = cr.Atomset({cr.Atom("Cu1", "Cu", fs("p 1/2 1/2 1/2"))})
     atomset3 = atomset1 + atomset2
-    atomset4 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
+    atomset4 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")),
                            cr.Atom("Cu1", "Cu", fs("p 1/2 1/2 1/2"))})
     assert atomset3 == atomset4
 
@@ -141,11 +141,11 @@ def test_Atomset():
 
 
 def test_structurefactor():
-    asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")), \
-                          cr.Atom("Mn1", "Mn", fs("p 1/2   0     0")), \
-                          cr.Atom("Mn2", "Mn", fs("p 1/2   0     0")), \
-                          cr.Atom("Mn3", "Mn", fs("p 0     0     1/2")), \
-                          cr.Atom("O1",  "O",  fs("p 0.223 0.274 0.081")), \
+    asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")),
+                          cr.Atom("Mn1", "Mn", fs("p 1/2   0     0")),
+                          cr.Atom("Mn2", "Mn", fs("p 1/2   0     0")),
+                          cr.Atom("Mn3", "Mn", fs("p 0     0     1/2")),
+                          cr.Atom("O1",  "O",  fs("p 0.223 0.274 0.081")),
                           cr.Atom("O2",  "O",  fs("p 0.342 0.522 0.341"))})
     sg = tables.spacegroup(148)
     cell = sg ** asyunit
@@ -157,9 +157,9 @@ def test_structurefactor():
 #    assert test_numbers_Mixed.approx(-6.540191224, F.real)
 #    assert test_numbers_Mixed.approx(0.0, F.imag)
 
-    cell = cr.Atomset({cr.Atom("Au1", "Au", fs("p 0   0   0  ")), \
-                       cr.Atom("Cu1", "Cu", fs("p 0   1/2 1/2")), \
-                       cr.Atom("Cu2", "Cu", fs("p 1/2 0   1/2")), \
+    cell = cr.Atomset({cr.Atom("Au1", "Au", fs("p 0   0   0  ")),
+                       cr.Atom("Cu1", "Cu", fs("p 0   1/2 1/2")),
+                       cr.Atom("Cu2", "Cu", fs("p 1/2 0   1/2")),
                        cr.Atom("Cu3", "Cu", fs("p 1/2 1/2 0  "))})
     cellparameters = geo.Cellparameters(3.71, 3.71, 3.71, 90, 90, 90)
     metric = cellparameters.to_Metric()
