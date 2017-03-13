@@ -75,6 +75,42 @@ def test_Momentum():
     assert fs("x+1/2,y,z") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
     assert fs("{x+3/2,y,z}") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
 
+def test_Bond():
+    b = cr.Bond(fs("p 0 0 0"), fs("p 0 0 1/2"))
+    assert isinstance(b, cr.Bond)
+    b.set_color((0, 0, 1))
+    b.set_color((fs("0.3"), 0.1, 1))
+    b.set_thickness(1)
+    b.set_thickness(0.5)
+    b.set_thickness(fs("1/2"))
+    d = fs("d 0 0 1/2")
+    b1 = cr.Bond(fs("p 0 0 0"), fs("p 0 0 1/2"))
+    b2 = cr.Bond(fs("p 1 2 3"), fs("p 0 0 1/2"))
+    b3 = cr.Bond(fs("p 0 0 0"), fs("p 1 2 3"))
+    assert b == b1
+    assert (b == b2) == False
+    assert (b == b3) == False
+    assert b + d == cr.Bond(fs("p 0 0 1/2"), fs("p 0 0 1"))
+    assert fs("x+1/2,y,z") ** b == cr.Bond(fs("p 1/2 0 0"), fs("p 1/2 0 1/2"))
+    assert fs("{x+3/2,y,z}") ** b == cr.Bond(fs("p 1/2 0 0"), fs("p 1/2 0 1/2"))
+
+def test_Face():
+    f = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    assert isinstance(f, cr.Face)
+    f.set_color((0, 0, 1))
+    f.set_color((fs("0.3"), 0.1, 1))
+    d = fs("d 0 0 1/2")
+    f1 = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    f2 = cr.Face([fs("p 0 0 0"), fs("p 0.7 0 0"), fs("p 0 1 0")])
+    f3 = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 2 0")])
+    assert f == f1
+    assert (f == f2) == False
+    assert (f == f3) == False
+    assert f + d == cr.Face([fs("p 0 0 1/2"), fs("p 1 0 1/2"), fs("p 0 1 1/2")])
+    assert fs("x+1/2,y,z") ** f == cr.Face([fs("p 1/2 0 0"), fs("p 3/2 0 0"), fs("p 1/2 1 0")])
+    assert fs("{x+3/2,y,z}") ** f == cr.Face([fs("p 1/2 0 0"), fs("p 1/2 0 0"), fs("p 1/2 0 0")])
+
+
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
     atom2 = cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0"))
