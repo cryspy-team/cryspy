@@ -9,4 +9,7 @@ setup(name='cryspy',
       author_email='',
       url='https://github.com/cryspy-team/cryspy/',
       packages=['cryspy'],
+      install_requires=[
+          'uncertainties',
+          'quicktions']
      )
