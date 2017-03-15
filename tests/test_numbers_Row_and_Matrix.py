@@ -5,6 +5,7 @@ from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 
+
 def approx(a, b):
     allowed_error = 1e-9
     assert isinstance(a, float), \
@@ -13,13 +14,14 @@ def approx(a, b):
         "Can only compare two floats for approx aquality"
     return abs(a - b) < allowed_error
 
+
 def test_Row():
 
     # Create
 
-    R = nb.Row([nb.Mixed(fr.Fraction(1, 2)), \
-                nb.Mixed(uc.ufloat(1.2, 0.1)), \
-                nb.Mixed(1), \
+    R = nb.Row([nb.Mixed(fr.Fraction(1, 2)),
+                nb.Mixed(uc.ufloat(1.2, 0.1)),
+                nb.Mixed(1),
                 nb.Mixed(0.5)])
     assert isinstance(R.liste, list)
     assert isinstance(R.liste[0], nb.Mixed)
@@ -35,9 +37,9 @@ def test_Row():
     assert isinstance(R.liste[3].value, float)
     assert approx(R.liste[3].value, 0.5)
 
-    R = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
-                1, \
+    R = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
+                1,
                 0.5])
     assert isinstance(R.liste, list)
     assert isinstance(R.liste[0], nb.Mixed)
@@ -55,9 +57,9 @@ def test_Row():
 
     # len
 
-    R = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
-                1, \
+    R = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
+                1,
                 0.5])
     assert len(R) == 4
 
@@ -65,20 +67,20 @@ def test_Row():
 
     # Equal
 
-    R1 = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
-                1, \
+    R1 = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
+                1,
                 0.5])
-    R2 = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
-                1, \
-                0.5])  
-    R3 = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
-                1, \
+    R2 = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
+                1,
+                0.5])
+    R3 = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
+                1,
                 fr.Fraction(1, 2)])
-    R4 = nb.Row([fr.Fraction(1, 2), \
-                uc.ufloat(1.2, 0.1), \
+    R4 = nb.Row([fr.Fraction(1, 2),
+                uc.ufloat(1.2, 0.1),
                 1])
 
     assert R1 == R2
@@ -94,7 +96,6 @@ def test_Row():
 
     R = nb.Row([1, 2, 3, 4])
     assert R.block(1, 3) == nb.Row([2, 3])
-
 
     # Addition
 
@@ -120,8 +121,9 @@ def test_Row():
     R1 = nb.Row([1, 2, 3])
     assert -R1 == nb.Row([-1, -2, -3])
 
+
 def test_Matrix():
-    
+
     # create and shape
 
     M1 = nb.Matrix([nb.Row([1, 2, 3]), nb.Row([4, 5, 6])])
@@ -145,7 +147,6 @@ def test_Matrix():
     assert (M1 == M6) == False
     assert M1 == M7
 
-
     # print
 
     assert nb.Matrix([[1, 2]]).__str__() == " <  1  2  > "
@@ -164,7 +165,7 @@ def test_Matrix():
     assert nb.Matrix([[1, 2], [3, 4], [5, 6]]) + \
            nb.Matrix([[1, 1], [1, 1], [1, 1]]) == \
            nb.Matrix([[2, 3], [4, 5], [6, 7]])
-    
+
     # Subtraction
 
     assert nb.Matrix([[1, 2], [3, 4]]) - nb.Matrix([[5, 6], [7, 8]]) == \
@@ -196,7 +197,7 @@ def test_Matrix():
         nb.Matrix([[fr.Fraction(1, 2), 1], [fr.Fraction(3, 2), 2]])
     assert fr.Fraction(1, 2) * M1 == \
         nb.Matrix([[fr.Fraction(1, 2), 1], [fr.Fraction(3, 2), 2]])
-   
+
     M = M1 * nb.Mixed(uc.ufloat(1.2, 0.1))
     assert approx(M.liste[0].liste[0].value.n, 1.2)
     assert approx(M.liste[0].liste[0].value.s, 0.1)
@@ -260,7 +261,6 @@ def test_Matrix():
     assert approx(M.liste[1].liste[0].value, 7.5)
     assert approx(M.liste[1].liste[1].value, 10.0)
 
-
     # onematrix
 
     assert nb.Matrix.onematrix(2) == nb.Matrix([[1, 0], [0, 1]])
@@ -290,29 +290,28 @@ def test_Matrix():
     M = nb.Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     assert M.subtract_x_times_rowj_from_rowi(2, 2, 0) == \
         nb.Matrix([[1, 2, 3], [4, 5, 6], [5, 4, 3]])
-  
+
     # inv
 
-    assert nb.Matrix([[2, 3], \
+    assert nb.Matrix([[2, 3],
                       [4, 5]]).inv() == \
-        nb.Matrix([[-fr.Fraction(5,2), fr.Fraction(3, 2)], \
-                   [                2,                -1]])
-    assert nb.Matrix([[0, 1,  1], \
-                      [1, 0,  0], \
+        nb.Matrix([[-fr.Fraction(5, 2), fr.Fraction(3, 2)],
+                   [2,                -1]])
+    assert nb.Matrix([[0, 1,  1],
+                      [1, 0,  0],
                       [0, 0, -1]]).inv() == \
-           nb.Matrix([[0, 1,  0], \
-                      [1, 0,  1], \
+           nb.Matrix([[0, 1,  0],
+                      [1, 0,  1],
                       [0, 0, -1]])
 
-    assert nb.Matrix([[0, 0, 1, 0], \
-                      [1, 0, 0, 0], \
-                      [0, 1, 0, 0], \
+    assert nb.Matrix([[0, 0, 1, 0],
+                      [1, 0, 0, 0],
+                      [0, 1, 0, 0],
                       [0, 0, 0, 1]]).inv() == \
-           nb.Matrix([[0, 1, 0, 0], \
-                      [0, 0, 1, 0], \
-                      [1, 0, 0, 0], \
+           nb.Matrix([[0, 1, 0, 0],
+                      [0, 0, 1, 0],
+                      [1, 0, 0, 0],
                       [0, 0, 0, 1]])
-
 
     # transpose
 
@@ -320,39 +319,36 @@ def test_Matrix():
            nb.Matrix([[1, 4], [2, 5], [3, 6]])
 
     # delete_ith_row_and_first_column
-    M = nb.Matrix([[1, 2, 3, 4], \
-                   [5, 6, 7, 8], \
+    M = nb.Matrix([[1, 2, 3, 4],
+                   [5, 6, 7, 8],
                    [9, 10, 11, 12]])
-    assert M.delete_ith_row_and_first_column(1) == nb.Matrix([[2, 3, 4], \
+    assert M.delete_ith_row_and_first_column(1) == nb.Matrix([[2, 3, 4],
                                                               [10, 11, 12]])
 
     # det
     M = nb.Matrix([[3]])
     assert M.det() == 3
-    M = nb.Matrix([[1, 2], \
+    M = nb.Matrix([[1, 2],
                    [3, 4]])
     assert M.det() == -2
-    M = nb.Matrix([[1, 2, 3], \
-                   [4, 5, 6], \
+    M = nb.Matrix([[1, 2, 3],
+                   [4, 5, 6],
                    [7, 8, 9]])
     assert M.det() == 0
-    M = nb.Matrix([[1, 2, 3, 4], \
-                   [5, 6, 7, 8], \
-                   [9, 8, 11, 12], \
+    M = nb.Matrix([[1, 2, 3, 4],
+                   [5, 6, 7, 8],
+                   [9, 8, 11, 12],
                    [13, 14, 15, 17]])
     assert M.det() == -16
-    
 
     # delete_translation
 
-    M = nb.Matrix([[1,  2,  3,  4], \
-                   [5,  6,  7,  8], \
-                   [9, 10, 11, 12], \
+    M = nb.Matrix([[1,  2,  3,  4],
+                   [5,  6,  7,  8],
+                   [9, 10, 11, 12],
                    [0,  0,  0,  1]])
 
-    assert M.delete_translation() == nb.Matrix([[1,  2,  3, 0], \
-                                              [5,  6,  7, 0], \
-                                              [9, 10, 11, 0], \
+    assert M.delete_translation() == nb.Matrix([[1,  2,  3, 0],
+                                              [5,  6,  7, 0],
+                                              [9, 10, 11, 0],
                                               [0,  0,  0, 1]])
-
-

@@ -562,8 +562,7 @@ class Metric(Operator):
             "Both arguments must be of type Dif."
         len1 = self.length(vector1)
         len2 = self.length(vector2)
-        return nb.arccos(self.dot(vector1, vector2)
-                         / (len1 * len2))
+        return nb.arccos(self.dot(vector1, vector2)/ (len1 * len2))
 
     def calculate_schmidttransformation(self):
         a1 = canonical_e0

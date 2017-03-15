@@ -5,6 +5,7 @@ from cryspy import numbers as nb
 import quicktions as fr
 import uncertainties as uc
 
+
 def approx(a, b):
     allowed_error = 1e-9
     assert isinstance(a, float), \
@@ -12,6 +13,7 @@ def approx(a, b):
     assert isinstance(b, float), \
         "Can only compare two floats for approx aquality"
     return abs(a - b) < allowed_error
+
 
 def test_Mixed():
     # Create a number of type Mixed with 4 different types.
@@ -37,7 +39,7 @@ def test_Mixed():
 
     # Convert a number of type Mixed to float.
     assert isinstance(float(nb.Mixed(q)), float)
-    assert float(nb.Mixed(q)) == float(2/3)
+    assert float(nb.Mixed(q)) == float(2 / 3)
     assert isinstance(float(nb.Mixed(e)), float)
     assert float(nb.Mixed(e)) == 1.2
     assert isinstance(float(nb.Mixed(i)), float)
@@ -67,11 +69,11 @@ def test_Mixed():
     assert nb.Mixed(i) == nb.Mixed(i)
     assert nb.Mixed(f) == nb.Mixed(f)
     assert nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(fr.Fraction(2, 3))
-    assert (nb.Mixed(fr.Fraction(2, 3)) ==  nb.Mixed(fr.Fraction(1, 3))) == False
+    assert (nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(fr.Fraction(1, 3))) == False
     assert nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(uc.ufloat(1.2, 0.1))
     assert (nb.Mixed(uc.ufloat(1.2, 0.1)) == nb.Mixed(uc.ufloat(1.2, 0.2))) \
         == False
-    x = nb.Mixed(uc.ufloat(0.5, 0.3) + uc.ufloat(0.5, 0.4)) 
+    x = nb.Mixed(uc.ufloat(0.5, 0.3) + uc.ufloat(0.5, 0.4))
     y = nb.Mixed(uc.ufloat(1.0, 0.5))
     assert x == y
     assert nb.Mixed(fr.Fraction(2, 3)) == nb.Mixed(fr.Fraction(2, 3))
@@ -127,13 +129,13 @@ def test_Mixed():
 
     assert isinstance(mq + me, nb.Mixed)
     assert isinstance((mq + me).value, uc.UFloat)
-    assert mq + me == nb.Mixed(uc.ufloat(1.2, 0.10) + 2/3)
+    assert mq + me == nb.Mixed(uc.ufloat(1.2, 0.10) + 2 / 3)
     assert isinstance(mq + e, nb.Mixed)
     assert isinstance((mq + e).value, uc.UFloat)
-    assert mq + e == nb.Mixed(uc.ufloat(1.2, 0.10) + 2/3)
+    assert mq + e == nb.Mixed(uc.ufloat(1.2, 0.10) + 2 / 3)
     assert isinstance(q + me, nb.Mixed)
     assert isinstance((q + me).value, uc.UFloat)
-    assert q + me == nb.Mixed(uc.ufloat(1.2, 0.10) + 2/3)
+    assert q + me == nb.Mixed(uc.ufloat(1.2, 0.10) + 2 / 3)
 
     assert isinstance(mq + mi, nb.Mixed)
     assert isinstance((mq + mi).value, fr.Fraction)
@@ -147,23 +149,23 @@ def test_Mixed():
 
     assert isinstance(mq + mf, nb.Mixed)
     assert isinstance((mq + mf).value, float)
-    assert mq + mf == nb.Mixed(3.5 + 2/3)
+    assert mq + mf == nb.Mixed(3.5 + 2 / 3)
     assert isinstance(mq + f, nb.Mixed)
     assert isinstance((mq + f).value, float)
-    assert mq + f == nb.Mixed(3.5 + 2/3)
+    assert mq + f == nb.Mixed(3.5 + 2 / 3)
     assert isinstance(q + mf, nb.Mixed)
     assert isinstance((q + mf).value, float)
-    assert q + mf == nb.Mixed(3.5 + 2/3)
+    assert q + mf == nb.Mixed(3.5 + 2 / 3)
 
     assert isinstance(me + mq, nb.Mixed)
     assert isinstance((me + mq).value, uc.UFloat)
-    assert me + mq == nb.Mixed(uc.ufloat(1.2, 0.1) + 2/3)
+    assert me + mq == nb.Mixed(uc.ufloat(1.2, 0.1) + 2 / 3)
     assert isinstance(me + q, nb.Mixed)
     assert isinstance((me + q).value, uc.UFloat)
-    assert me + q == nb.Mixed(uc.ufloat(1.2, 0.1) + 2/3)
+    assert me + q == nb.Mixed(uc.ufloat(1.2, 0.1) + 2 / 3)
     assert isinstance(e + mq, nb.Mixed)
     assert isinstance((e + mq).value, uc.UFloat)
-    assert e + mq == nb.Mixed(uc.ufloat(1.2, 0.1) + 2/3)
+    assert e + mq == nb.Mixed(uc.ufloat(1.2, 0.1) + 2 / 3)
 
     assert isinstance(me + me, nb.Mixed)
     assert isinstance((me + me).value, uc.UFloat)
@@ -237,13 +239,13 @@ def test_Mixed():
 
     assert isinstance(mf + mq, nb.Mixed)
     assert isinstance((mf + mq).value, float)
-    assert mf + mq == nb.Mixed(3.5 + 2/3)
+    assert mf + mq == nb.Mixed(3.5 + 2 / 3)
     assert isinstance(mf + q, nb.Mixed)
     assert isinstance((mf + q).value, float)
-    assert mf + q == nb.Mixed(3.5 + 2/3)
+    assert mf + q == nb.Mixed(3.5 + 2 / 3)
     assert isinstance(f + mq, nb.Mixed)
     assert isinstance((f + mq).value, float)
-    assert f + mq == nb.Mixed(3.5 + 2/3)
+    assert f + mq == nb.Mixed(3.5 + 2 / 3)
 
     assert isinstance(mf + me, nb.Mixed)
     assert isinstance((mf + me).value, uc.UFloat)
@@ -358,7 +360,7 @@ def test_Mixed():
     assert mi1 - mq1 == nb.Mixed(fr.Fraction(7, 2))
     assert isinstance(mi1 - q1, nb.Mixed)
     assert isinstance((mi1 - q1).value, fr.Fraction)
-    assert mi1 - q1  == nb.Mixed(fr.Fraction(7, 2))
+    assert mi1 - q1 == nb.Mixed(fr.Fraction(7, 2))
     assert isinstance(i1 - mq1, nb.Mixed)
     assert isinstance((i1 - mq1).value, fr.Fraction)
     assert i1 - mq1 == nb.Mixed(fr.Fraction(7, 2))
@@ -451,7 +453,7 @@ def test_Mixed():
     mi2 = nb.Mixed(i2)
     mf1 = nb.Mixed(f1)
     mf2 = nb.Mixed(f2)
-    
+
     assert isinstance(mq1 * mq2, nb.Mixed)
     assert isinstance((mq1 * mq2).value, fr.Fraction)
     assert mq1 * mq2 == nb.Mixed(fr.Fraction(1, 8))
@@ -625,10 +627,10 @@ def test_Mixed():
     m0 = nb.Mixed(0)
 
     for m in [mq, me, mi, mf]:
-        assert m  * m0 == m0
-        assert m  * 0  == m0
-        assert m0 * m  == m0
-        assert 0  * m  == m0
+        assert m * m0 == m0
+        assert m * 0 == m0
+        assert m0 * m == m0
+        assert 0 * m == m0
 
     for z in [q, e, i, f]:
         assert z * m0 == m0
@@ -664,13 +666,13 @@ def test_Mixed():
 
     assert isinstance(mq1 / me1, nb.Mixed)
     assert isinstance((mq1 / me1).value, uc.UFloat)
-    assert mq1 / me1 == nb.Mixed(uc.ufloat(4/3, 0.3 * 2/3 / (1/2)**2))
+    assert mq1 / me1 == nb.Mixed(uc.ufloat(4 / 3, 0.3 * 2 / 3 / (1 / 2) ** 2))
     assert isinstance(mq1 / e1, nb.Mixed)
     assert isinstance((mq1 / e1).value, uc.UFloat)
-    assert mq1 / e1 == nb.Mixed(uc.ufloat(4/3, 0.3 * 2/3 / (1/2)**2))
+    assert mq1 / e1 == nb.Mixed(uc.ufloat(4 / 3, 0.3 * 2 / 3 / (1 / 2) ** 2))
     assert isinstance(q1 / me1, nb.Mixed)
     assert isinstance((q1 / me1).value, uc.UFloat)
-    assert q1 / me1 == nb.Mixed(uc.ufloat(4/3, 0.3 * 2/3 / (1/2)**2))
+    assert q1 / me1 == nb.Mixed(uc.ufloat(4 / 3, 0.3 * 2 / 3 / (1 / 2) ** 2))
 
     assert isinstance(mq1 / mi1, nb.Mixed)
     assert isinstance((mq1 / mi1).value, fr.Fraction)
@@ -681,26 +683,26 @@ def test_Mixed():
     assert isinstance(q1 / mi1, nb.Mixed)
     assert isinstance((q1 / mi1).value, fr.Fraction)
     assert q1 / mi1 == nb.Mixed(fr.Fraction(1, 6))
-    
+
     assert isinstance(mq1 / mf1, nb.Mixed)
     assert isinstance((mq1 / mf1).value, float)
-    assert mq1 / mf1 == nb.Mixed(4.0/9.0)
+    assert mq1 / mf1 == nb.Mixed(4.0 / 9.0)
     assert isinstance(mq1 / f1, nb.Mixed)
     assert isinstance((mq1 / f1).value, float)
-    assert mq1 / f1 == nb.Mixed(4.0/9.0)
+    assert mq1 / f1 == nb.Mixed(4.0 / 9.0)
     assert isinstance(q1 / mf1, nb.Mixed)
     assert isinstance((q1 / mf1).value, float)
-    assert q1 / mf1 == nb.Mixed(4.0/9.0)
+    assert q1 / mf1 == nb.Mixed(4.0 / 9.0)
 
     assert isinstance(me1 / mq1, nb.Mixed)
     assert isinstance((me1 / mq1).value, uc.UFloat)
-    assert me1 / mq1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2/3))
+    assert me1 / mq1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2 / 3))
     assert isinstance(me1 / q1, nb.Mixed)
     assert isinstance((me1 / q1).value, uc.UFloat)
-    assert me1 / q1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2/3))
+    assert me1 / q1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2 / 3))
     assert isinstance(e1 / mq1, nb.Mixed)
     assert isinstance((e1 / mq1).value, uc.UFloat)
-    assert e1 / mq1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2/3))
+    assert e1 / mq1 == nb.Mixed(uc.ufloat(0.5, 0.3) / (2 / 3))
 
     assert isinstance(me1 / me2, nb.Mixed)
     assert isinstance((me1 / me2).value, uc.UFloat)
@@ -724,13 +726,13 @@ def test_Mixed():
 
     assert isinstance(me1 / mf1, nb.Mixed)
     assert isinstance((me1 / mf1).value, uc.UFloat)
-    assert me1 / mf1 == nb.Mixed(uc.ufloat(0.5/1.5, 0.3/1.5))
+    assert me1 / mf1 == nb.Mixed(uc.ufloat(0.5 / 1.5, 0.3 / 1.5))
     assert isinstance(me1 / f1, nb.Mixed)
     assert isinstance((me1 / f1).value, uc.UFloat)
-    assert me1 / f1 == nb.Mixed(uc.ufloat(0.5/1.5, 0.3/1.5))
+    assert me1 / f1 == nb.Mixed(uc.ufloat(0.5 / 1.5, 0.3 / 1.5))
     assert isinstance(e1 / mf1, nb.Mixed)
     assert isinstance((e1 / mf1).value, uc.UFloat)
-    assert e1 / mf1 == nb.Mixed(uc.ufloat(0.5/1.5, 0.3/1.5))
+    assert e1 / mf1 == nb.Mixed(uc.ufloat(0.5 / 1.5, 0.3 / 1.5))
 
     assert isinstance(mi1 / mq2, nb.Mixed)
     assert isinstance((mi1 / mq2).value, fr.Fraction)
@@ -784,13 +786,13 @@ def test_Mixed():
 
     assert isinstance(mf1 / me1, nb.Mixed)
     assert isinstance((mf1 / me1).value, uc.UFloat)
-    assert mf1 / me1 == nb.Mixed(uc.ufloat(3.0, 0.3*1.5/0.5**2))
+    assert mf1 / me1 == nb.Mixed(uc.ufloat(3.0, 0.3 * 1.5 / 0.5 ** 2))
     assert isinstance(mf1 / e1, nb.Mixed)
     assert isinstance((mf1 / e1).value, uc.UFloat)
-    assert mf1 / e1 == nb.Mixed(uc.ufloat(3.0, 0.3*1.5/0.5**2))
+    assert mf1 / e1 == nb.Mixed(uc.ufloat(3.0, 0.3 * 1.5 / 0.5 ** 2))
     assert isinstance(f1 / me1, nb.Mixed)
     assert isinstance((f1 / me1).value, uc.UFloat)
-    assert f1 / me1 == nb.Mixed(uc.ufloat(3.0, 0.3*1.5/0.5**2))
+    assert f1 / me1 == nb.Mixed(uc.ufloat(3.0, 0.3 * 1.5 / 0.5 ** 2))
 
     assert isinstance(mf1 / mi1, nb.Mixed)
     assert isinstance((mf1 / mi1).value, float)
@@ -825,12 +827,11 @@ def test_Mixed():
     m0 = nb.Mixed(0)
 
     for m in [mq, me, mi, mf]:
-        assert m0 / m  == m0
-        assert 0  / m  == m0
+        assert m0 / m == m0
+        assert 0 / m == m0
 
     for z in [q, e, i, f]:
         assert m0 / z == m0
-
 
     # negative
 
@@ -860,7 +861,6 @@ def test_Mixed():
     assert -mf == nb.Mixed(-3.5)
 
     # Modulo
-
 
     q = fr.Fraction(5, 2)
     e = uc.ufloat(3.2, 0.1)

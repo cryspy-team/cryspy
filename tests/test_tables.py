@@ -5,6 +5,7 @@ from cryspy import geo as geo
 from cryspy.fromstr import fromstr as fs
 from cryspy import tables as tb
 
+
 def test_cryspy_tables():
     sg = tb.spacegroup(15)
 #    assert sg.is_really_a_spacegroup() == True
