@@ -724,6 +724,34 @@ mat = bpy.data.materials.new('structure.material.Momentum001')
 mat.diffuse_color = (0, 0, 1)
 mat.specular_color = (0, 0, 0)
 ob1.data.materials.append(mat)
+bm = bmesh.new()
+bmesh.ops.create_cone(bm, cap_ends = True, cap_tris = True, segments = 32, diameter1 =     0.0500, diameter2 =     0.0500, depth =     5.2208)
+bmesh.ops.translate(bm, verts=bm.verts, vec = (0, 0,     2.6104))
+mesh = bpy.data.meshes.new('structure.meshBond001')
+bm.to_mesh(mesh)
+ob1 = bpy.data.objects.new('structure.Bond001', mesh)
+ob1.data.transform([[    0.0000,     0.0000,    -1.0000,     0.0000], \
+ [    0.0000,     1.0000,     0.0000,     0.0000], \
+ [    1.0000,     0.0000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.data.transform([[    0.5000,     0.8660,     0.0000,     0.0000], \
+ [   -0.8660,     0.5000,     0.0000,     0.0000], \
+ [    0.0000,     0.0000,     1.0000,     0.0000], \
+ [    0.0000,     0.0000,     0.0000,     1.0000]])
+ob1.location = (    0.0000,     0.0000,     0.0000)
+bpy.context.scene.objects.link(ob1)
+mat = bpy.data.materials.new('structure.material.Bond001')
+mat.diffuse_color = (0.5, 0.5, 0.5)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
+mesh_data = bpy.data.meshes.new('structure.meshFace001')
+mesh_data.from_pydata([(    0.0000,     0.0000,     0.0000), (   10.4416,     0.0000,     0.0000), (   -5.2208,     9.0427,     0.0000)], [], [(0, 1, 2)])
+mesh_data.update()
+ob1 = bpy.data.objects.new('structure.Face001', mesh_data)
+bpy.context.scene.objects.link(ob1)
+mat.diffuse_color = (0.7, 0.7, 0.7)
+mat.specular_color = (0, 0, 0)
+ob1.data.materials.append(mat)
 for ob in bpy.data.objects:
     if ob.name.startswith('structure.Atom'):
         ob.select = True

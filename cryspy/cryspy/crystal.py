@@ -126,6 +126,8 @@ class Momentum():
             if self.has_plotlength:
                 result.set_plotlength(self.plotlength)
             return result
+        else:
+            return NotImplemented
 
     def __hash__(self):
         string = "x%sy%sz%sdx%sdy%sdz%s" \
@@ -138,12 +140,172 @@ class Momentum():
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
+class Bond():
+    def __init__(self, start, target):
+        assert isinstance(start, geo.Pos), \
+            "The start position of an object of type Bond " \
+            "must be of type geo.Position."
+        assert isinstance(target, geo.Pos), \
+            "The target position of an object of type Bond " \
+            "must be of type geo.Position."
+        self.start = start
+        self.target = target
+        self.has_color = False
+        self.color = None
+        self.has_thickness = False
+        self.thickness = None
+
+    def set_color(self, color):
+        assert isinstance(color, tuple), \
+            "Argument of crystal.Bond.set_color(color) must be of type " \
+            " tuple."
+        assert (len(color) == 3), \
+            "Argument of crystal.Bond.set_color(color) must be of type "\
+            "tuple and must have three items."
+        for item in color:
+            assert isinstance(item, float) or isinstance(item, int) \
+                or isinstance(item, nb.Mixed), \
+                "Argument of crystal.Bond.set_color(color) must be of " \
+                "type tuple with three numbers in it."
+        self.has_color = True
+        self.color = (float(color[0]), float(color[1]), float(color[2]))
+
+    def set_thickness(self, thickness):
+        assert isinstance(thickness, float) or isinstance(thickness, int) \
+            or isinstance(thickness, nb.Mixed), \
+            "Argument of crystal.Bond.set_thickness(...) must be of type " \
+            "float, int or Mixed."
+
+    def __str__(self):
+        return "Bond"
+
+    def __eq__(self, right):
+        if isinstance(right, Bond):
+            if (self.start == right.start) and (self.target == right.target):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def __add__(self, right):
+        if isinstance(right, geo.Dif):
+            result = Bond(self.start + right, self.target + right)
+            if self.has_color:
+                result.set_color(self.color)
+            if self.has_thickness:
+                result.set_thickness(self.thickness)
+            return result
+        else:
+            return NotImplemented
+
+    def __rpow__(self, left):
+        if isinstance(left, geo.Operator) \
+            or isinstance(left, geo.Coset):
+            result = Bond(left ** self.start, left ** self.target)
+            if self.has_color:
+                result.set_color(self.color)
+            if self.has_thickness:
+                result.set_thickness(self.thickness)
+            return result
+        else:
+            return NotImplemented
+
+    def __hash__(self):
+        string = "x%sy%sz%sdx%sdy%sdz%s" \
+            % (str(hash(self.start.x())),
+               str(hash(self.start.y())),
+               str(hash(self.start.z())),
+               str(hash(self.target.x())),
+               str(hash(self.target.y())),
+               str(hash(self.target.z())))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
+
+class Face():
+    def __init__(self, corners):
+        assert isinstance(corners, list), \
+            "Face must be created by a list of objects of type geo.Pos."
+        for corner in corners:
+            assert isinstance(corner, geo.Pos), \
+                "Face must be created by a list of objects of type geo.Pos."
+        self.corners = corners
+        self.has_color = False
+        self.color = None
+ 
+    def set_color(self, color):
+        assert isinstance(color, tuple), \
+            "Argument of crystal.Bond.set_color(color) must be of type " \
+            " tuple."
+        assert (len(color) == 3), \
+            "Argument of crystal.Bond.set_color(color) must be of type "\
+            "tuple and must have three items."
+        for item in color:
+            assert isinstance(item, float) or isinstance(item, int) \
+                or isinstance(item, nb.Mixed), \
+                "Argument of crystal.Bond.set_color(color) must be of " \
+                "type tuple with three numbers in it."
+        self.has_color = True
+        self.color = (float(color[0]), float(color[1]), float(color[2]))
+
+    def __str__(self):
+        return "Face"
+
+    def __eq__(self, right):
+        if isinstance(right, Face):
+            if len(self.corners) == len(right.corners):
+                result = True
+                for i in range(len(self.corners)):
+                    if self.corners[i] != right.corners[i]:
+                        result = False
+                return result
+            else:
+                return False
+        else:
+            return False
+
+    def __add__(self, right):
+        if isinstance(right, geo.Dif):
+            liste = []
+            for corner in self.corners:
+                liste.append(corner + right)
+            result = Face(liste)
+            if self.has_color:
+                result.set_color(self.color)
+            return result
+        else:
+            return NotImplemented
+
+    def __rpow__(self, left):
+        if isinstance(left, geo.Operator) \
+            or isinstance(left, geo.Coset):
+            result = Face([left ** corner for corner in self.corners])
+            if self.has_color:
+                result.set_color(self.color)
+            return result
+        else:
+            return NotImplemented
+
+    def __hash__(self):
+        string = ""
+        for corner in self.corners:
+            string += "x%sy%sz%s" \
+               %(str(hash(corner.x())),
+               str(hash(corner.y())),
+               str(hash(corner.z())))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
+      
+
+
+
 class Atomset():
     def __init__(self, menge):
         assert isinstance(menge, set), \
             "Argument must be of type set."
         for item in menge:
-            assert isinstance(item, Atom) or isinstance(item, Momentum), \
+            assert isinstance(item, Atom) or isinstance(item, Momentum) \
+                or isinstance(item, Bond) or isinstance(item, Face), \
                 "Argument must be a set of "\
                 "objects of type Atom or of type Momentum."
         self.menge = menge
@@ -162,11 +324,17 @@ class Atomset():
         liste = [atom for atom in self.menge]
         atomliste = []
         momentumliste = []
+        bondliste = []
+        faceliste = []
         for item in self.menge:
             if isinstance(item, Atom):
                 atomliste.append(item)
             elif isinstance(item, Momentum):
                 momentumliste.append(item)
+            elif isinstance(item, Bond):
+                bondliste.append(item)
+            elif isinstance(item, Face):
+                faceliste.append(item)
         types = [atom.typ for atom in atomliste]
         indexes = [i for (j, i) in sorted(zip(types, range(len(atomliste))))]
         names = [atomliste[i].name for i in indexes]
@@ -177,6 +345,10 @@ class Atomset():
             strings.append([""])
         for momentum in momentumliste:
             strings.append(["", str(momentum)])
+        for bond in bondliste:
+            strings.append(["", str(bond)])
+        for face in faceliste:
+            strings.append(["", str(face)])
         return bp.block(strings)
 
     def __add__(self, right):
