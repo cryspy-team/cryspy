@@ -16,6 +16,7 @@ blender__num_of_segments_of_bond = 32 # 4...128: rough...fine
 blender__std_bond_thickness = 0.05
 blender__std_bond_color = (0.5, 0.5, 0.5)
 blender__std_face_color = (0.7, 0.7, 0.7)
+blender__std_face_opacity = 0.7 # 0: fully transparent, 1: fully opaque
 blender__background_color = (1, 1, 1)
 blender__location_of_lamp1 = (5, -5, 10)
 blender__diffuse_light = 0.5

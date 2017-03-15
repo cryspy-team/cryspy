@@ -216,6 +216,15 @@ def make_blender_script(atomset, metric, structurename, outfilename):
             z = float(cartesian_corner.z())
             verts.append((x, y, z))
         outstr += add_face(structurename, facename, verts)
+        outstr += "mat = bpy.data.materials.new('%s.material.%s')\n" \
+            %(structurename, facename)
+        if face.has_opacity:
+            opacity = face.opacity
+        else:
+            opacity = const.blender__std_face_opacity
+        if opacity < 1:
+            outstr += "mat.use_transparency = True\n"
+            outstr += "mat.alpha = %10.4f\n"%(opacity)
         outstr += "mat.diffuse_color = %s\n" % (str(color))
         outstr += "mat.specular_color = (0, 0, 0)\n"
         outstr += "ob1.data.materials.append(mat)\n"

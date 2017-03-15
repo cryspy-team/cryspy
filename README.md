@@ -27,6 +27,14 @@ $ sudo pip3 install uncertainties    # >= uncertainties-2.4.8.1
 $ sudo pip3 install numpy            # >= numpy-1.11.0
 ```
 
+# Installation
+
+pip3 install --user .
+
+Uninstall:
+
+pip3 uninstall cryspy
+
 # Usage
 
 ```py
