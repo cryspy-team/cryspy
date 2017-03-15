@@ -75,11 +75,49 @@ def test_Momentum():
     assert fs("x+1/2,y,z") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
     assert fs("{x+3/2,y,z}") ** m == cr.Momentum(fs("p 1/2 0 0"), fs("d 0 0 1"))
 
+def test_Bond():
+    b = cr.Bond(fs("p 0 0 0"), fs("p 0 0 1/2"))
+    assert isinstance(b, cr.Bond)
+    b.set_color((0, 0, 1))
+    b.set_color((fs("0.3"), 0.1, 1))
+    b.set_thickness(1)
+    b.set_thickness(0.5)
+    b.set_thickness(fs("1/2"))
+    d = fs("d 0 0 1/2")
+    b1 = cr.Bond(fs("p 0 0 0"), fs("p 0 0 1/2"))
+    b2 = cr.Bond(fs("p 1 2 3"), fs("p 0 0 1/2"))
+    b3 = cr.Bond(fs("p 0 0 0"), fs("p 1 2 3"))
+    assert b == b1
+    assert (b == b2) == False
+    assert (b == b3) == False
+    assert b + d == cr.Bond(fs("p 0 0 1/2"), fs("p 0 0 1"))
+    assert fs("x+1/2,y,z") ** b == cr.Bond(fs("p 1/2 0 0"), fs("p 1/2 0 1/2"))
+    assert fs("{x+3/2,y,z}") ** b == cr.Bond(fs("p 1/2 0 0"), fs("p 1/2 0 1/2"))
+
+def test_Face():
+    f = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    assert isinstance(f, cr.Face)
+    f.set_color((0, 0, 1))
+    f.set_color((fs("0.3"), 0.1, 1))
+    d = fs("d 0 0 1/2")
+    f1 = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    f2 = cr.Face([fs("p 0 0 0"), fs("p 0.7 0 0"), fs("p 0 1 0")])
+    f3 = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 2 0")])
+    assert f == f1
+    assert (f == f2) == False
+    assert (f == f3) == False
+    assert f + d == cr.Face([fs("p 0 0 1/2"), fs("p 1 0 1/2"), fs("p 0 1 1/2")])
+    assert fs("x+1/2,y,z") ** f == cr.Face([fs("p 1/2 0 0"), fs("p 3/2 0 0"), fs("p 1/2 1 0")])
+    assert fs("{x+3/2,y,z}") ** f == cr.Face([fs("p 1/2 0 0"), fs("p 1/2 0 0"), fs("p 1/2 0 0")])
+
+
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0 0 0"))
     atom2 = cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0"))
     momentum = cr.Momentum(fs("p 0 0 0"), fs("d 0 0 1"))
-    atomset = cr.Atomset({atom1, atom2, momentum})
+    bond = cr.Bond(fs("p 0 0 0"), fs("p 1/2 1/2 1/2"))
+    face = cr.Face([fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    atomset = cr.Atomset({atom1, atom2, momentum, bond, face})
     print(atomset)
     assert atomset.__str__() == \
         "Atomset                          \n" \
@@ -92,7 +130,9 @@ def test_Atomset():
         "                      |   1/4   |\n" \
         "                       \    0  / \n" \
         "                                 \n" \
-        "                         Momentum"
+        "                         Momentum\n" \
+        "                             Bond\n" \
+        "                             Face"
 
     transformation = fs("O->(0,0,1/4) \n" \
                         "then\n" \
@@ -102,7 +142,11 @@ def test_Atomset():
     atomset1 = transformation**atomset
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
                            cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4")), \
-                           cr.Momentum(fs("p 0 0 -1/4"), fs("d 0 0 1"))})
+                           cr.Momentum(fs("p 0 0 -1/4"), fs("d 0 0 1")), \
+                           cr.Bond(fs("p 0 0 -1/4"), fs("p 1/2 0 1/4")), \
+                           cr.Face([fs("p 0 0 -1/4"), fs("p 1 -1 -1/4"), fs("p 0 1 -1/4")])})
+    assert (transformation ** bond) == cr.Bond(fs("p 0 0 -1/4"), fs("p 1/2 0 1/4"))
+    assert (transformation ** face) == cr.Face([fs("p 0 0 -1/4"), fs("p 1 -1 -1/4"), fs("p 0 1 -1/4")])
     assert atomset1 == atomset2
 
     spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"), \
@@ -111,8 +155,49 @@ def test_Atomset():
     atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
                            cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
                            cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0")), \
-                           momentum})
-    assert atomset1 == atomset2
+                           momentum, \
+                           bond, \
+                           cr.Face([fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
+    
+    print(len(atomset1.menge))
+    print(len(atomset2.menge))
+    print(atomset2.menge)
+    print((fs("{-x, -y, -z}")**bond).start.x())
+    print((fs("{-x, -y, -z}")**bond).start.y())
+    print((fs("{-x, -y, -z}")**bond).start.z())
+    print((fs("{-x, -y, -z}")**bond).target.x())
+    print((fs("{-x, -y, -z}")**bond).target.y())
+    print((fs("{-x, -y, -z}")**bond).target.z())
+    for item in atomset1.menge:
+        print(item)
+        if isinstance(item, cr.Bond):
+            print(item.start.x())
+            print(item.start.y())
+            print(item.start.z())
+            print(item.target.x())
+            print(item.target.y())
+            print(item.target.z())            
+        if isinstance(item, cr.Face):
+            for corner in item.corners:
+                print(corner.x())
+                print(corner.y())
+                print(corner.z())
+    print("--------------------------------")
+    for item in atomset2.menge:
+        print(item)
+        if isinstance(item, cr.Bond):
+            print(item.start.x())
+            print(item.start.y())
+            print(item.start.z())
+            print(item.target.x())
+            print(item.target.y())
+            print(item.target.z())
+        if isinstance(item, cr.Face):
+            for corner in item.corners:
+                print(corner.x())
+                print(corner.y())
+                print(corner.z())
+    assert atomset1.menge == atomset2.menge
 
     
     atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")), \
