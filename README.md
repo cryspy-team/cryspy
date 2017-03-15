@@ -31,6 +31,10 @@ $ sudo pip3 install numpy            # >= numpy-1.11.0
 
 pip3 install --user .
 
+Uninstall:
+
+pip3 uninstall cryspy
+
 # Usage
 
 ```py

@@ -232,6 +232,8 @@ class Face():
         self.corners = corners
         self.has_color = False
         self.color = None
+        self.has_opacity = False
+        self.opacity = None
  
     def set_color(self, color):
         assert isinstance(color, tuple), \
@@ -247,6 +249,15 @@ class Face():
                 "type tuple with three numbers in it."
         self.has_color = True
         self.color = (float(color[0]), float(color[1]), float(color[2]))
+
+    def set_opacity(self, opacity):
+        assert isinstance(opacity, Mixe) or isinstance(opacity, float) \
+            or isinstance(opacity, int), \
+            "Opacity must be a number."
+        assert 0 <= float(opacity) <= 1, \
+            "Opacity must be between 0 and 1."
+        self.has_opacity = True
+        self.opacity = opacity 
 
     def __str__(self):
         return "Face"
@@ -375,8 +386,12 @@ class Atomset():
         if isinstance(left, geo.Spacegroup):
             atoms = set([])
             for atom in self.menge:
+                i = 0
                 for coset in left.liste_cosets:
-                    atoms |= set([coset ** atom])
+                    i += 1
+                    new_atom = coset ** atom
+                    new_atom.name = new_atom.name + "_%i"%(i)
+                    atoms |= set([new_atom])
             return Atomset(atoms)
 
     def __mod__(self, right):
@@ -388,6 +403,11 @@ class Atomset():
             atoms |= set([atom % right])
         return Atomset(atoms)
 
+    def get_atom(self, atomname):
+        for atom in self.menge:
+            if atom.name == atomname:
+                return atom
+        return None
 
 def structurefactor(atomset, metric, q, wavelength):
     assert isinstance(atomset, Atomset), \
