@@ -304,7 +304,8 @@ class Atomset():
         assert isinstance(menge, set), \
             "Argument must be of type set."
         for item in menge:
-            assert isinstance(item, Atom) or isinstance(item, Momentum), \
+            assert isinstance(item, Atom) or isinstance(item, Momentum) \
+                or isinstance(item, Bond) or isinstance(item, Face), \
                 "Argument must be a set of "\
                 "objects of type Atom or of type Momentum."
         self.menge = menge
@@ -323,11 +324,17 @@ class Atomset():
         liste = [atom for atom in self.menge]
         atomliste = []
         momentumliste = []
+        bondliste = []
+        faceliste = []
         for item in self.menge:
             if isinstance(item, Atom):
                 atomliste.append(item)
             elif isinstance(item, Momentum):
                 momentumliste.append(item)
+            elif isinstance(item, Bond):
+                bondliste.append(item)
+            elif isinstance(item, Face):
+                faceliste.append(item)
         types = [atom.typ for atom in atomliste]
         indexes = [i for (j, i) in sorted(zip(types, range(len(atomliste))))]
         names = [atomliste[i].name for i in indexes]
@@ -338,6 +345,10 @@ class Atomset():
             strings.append([""])
         for momentum in momentumliste:
             strings.append(["", str(momentum)])
+        for bond in bondliste:
+            strings.append(["", str(bond)])
+        for face in faceliste:
+            strings.append(["", str(face)])
         return bp.block(strings)
 
     def __add__(self, right):

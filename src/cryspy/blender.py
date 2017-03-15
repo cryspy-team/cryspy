@@ -83,16 +83,23 @@ def make_blender_script(atomset, metric, structurename, outfilename):
     outstr += "posobject = bpy.context.object\n"
     outstr += "posobject.name = '%s.Positions'\n" % (structurename)
 
-    # Create a mesh for each atom-type, respectively
+    # Inspect atomset for different kinds of object and sort them into different lists
     typs = []
     atomlist = []
     momentumlist = []
+    bondlist = []
+    facelist = []
     for item in atomset.menge:
         if isinstance(item, crystal.Atom):
             atomlist.append(item)
         elif isinstance(item, crystal.Momentum):
             momentumlist.append(item)
+        elif isinstance(item, crystal.Bond):
+            bondlist.append(item)
+        elif isinstance(item, crystal.Face):
+            facelist.append(item)
 
+    # Create a mesh for each atom-type, respectively
     for atom in atomlist:
         if atom.typ not in typs:
             typs.append(atom.typ)
@@ -146,9 +153,9 @@ def make_blender_script(atomset, metric, structurename, outfilename):
         x0 = float((t ** momentum.pos).x())
         y0 = float((t ** momentum.pos).y())
         z0 = float((t ** momentum.pos).z())
-        dx = float((t ** momentum.dir).x())
-        dy = float((t ** momentum.dir).y())
-        dz = float((t ** momentum.dir).z())
+        dx = float((t ** momentum.direction).x())
+        dy = float((t ** momentum.direction).y())
+        dz = float((t ** momentum.direction).z())
 
         length = np.sqrt(dx * dx + dy * dy + dz * dz)
         x1 = x0 - dx * plotlength / length
@@ -160,6 +167,60 @@ def make_blender_script(atomset, metric, structurename, outfilename):
 
         outstr += add_momentum(structurename, momentumname,
                                x1, y1, z1, x2, y2, z2, color)
+
+    # Create Cylinders for the Bonds:
+    bondindex = 0
+    for bond in bondlist:
+        bondindex += 1
+        bondname = "Bond%03i" % (bondindex)
+        if bond.has_color:
+            color = bond.color
+        else:
+            color = const.blender__std_bond_color
+        if bond.has_thickness:
+            thickness = bond.thickness
+        else:
+            thickness = const.blender__std_bond_thickness
+        x1 = float((t ** bond.start).x())
+        y1 = float((t ** bond.start).y())
+        z1 = float((t ** bond.start).z())
+        x2 = float((t ** bond.target).x())
+        y2 = float((t ** bond.target).y())
+        z2 = float((t ** bond.target).z())
+
+        outstr += add_cylinder(structurename, bondname, 
+            x1, y1, z1, x2, y2, z2, 
+            thickness, const.blender__num_of_segments_of_bond)
+
+        outstr += "mat = bpy.data.materials.new('%s.material.%s')\n"\
+            % (structurename, bondname)
+        outstr += "mat.diffuse_color = %s\n"\
+            % (str(color))
+        outstr += "mat.specular_color = (0, 0, 0)\n"
+        outstr += "ob1.data.materials.append(mat)\n"
+        
+    # Create Faces:
+    faceindex = 0
+    for face in facelist:
+        faceindex += 1
+        facename = "Face%03i" % (faceindex)
+        if face.has_color:
+            color = face.color
+        else:
+            color = const.blender__std_face_color
+        verts = []
+        for corner in face.corners:
+            cartesian_corner = t**corner
+            x = float(cartesian_corner.x())
+            y = float(cartesian_corner.y())
+            z = float(cartesian_corner.z())
+            verts.append((x, y, z))
+        outstr += add_face(structurename, facename, verts)
+        outstr += "mat.diffuse_color = %s\n" % (str(color))
+        outstr += "mat.specular_color = (0, 0, 0)\n"
+        outstr += "ob1.data.materials.append(mat)\n"
+
+
 
     # Make all atoms looking smooth:
     outstr += "for ob in bpy.data.objects:\n"
@@ -326,3 +387,35 @@ def add_cone(structurename, conename, x1, y1, z1, x2, y2, z2,
     outstr += "ob2.location = (%10.4f, %10.4f, %10.4f)\n" % (x1, y1, z1)
     outstr += "bpy.context.scene.objects.link(ob2)\n"
     return outstr
+
+def add_face(structurename, facename, verts):
+    outstr = ""
+    faces = range(len(verts))
+    vertsstr = "["
+    for vert in verts:
+        vertsstr += "(%10.4f, %10.4f, %10.4f), " % (vert[0], vert[1], vert[2])
+    vertsstr = vertsstr[:-2]
+    vertsstr += "]"
+    facesstr = "[("
+    for face in faces:
+        facesstr += "%i, " % (face)
+    facesstr = facesstr[:-2]
+    facesstr += ")]"
+    outstr += "mesh_data = bpy.data.meshes.new('%s.mesh%s')\n" % (structurename, facename)
+    outstr += "mesh_data.from_pydata(%s, [], %s)\n" % (vertsstr, facesstr)
+    outstr += "mesh_data.update()\n"
+    outstr += "ob1 = bpy.data.objects.new('%s.%s', mesh_data)\n" %(structurename, facename)
+    outstr += "bpy.context.scene.objects.link(ob1)\n"
+    return outstr
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
