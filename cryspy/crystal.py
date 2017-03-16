@@ -31,6 +31,8 @@ class Atom():
     def __add__(self, right):
         if isinstance(right, geo.Dif):
             return Atom(self.name, self.typ, self.pos + right)
+        elif isinstance(right, str):
+            return Atom(self.name + right, self.typ, self.pos)
         else:
             return NotImplemented
 
@@ -48,8 +50,8 @@ class Atom():
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s%s" % (
-            self.name, self.typ,
+        string = "%s%s%s%s" % (
+            self.typ,
             str(hash(self.pos.x())),
             str(hash(self.pos.y())),
             str(hash(self.pos.z())))
@@ -306,9 +308,6 @@ class Face():
                str(hash(corner.z())))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
-      
-
-
 
 class Atomset():
     def __init__(self, menge):
@@ -320,6 +319,10 @@ class Atomset():
                 "Argument must be a set of "\
                 "objects of type Atom or of type Momentum."
         self.menge = menge
+        self.atomnames = set([])
+        for item in menge:
+            if isinstance(item, Atom):
+                self.atomnames.add(item.name)
 
     def __eq__(self, right):
         if isinstance(right, Atomset):
@@ -362,9 +365,24 @@ class Atomset():
             strings.append(["", str(face)])
         return bp.block(strings)
 
+    def add(self, item):
+        if not (item in self.menge):
+            self.menge.add(item)
+            if isinstance(item, Atom):
+                self.atomnames.add(item.name)
+
     def __add__(self, right):
         if isinstance(right, geo.Dif):
             return Atomset({atom + right for atom in self.menge})
+        elif isinstance(right, str):
+            menge = set([])
+            for item in self.menge:
+                if isinstance(item, Atom):
+                    menge.add(item + right)
+                else:
+                    menge.add(item)
+            return Atomset(menge)
+
         elif isinstance(right, Atomset):
             return Atomset(self.menge.union(right.menge))
         else:
@@ -384,15 +402,26 @@ class Atomset():
             menge = set([])
             return Atomset({left ** item for item in self.menge})
         if isinstance(left, geo.Spacegroup):
-            atoms = set([])
-            for atom in self.menge:
+            atomset = Atomset(set([]))
+            for item in self.menge:
                 i = 0
                 for coset in left.liste_cosets:
                     i += 1
-                    new_atom = coset ** atom
-                    new_atom.name = new_atom.name + "_%i"%(i)
-                    atoms |= set([new_atom])
-            return Atomset(atoms)
+                    new_item = coset ** item
+                    if isinstance(item, Atom):
+                        new_item.name = atomset.nextname(new_item.name)
+                    atomset.add(new_item)
+            return atomset
+
+    def nextname(self, name):
+        if name in self.atomnames:
+            words = name.split('_')
+            if words[-1].isdigit():
+                return self.nextname('_'.join(words[:-1] + [str(int(words[-1])+1)]))
+            else:
+                return self.nextname(name + '_1')
+        else:
+            return name
 
     def __mod__(self, right):
         assert isinstance(right, geo.Transgen), \
