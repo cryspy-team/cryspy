@@ -1393,7 +1393,7 @@ ob1 = bpy.data.objects.new('structure.Face001', mesh_data)
 bpy.context.scene.objects.link(ob1)
 mat = bpy.data.materials.new('structure.material.Face001')
 mat.use_transparency = True
-mat.alpha = opacity
+mat.alpha =     0.7000
 mat.diffuse_color = (0.7, 0.7, 0.7)
 mat.specular_color = (0, 0, 0)
 ob1.data.materials.append(mat)

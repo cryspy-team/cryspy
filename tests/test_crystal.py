@@ -18,6 +18,7 @@ def test_Atom():
 
     atom2 = cr.Atom("Cs2", "Cs", fs("p 0 0 0"))
     assert atom2 == atom1
+    assert {atom2} == {atom1}
     atom3 = cr.Atom("Cs3", "Cs", fs("p0.1 0 0"))
     assert atom3 != atom1
     atom4 = cr.Atom("Cs1", "Fe", fs("p 0 0 0"))
@@ -153,9 +154,9 @@ def test_Atomset():
     spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"),
                                                 fs("{-x, -y, -z}")])
     atomset1 = spacegroup ** atomset
-    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
-                           cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
-                           cr.Atom("Cs2", "Cs", fs("p 3/4 3/4 0")), \
+    atomset2 = cr.Atomset({cr.Atom("Cs1_1", "Cs", fs("p 0 0 0")), \
+                           cr.Atom("Cs2_1", "Cs", fs("p 1/4 1/4 0")), \
+                           cr.Atom("Cs2_2", "Cs", fs("p 3/4 3/4 0")), \
                            momentum, \
                            bond, \
                            cr.Face([fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
@@ -198,7 +199,7 @@ def test_Atomset():
                 print(corner.x())
                 print(corner.y())
                 print(corner.z())
-    assert atomset1.menge == atomset2.menge
+    assert atomset1 == atomset2
 
     atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})

@@ -48,8 +48,8 @@ class Atom():
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s%s" % (
-            self.name, self.typ,
+        string = "%s%s%s%s" % (
+            self.typ,
             str(hash(self.pos.x())),
             str(hash(self.pos.y())),
             str(hash(self.pos.z())))
@@ -390,7 +390,8 @@ class Atomset():
                 for coset in left.liste_cosets:
                     i += 1
                     new_atom = coset ** atom
-                    new_atom.name = new_atom.name + "_%i"%(i)
+                    if isinstance(atom, Atom):
+                        new_atom.name = new_atom.name + "_%i"%(i)
                     atoms |= set([new_atom])
             return Atomset(atoms)
 
