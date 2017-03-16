@@ -15,7 +15,7 @@ def test_Atom():
         "Atom Cs1 Cs Pos /  0  \ \n" \
         "               |   0   |\n" \
         "                \  0  / "
-
+    assert (atom1 + "hallo").name == atom1.name + "hallo"
     atom2 = cr.Atom("Cs2", "Cs", fs("p 0 0 0"))
     assert atom2 == atom1
     assert {atom2} == {atom1}
@@ -153,53 +153,27 @@ def test_Atomset():
 
     spacegroup = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"),
                                                 fs("{-x, -y, -z}")])
+
     atomset1 = spacegroup ** atomset
+    atomset2 = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 0")), \
+                           cr.Atom("Cs2", "Cs", fs("p 1/4 1/4 0")), \
+                           cr.Atom("Cs2_1", "Cs", fs("p 3/4 3/4 0")), \
+                           momentum, \
+                           bond, \
+                           cr.Face([fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
+    assert atomset1 == atomset2
+    assert atomset1.atomnames == atomset2.atomnames
+
+    atomset1 = spacegroup ** (atomset + "_1")
     atomset2 = cr.Atomset({cr.Atom("Cs1_1", "Cs", fs("p 0 0 0")), \
                            cr.Atom("Cs2_1", "Cs", fs("p 1/4 1/4 0")), \
                            cr.Atom("Cs2_2", "Cs", fs("p 3/4 3/4 0")), \
                            momentum, \
                            bond, \
                            cr.Face([fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
-    
-    print(len(atomset1.menge))
-    print(len(atomset2.menge))
-    print(atomset2.menge)
-    print((fs("{-x, -y, -z}")**bond).start.x())
-    print((fs("{-x, -y, -z}")**bond).start.y())
-    print((fs("{-x, -y, -z}")**bond).start.z())
-    print((fs("{-x, -y, -z}")**bond).target.x())
-    print((fs("{-x, -y, -z}")**bond).target.y())
-    print((fs("{-x, -y, -z}")**bond).target.z())
-    for item in atomset1.menge:
-        print(item)
-        if isinstance(item, cr.Bond):
-            print(item.start.x())
-            print(item.start.y())
-            print(item.start.z())
-            print(item.target.x())
-            print(item.target.y())
-            print(item.target.z())            
-        if isinstance(item, cr.Face):
-            for corner in item.corners:
-                print(corner.x())
-                print(corner.y())
-                print(corner.z())
-    print("--------------------------------")
-    for item in atomset2.menge:
-        print(item)
-        if isinstance(item, cr.Bond):
-            print(item.start.x())
-            print(item.start.y())
-            print(item.start.z())
-            print(item.target.x())
-            print(item.target.y())
-            print(item.target.z())
-        if isinstance(item, cr.Face):
-            for corner in item.corners:
-                print(corner.x())
-                print(corner.y())
-                print(corner.z())
     assert atomset1 == atomset2
+    assert atomset1.atomnames == atomset2.atomnames
+
 
     atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
                           cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
@@ -223,6 +197,19 @@ def test_Atomset():
     assert atomset5 == atomset6
     assert atomset5 == atomset7
 
+    atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
+                          cr.Atom("Cs2", "Cs", fs("p 1/4 0 -1/4"))})
+    assert atomset.nextname("Cs1") == "Cs1_1"
+    assert atomset.nextname("Cs3") == "Cs3"
+
+    atomset = cr.Atomset({cr.Atom("Cs_1", "Cs", fs("p 0 0 -1/4")),
+                          cr.Atom("Ar_1", "Cs", fs("p 1/4 0 -1/4")),
+                          cr.Atom("Ar_2", "Ar", fs("p 0 1/2 0"))})
+    assert atomset.nextname("Cs_1") == "Cs_2"
+    assert atomset.nextname("Ar_2") == "Ar_3"
+    assert atomset.nextname("Ar_1") == "Ar_3"
+
+    
 
 def test_structurefactor():
     asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")),
