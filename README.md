@@ -67,3 +67,7 @@ print(A2)
 
 
 ```
+
+run blender with 
+
+blender --python blenderscript.py
