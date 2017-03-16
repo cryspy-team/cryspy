@@ -20,3 +20,12 @@ def test_Karussell():
     assert float(metric.length(d1 - fs("d 1.0 0.0 0"))) < 1e-9
     d2 = k.direction(np.pi / 4)
     assert float(metric.length(d2 - fs("d 0 1 0"))) < 1e-9
+
+def test_fill():
+    atomset = cryspy.crystal.Atomset({cryspy.crystal.Atom("Fe1", "Fe", fs("p 1/2 1/2 1/2"))})
+    atomset = cryspy.utils.fill(atomset, [0.6, 0.6, 0.6])
+    assert len(atomset.menge) == 27
+    
+    atomset = cryspy.crystal.Atomset({cryspy.crystal.Atom("Fe1", "Fe", fs("p 0 0 0"))})
+    atomset = cryspy.utils.fill(atomset, [0.1, 0.1, 0.1])
+    assert len(atomset.menge) == 8
