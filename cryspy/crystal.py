@@ -5,8 +5,36 @@ from cryspy import geo as geo
 from cryspy import blockprint as bp
 from cryspy import tables
 
+class Drawable():
+    def __init__(self, name, pos):
+        assert isinstance(name, str), \
+            "First argument of crystal.Drawable.__init__(...) must be " \
+            "of type str."
+        assert isinstance(pos, geo.Pos), \
+            "Second argument of crystal.Drawable.__init__(...) must be " \
+            "of type geo.Pos."
+        self.name = name
+        self.pos = pos
+        self.has_color = False
+        self.color = None
+    
+    def set_color(self, color):
+        assert isinstance(color, tuple), \
+            "Argument of crystal.Momentum.set_color(color) must be of type " \
+            " tuple."
+        assert (len(color) == 3), \
+            "Argument of crystal.Momentum.set_color(color) must be of type "\
+            "tuple and must have three items."
+        for item in color:
+            assert isinstance(item, float) or isinstance(item, int) \
+                or isinstance(item, nb.Mixed), \
+                "Argument of crystal.Momentum.set_color(color) must be of " \
+                "type tuple with three numbers in it."
+        self.has_color = True
+        self.color = (float(color[0]), float(color[1]), float(color[2]))
+    
 
-class Atom():
+class Atom(Drawable):
     def __init__(self, name, typ, pos):
         assert isinstance(name, str), \
             "First argument must be of type str."
@@ -14,7 +42,7 @@ class Atom():
             "Second argument must be of type str."
         assert isinstance(pos, geo.Pos), \
             "Third argument must be of type Pos."
-        self.name = name
+        Drawable.__init__(self, name, pos)
         self.typ = typ
         self.pos = pos
 
@@ -58,35 +86,18 @@ class Atom():
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
-class Momentum():
-    def __init__(self, pos, direction):
+class Momentum(Drawable):
+    def __init__(self, name, pos, direction):
         assert isinstance(pos, geo.Pos), \
             "First argument of crystal.Momentum(pos, dir) must be of type " \
             " geo.Pos ."
         assert isinstance(direction, geo.Dif), \
             "Second argument of crystal.Momentum(pos, dir) must be of type" \
             " geo.Dif ."
-        self.pos = pos
+        Drawable.__init__(self, name, pos)
         self.direction = direction
-        self.has_color = False
-        self.color = None
         self.has_plotlength = False
         self.plotlength = None
-
-    def set_color(self, color):
-        assert isinstance(color, tuple), \
-            "Argument of crystal.Momentum.set_color(color) must be of type " \
-            " tuple."
-        assert (len(color) == 3), \
-            "Argument of crystal.Momentum.set_color(color) must be of type "\
-            "tuple and must have three items."
-        for item in color:
-            assert isinstance(item, float) or isinstance(item, int) \
-                or isinstance(item, nb.Mixed), \
-                "Argument of crystal.Momentum.set_color(color) must be of " \
-                "type tuple with three numbers in it."
-        self.has_color = True
-        self.color = (float(color[0]), float(color[1]), float(color[2]))
 
     def set_plotlength(self, plotlength):
         assert isinstance(plotlength, float) or isinstance(plotlength, int) \
@@ -110,19 +121,21 @@ class Momentum():
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
-            result = Momentum(self.pos + right, self.direction)
+            result = Momentum(self.name, self.pos + right, self.direction)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_plotlength:
                 result.set_plotlength(self.plotlength)
             return result
+        elif isinstance(right, str):
+            return Momentum(self.name + right, self.pos, self.direction)
         else:
             return NotImplemented
 
     def __rpow__(self, left):
         if isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset):
-            result = Momentum(left ** self.pos, self.direction)
+            result = Momentum(self.name, left ** self.pos, self.direction)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_plotlength:
@@ -142,18 +155,17 @@ class Momentum():
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
-class Bond():
-    def __init__(self, start, target):
+class Bond(Drawable):
+    def __init__(self, name, start, target):
         assert isinstance(start, geo.Pos), \
             "The start position of an object of type Bond " \
             "must be of type geo.Position."
         assert isinstance(target, geo.Pos), \
             "The target position of an object of type Bond " \
             "must be of type geo.Position."
+        Drawable.__init__(self, name, geo.centre_of_gravity([start, target]))
         self.start = start
         self.target = target
-        self.has_color = False
-        self.color = None
         self.has_thickness = False
         self.thickness = None
 
@@ -192,19 +204,21 @@ class Bond():
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
-            result = Bond(self.start + right, self.target + right)
+            result = Bond(self.name, self.start + right, self.target + right)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_thickness:
                 result.set_thickness(self.thickness)
             return result
+        elif isinstance(right, str):
+            return Bond(self.name + right, self.start, self.target)
         else:
             return NotImplemented
 
     def __rpow__(self, left):
         if isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset):
-            result = Bond(left ** self.start, left ** self.target)
+            result = Bond(self.name, left ** self.start, left ** self.target)
             if self.has_color:
                 result.set_color(self.color)
             if self.has_thickness:
@@ -224,16 +238,15 @@ class Bond():
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
-class Face():
-    def __init__(self, corners):
+class Face(Drawable):
+    def __init__(self, name, corners):
         assert isinstance(corners, list), \
             "Face must be created by a list of objects of type geo.Pos."
         for corner in corners:
             assert isinstance(corner, geo.Pos), \
                 "Face must be created by a list of objects of type geo.Pos."
+        Drawable.__init__(self, name, geo.centre_of_gravity(corners))
         self.corners = corners
-        self.has_color = False
-        self.color = None
         self.has_opacity = False
         self.opacity = None
  
@@ -282,17 +295,19 @@ class Face():
             liste = []
             for corner in self.corners:
                 liste.append(corner + right)
-            result = Face(liste)
+            result = Face(self.name, liste)
             if self.has_color:
                 result.set_color(self.color)
             return result
+        elif isinstance(right, str):
+            return Face(self.name + right, self.corners)
         else:
             return NotImplemented
 
     def __rpow__(self, left):
         if isinstance(left, geo.Operator) \
             or isinstance(left, geo.Coset):
-            result = Face([left ** corner for corner in self.corners])
+            result = Face(self.name, [left ** corner for corner in self.corners])
             if self.has_color:
                 result.set_color(self.color)
             return result

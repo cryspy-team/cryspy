@@ -156,6 +156,15 @@ class Dif:
         else:
             return NotImplemented
 
+    def to_Symmetry(self):
+        # Returns the symmetry operation that is a translation with
+        # the Dif-Vector.
+        return Symmetry(nb.Matrix([[1, 0, 0, self.x()],
+                                   [0, 1, 0, self.y()],
+                                   [0, 0, 1, self.z()],
+                                   [0, 0, 0, 1       ]]))
+
+
 canonical_e0 = Dif(nb.Matrix([nb.Row([1]),
                               nb.Row([0]),
                               nb.Row([0]),
@@ -769,6 +778,17 @@ class Coset():
     def gohome(self):
         return Coset(self.symmetry % self.transgen, self.transgen)
 
+    def coset_representant_for_pos(self, pos):
+        # Returns the symmetry (coset representant) that transforms the
+        # position pos into a position that is inside the unit cell.
+        assert isinstance(pos, Pos), \
+            "Argument of geo.Coset.coset_representant_for_pos(...) must " \
+            "be of type geo.Pos."
+        is_position = self.symmetry ** pos
+        should_be_position = is_position % self.transgen
+        return (should_be_position - is_position).to_Symmetry() * self.symmetry
+
+
     def __pow__(self, right):
         if isinstance(right, Pos):
             return (self.symmetry ** right) % self.transgen
@@ -840,3 +860,18 @@ class Spacegroup():
             "to object of type Spacegroup only."
         return (self.transgen == right.transgen) and \
                (self.liste_cosets == right.liste_cosets)
+
+
+def centre_of_gravity(liste):
+# Calculates the centre of gravity of a list of positions
+# of type geo.Pos.
+    assert isinstance(liste, list), \
+        "Argument of geo.centre_of_gravity(...) must be of type list."
+    for item in liste:
+        assert isinstance(item, Pos), \
+            "Argument of geo.centre_of_gravity(...) must be a list " \
+            "of objects of type geo.Pos."
+    summe = Dif(nb.Matrix([[0], [0], [0], [0]]))
+    for item in liste:
+        summe += item - origin
+    return origin + Dif((summe.value * (1 / nb.Mixed(len(liste)))))
