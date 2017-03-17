@@ -23,6 +23,10 @@ def test_Dif():
     assert x.x() == 1
     assert x.y() == 2
     assert x.z() == 3
+    assert x.to_Symmetry() == geo.Symmetry(nb.Matrix([[1, 0, 0, 1],
+                                                      [0, 1, 0, 2],
+                                                      [0, 0, 1, 3],
+                                                      [0, 0, 0, 1]]))
 
 
 def test_Rec():
@@ -460,6 +464,19 @@ def test_Coset():
         "     0  0  2  "
     c = geo.Coset(g, geo.canonical)
     assert c.__str__() == "{x+2z,-2y,z}"
+    g = geo.Symmetry(nb.Matrix([[ 1, 0, 0, 0.5],
+                                [ 0, 1, 0, 0],
+                                [ 0, 0, 1, 0],
+                                [ 0, 0, 0, 1]]))
+    c = geo.Coset(g, geo.canonical)
+    g2 = geo.Symmetry(nb.Matrix([[ 1, 0, 0, -0.5],
+                                 [ 0, 1, 0, 0],
+                                 [ 0, 0, 1, 0],
+                                 [ 0, 0, 0, 1]]))
+    p1 = geo.Pos(nb.Matrix([[0.3], [0], [0], [1]]))
+    p2 = geo.Pos(nb.Matrix([[0.8], [0], [0], [1]]))
+    assert c.coset_representant_for_pos(p1) == g
+    assert c.coset_representant_for_pos(p2) == g2
 
 
 def test_Spacegroup():
@@ -701,3 +718,10 @@ def test_operations():
                                                 [0, 0, 1, fr.Fraction(3, 2)],
                                                 [0, 0, 0, 1]])), transgen1)
     assert coset1 % transgen1 == coset1_
+
+
+def test_centre_of_gravity():
+    p1 = geo.Pos(nb.Matrix([[1], [0], [0], [1]]))
+    p2 = geo.Pos(nb.Matrix([[3], [0], [0], [1]]))
+    assert geo.centre_of_gravity([p1, p2]) == geo.Pos(nb.Matrix([[2], [0], [0], [1]]))
+
