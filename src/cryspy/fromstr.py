@@ -146,19 +146,21 @@ def mixedfromstr(string):
                 except ValueError:
                     raise(Exception("The following string looks like a number, "\
                                     "but I can't convert it: %s"%(string)))
-        
+ 0       
 
 def matrixfromstr(string):
      string = string.replace('|', '\\')
-     string = string.replace('/ ', ' ')
-     string = string.replace('<', ' ')
-     string = string.replace('>', ' ')
-     string = string.replace(' /', ' ')
+     string = re.sub('\/ | \/|[<>]', ' ', string)
+#     string = string.replace('/ ', ' ')
+#     string = string.replace('<', ' ')
+#     string = string.replace('>', ' ')
+#     string = string.replace(' /', ' ')
      string = string.replace('\n', '\\')
-     for i in range(4):
-        string = string.replace('\\ \\', '\\')
-        string = string.replace('\\  \\', '\\')
-        string = string.replace('\\   \\', '\\')
+     string = re.sub('\\\\ +\\\\', '\\', string)
+#     for i in range(4):
+#        string = string.replace('\\ \\', '\\')
+#        string = string.replace('\\  \\', '\\')
+#        string = string.replace('\\   \\', '\\')
      rowwords = string.split('\\')
      rowliste = []
      for rowword in rowwords:
@@ -245,17 +247,19 @@ def transformationfromstr(string):
         return geo.Transformation(matrix.inv())
 
 def cosetfromstr(string):
-    string = string.replace('{', ' ')
-    string = string.replace('}', ' ')
+    string = re.sub('[{}]', ' ', string)
+#    string = string.replace('{', ' ')
+#    string = string.replace('}', ' ')
     return geo.Coset(fromstr(string), geo.canonical)
 
 
 def posfromstr(string):
+    string = re.sub('\\\\| \/|\/ |\|', ' ', string)
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
     string = removeletters(string)
     words = string.split()
     string = '\n'.join(words)
@@ -264,10 +268,11 @@ def posfromstr(string):
 
 def diffromstr(string):
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
+    string = re.sub("\\\\| \/|\/ |\|", " ", string)
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
     string = removeletters(string)
     words = string.split()
     string = '\n'.join(words)
@@ -276,12 +281,13 @@ def diffromstr(string):
 
 def recfromstr(string):
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
-    stirng = string.replace('<', ' ')
-    string = string.replace('>', ' ')
+    string = re.sub("\\\\| \/|\/ |[|<>]", " ", string)
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
+#    string = string.replace('<', ' ')
+#    string = string.replace('>', ' ')
     string = removeletters(string)
     words = string.split()
     string = ' '.join(words)
