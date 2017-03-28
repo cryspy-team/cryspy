@@ -1,0 +1,4 @@
+* write setup.py and test it
+https://docs.python.org/3/distutils/setupscript.html
+
+* pep8 for tests
