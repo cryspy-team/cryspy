@@ -1,9 +1,9 @@
 import sys
 sys.path.append("../src")
-from cryspy_fromstr import fromstr as fs
-import geo as geo
-import crystal as cr
-import niceprint
+from cryspy.fromstr import fromstr as fs
+import cryspy.geo as geo
+import cryspy.crystal as cr
+import cryspy.niceprint
 
 
 def test_print_atomtable():

@@ -4,13 +4,11 @@ import uncertainties as uc
 from cryspy import geo as geo
 import re
 
-
 def removeletters(string):
     assert isinstance(string, str), \
         "Argument must be of type str."
     string = re.sub("[a-zA-Z]", " ", string)
     return string
-
 
 def str2linearterm(string, liste_variables):
     assert isinstance(string, str), \
@@ -39,7 +37,6 @@ def str2linearterm(string, liste_variables):
                 word += '0'
         liste_numbers[index] += fromstr(word)
     return liste_numbers
-
 
 def fromstr(string):
     assert isinstance(string, str), \
@@ -98,7 +95,6 @@ def fromstr(string):
             raise(Exception("The following string looks like a Rec "
                             "but I cannot convert it: %s" % (string)))
 
-
 def typefromstr(string):
     words = string.split()
 
@@ -125,7 +121,6 @@ def typefromstr(string):
     else:
         return nb.Mixed
 
-
 def mixedfromstr(string):
     try:
         return nb.Mixed(int(string))
@@ -142,14 +137,15 @@ def mixedfromstr(string):
                     raise(Exception("The following string looks like a number, "
                                     "but I can't convert it: %s" % (string)))
 
-
 def matrixfromstr(string):
     string = string.replace('|', '\\')
-    string = string.replace('/ ', ' ')
-    string = string.replace('<', ' ')
-    string = string.replace('>', ' ')
-    string = string.replace(' /', ' ')
+    string = re.sub('\/ | \/|[<>]', ' ', string)
+#    string = string.replace('/ ', ' ')
+#    string = string.replace('<', ' ')
+#    string = string.replace('>', ' ')
+#    string = string.replace(' /', ' ')
     string = string.replace('\n', '\\')
+#    string = re.sub('\\\\ +\\\\', '\\', string)
     for i in range(4):
         string = string.replace('\\ \\', '\\')
         string = string.replace('\\  \\', '\\')
@@ -164,7 +160,6 @@ def matrixfromstr(string):
         rowliste.append(nb.Row(liste))
     return nb.Matrix(rowliste)
 
-
 def symmetryfromstr(string):
     words = string.split(',')
     assert len(words) == 3, \
@@ -177,7 +172,6 @@ def symmetryfromstr(string):
     liste.append(nb.Row([fromstr("0"), fromstr("0"), fromstr("0"),
                          fromstr("1")]))
     return geo.Symmetry(nb.Matrix(liste))
-
 
 def transformationfromstr(string):
     if len(string.split("then")) > 1:
@@ -239,47 +233,47 @@ def transformationfromstr(string):
 
         return geo.Transformation(matrix.inv())
 
-
 def cosetfromstr(string):
-    string = string.replace('{', ' ')
-    string = string.replace('}', ' ')
+    string = re.sub('[{}]', ' ', string)
+#    string = string.replace('{', ' ')
+#    string = string.replace('}', ' ')
     return geo.Coset(fromstr(string), geo.canonical)
 
-
 def posfromstr(string):
+    string = re.sub('\\\\| \/|\/ |\|', ' ', string)
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
     string = removeletters(string)
     words = string.split()
     string = '\n'.join(words)
     string += "\n 1"
     return geo.Pos(matrixfromstr(string))
 
-
 def diffromstr(string):
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
+    string = re.sub("\\\\| \/|\/ |\|", " ", string)
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
     string = removeletters(string)
     words = string.split()
     string = '\n'.join(words)
     string += "\n 0"
     return geo.Dif(matrixfromstr(string))
 
-
 def recfromstr(string):
     string = string.replace('\n', ' ')
-    string = string.replace('\\', ' ')
-    string = string.replace('/ ', ' ')
-    string = string.replace(' /', ' ')
-    string = string.replace('|', ' ')
-    stirng = string.replace('<', ' ')
-    string = string.replace('>', ' ')
+    string = re.sub("\\\\| \/|\/ |[|<>]", " ", string)
+#    string = string.replace('\\', ' ')
+#    string = string.replace('/ ', ' ')
+#    string = string.replace(' /', ' ')
+#    string = string.replace('|', ' ')
+#    string = string.replace('<', ' ')
+#    string = string.replace('>', ' ')
     string = removeletters(string)
     words = string.split()
     string = ' '.join(words)
