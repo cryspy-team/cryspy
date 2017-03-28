@@ -145,11 +145,11 @@ def matrixfromstr(string):
 #    string = string.replace('>', ' ')
 #    string = string.replace(' /', ' ')
     string = string.replace('\n', '\\')
-    string = re.sub('\\\\ +\\\\', '\\', string)
-#    for i in range(4):
-#        string = string.replace('\\ \\', '\\')
-#        string = string.replace('\\  \\', '\\')
-#        string = string.replace('\\   \\', '\\')
+#    string = re.sub('\\\\ +\\\\', '\\', string)
+    for i in range(4):
+        string = string.replace('\\ \\', '\\')
+        string = string.replace('\\  \\', '\\')
+        string = string.replace('\\   \\', '\\')
     rowwords = string.split('\\')
     rowliste = []
     for rowword in rowwords:
