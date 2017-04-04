@@ -266,7 +266,7 @@ class Face(Drawable):
         self.color = (float(color[0]), float(color[1]), float(color[2]))
 
     def set_opacity(self, opacity):
-        assert isinstance(opacity, Mixe) or isinstance(opacity, float) \
+        assert isinstance(opacity, nb.Mixed) or isinstance(opacity, float) \
             or isinstance(opacity, int), \
             "Opacity must be a number."
         assert 0 <= float(opacity) <= 1, \
@@ -330,9 +330,10 @@ class Atomset():
             "Argument must be of type set."
         for item in menge:
             assert isinstance(item, Atom) or isinstance(item, Momentum) \
-                or isinstance(item, Bond) or isinstance(item, Face), \
+                or isinstance(item, Bond) or isinstance(item, Face) \
+                or isinstance(item, Subset), \
                 "Argument must be a set of "\
-                "objects of type Atom or of type Momentum."
+                "objects of type Atom, Momentum, Bond or Face."
         self.menge = menge
         self.atomnames = set([])
         for item in menge:
@@ -355,6 +356,7 @@ class Atomset():
         momentumliste = []
         bondliste = []
         faceliste = []
+        subsetliste = []
         for item in self.menge:
             if isinstance(item, Atom):
                 atomliste.append(item)
@@ -364,6 +366,8 @@ class Atomset():
                 bondliste.append(item)
             elif isinstance(item, Face):
                 faceliste.append(item)
+            elif isinstance(item, Subset):
+                subsetliste.append(item)
         types = [atom.typ for atom in atomliste]
         indexes = [i for (j, i) in sorted(zip(types, range(len(atomliste))))]
         names = [atomliste[i].name for i in indexes]
@@ -378,6 +382,8 @@ class Atomset():
             strings.append(["", str(bond)])
         for face in faceliste:
             strings.append(["", str(face)])
+        for subset in subsetliste:
+            strings.append(["", str(subset)])
         return bp.block(strings)
 
     def add(self, item):
@@ -453,6 +459,63 @@ class Atomset():
                 return atom
         return None
 
+
+class Subset(Drawable):
+    def __init__(self, name, pos, menge):
+        assert isinstance(name, str), \
+            "First argument must be of type str."
+        assert isinstance(pos, geo.Pos), \
+            "Second argument must be of type cryspy.geo.Pos."
+        assert isinstance(menge, set), \
+            "Third argument must be of type set."
+        for item in menge:
+            assert isinstance(item, Atom) or isinstance(item, Momentum) \
+                or isinstance(item, Bond) or isinstance(item, Face), \
+                "Third argument must be a set of "\
+                "objects of type Atom, Momentum, Bond or Face."
+        Drawable.__init__(self, name, pos)
+        self.atomset = Atomset(menge)
+
+    def __eq__(self, right):
+        if isinstance(right, Subset):
+            return (self.pos == right.pos) \
+               and (self.atomset == right.atomset)
+        else:
+            return False
+
+    def __str__(self):
+        return "Subset"
+
+    def __rpow__(self, left):
+        assert isinstance(left, geo.Symmetry) or isinstance(left, geo.Coset), \
+            "Cannot apply object of type %s to object of type " \
+            "cryspy.crystalSubset."%(str(type(left)))
+        if isinstance(left, geo.Symmetry):
+            return Subset(self.name, left**self.pos,
+                          {left ** item for item in self.atomset.menge})
+        elif isinstance(left, geo.Coset):
+            pos = left ** self.pos
+            correct = (pos - left.symmetry ** self.pos).to_Symmetry()
+            return Subset(self.name, pos,
+                          {correct ** (left.symmetry ** item)
+                           for item in self.atomset.menge})
+
+    def __hash__(self):
+        h = 0
+        for item in self.atomset.menge:
+            h += hash(item)
+        string = "%s%i%i%i%i" % (
+            "Subset",
+            hash(self.pos.x()),
+            hash(self.pos.y()),
+            hash(self.pos.z()),
+            h)
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
+
+            
+        
+
 def structurefactor(atomset, metric, q, wavelength):
     assert isinstance(atomset, Atomset), \
         "atomset must be of type Atomset."
@@ -473,3 +536,5 @@ def structurefactor(atomset, metric, q, wavelength):
            * np.exp(i2pi * float(q * (atom.pos - geo.origin)))
 
     return F
+
+

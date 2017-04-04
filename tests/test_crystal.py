@@ -90,7 +90,7 @@ def test_Bond():
     b.set_thickness(0.5)
     b.set_thickness(fs("1/2"))
     d = fs("d 0 0 1/2")
-    b1 = cr.Bond("B", fs("p 0 0 0"), fs("p 0 0 1/2"))
+    b1 = cr.Bond("Bblabla", fs("p 0 0 0"), fs("p 0 0 1/2"))
     b2 = cr.Bond("B", fs("p 1 2 3"), fs("p 0 0 1/2"))
     b3 = cr.Bond("B", fs("p 0 0 0"), fs("p 1 2 3"))
     assert b == b1
@@ -108,8 +108,9 @@ def test_Face():
     assert isinstance(f, cr.Face)
     f.set_color((0, 0, 1))
     f.set_color((fs("0.3"), 0.1, 1))
+    f.set_opacity(0.5)
     d = fs("d 0 0 1/2")
-    f1 = cr.Face("F", [fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
+    f1 = cr.Face("Fblabla", [fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
     f2 = cr.Face("F", [fs("p 0 0 0"), fs("p 0.7 0 0"), fs("p 0 1 0")])
     f3 = cr.Face("F", [fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 2 0")])
     assert f == f1
@@ -217,7 +218,31 @@ def test_Atomset():
     assert atomset.nextname("Ar_2") == "Ar_3"
     assert atomset.nextname("Ar_1") == "Ar_3"
 
-    
+    atomset = cr.Atomset({cr.Subset("S1", fs("p 0 0 0"), {
+                                        cr.Atom("Fe1", "Fe", fs("p -0.1 0 0")),
+                                        cr.Atom("Fe1", "Fe", fs("p  0.1 0 0"))
+                                    }
+                          )
+    })
+
+   
+def test_Subset():
+    a1 = cr.Atom("Fe1", "Fe", fs("p 0 0 0"))
+    a2 = cr.Atom("Fe2", "Fe", fs("p 0 0 1/4"))
+    subset = cr.Subset("Sub", fs("p 0 0 1/8"), {a1, a2})
+    subset1 = cr.Subset("Sub1", fs("p 0 0 1/8"), {a1, a2})
+    subset2 = cr.Subset("Sub", fs("p 0 0 0"), {a1, a2})
+    subset3 = cr.Subset("Sub", fs("p 0 0 1/8"), {a1})
+    assert subset == subset1
+    assert (subset == subset2) == False
+    assert (subset == subset3) == False
+    assert str(subset) == "Subset"
+    subset4 = cr.Subset("Sub", fs("p 7/8 0 1/8"),
+                        {cr.Atom("Fe1", "Fe", fs("p 7/8 0 0")), 
+                         cr.Atom("Fe2", "Fe", fs("p 7/8 0 1/4"))})
+    assert fs("x+7/8, y, z") ** subset == subset4
+    assert fs("{x-1/8, y, z}") ** subset == subset4
+
 
 def test_structurefactor():
     asyunit = cr.Atomset({cr.Atom("Ca1", "Ca", fs("p 0     0     0")),
