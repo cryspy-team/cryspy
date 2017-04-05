@@ -335,10 +335,9 @@ class Atomset():
                 "Argument must be a set of "\
                 "objects of type Atom, Momentum, Bond or Face."
         self.menge = menge
-        self.atomnames = set([])
+        self.names = set([])
         for item in menge:
-            if isinstance(item, Atom):
-                self.atomnames.add(item.name)
+            self.names.add(item.name)
 
     def __eq__(self, right):
         if isinstance(right, Atomset):
@@ -389,8 +388,7 @@ class Atomset():
     def add(self, item):
         if not (item in self.menge):
             self.menge.add(item)
-            if isinstance(item, Atom):
-                self.atomnames.add(item.name)
+            self.names.add(item.name)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -425,17 +423,14 @@ class Atomset():
         if isinstance(left, geo.Spacegroup):
             atomset = Atomset(set([]))
             for item in self.menge:
-                i = 0
                 for coset in left.liste_cosets:
-                    i += 1
                     new_item = coset ** item
-                    if isinstance(item, Atom):
-                        new_item.name = atomset.nextname(new_item.name)
+                    new_item.name = atomset.nextname(new_item.name)
                     atomset.add(new_item)
             return atomset
 
     def nextname(self, name):
-        if name in self.atomnames:
+        if name in self.names:
             words = name.split('_')
             if words[-1].isdigit():
                 return self.nextname('_'.join(words[:-1] + [str(int(words[-1])+1)]))
@@ -458,6 +453,18 @@ class Atomset():
             if atom.name == atomname:
                 return atom
         return None
+
+    def unpack_subsets(self):
+        menge_new = set([])
+        for item in self.menge:
+            if not isinstance(item, Subset):
+                menge_new.add(item)
+            else:
+                for subitem in item.atomset.menge:
+                    subitem.name = item.name + ':' + subitem.name
+                    menge_new.add(subitem)
+                    
+        return Atomset(menge_new)
 
 
 class Subset(Drawable):
@@ -512,9 +519,6 @@ class Subset(Drawable):
             h)
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
-
-            
-        
 
 def structurefactor(atomset, metric, q, wavelength):
     assert isinstance(atomset, Atomset), \

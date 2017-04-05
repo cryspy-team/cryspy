@@ -171,7 +171,7 @@ def test_Atomset():
                            bond, \
                            cr.Face("F", [fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
     assert atomset1 == atomset2
-    assert atomset1.atomnames == atomset2.atomnames
+    assert atomset1.names == atomset2.names
 
     atomset1 = spacegroup ** (atomset + "_1")
     atomset2 = cr.Atomset({cr.Atom("Cs1_1", "Cs", fs("p 0 0 0")), \
@@ -181,7 +181,7 @@ def test_Atomset():
                            bond, \
                            cr.Face("F", [fs("p 0 0 0"), fs("p 0 0 0"), fs("p 0 0 0")])})
     assert atomset1 == atomset2
-    assert atomset1.atomnames == atomset2.atomnames
+    assert atomset1.names == atomset2.names
 
 
     atomset = cr.Atomset({cr.Atom("Cs1", "Cs", fs("p 0 0 -1/4")),
@@ -218,13 +218,42 @@ def test_Atomset():
     assert atomset.nextname("Ar_2") == "Ar_3"
     assert atomset.nextname("Ar_1") == "Ar_3"
 
-    atomset = cr.Atomset({cr.Subset("S1", fs("p 0 0 0"), {
+    atomset = cr.Atomset({cr.Subset("S_1", fs("p 0 0 0"), {
                                         cr.Atom("Fe1", "Fe", fs("p -0.1 0 0")),
-                                        cr.Atom("Fe1", "Fe", fs("p  0.1 0 0"))
+                                        cr.Atom("Fe2", "Fe", fs("p  0.1 0 0"))
                                     }
                           )
     })
+    sg = geo.Spacegroup(geo.canonical, [fs("{x, y, z}"), fs("{x, -y+1/2, z}")])
+    assert sg.is_really_a_spacegroup()
+    atomset1 = cr.Atomset({cr.Subset("S_1", fs("p 0 0 0"), {
+                                        cr.Atom("Fe1", "Fe", fs("p -0.1 0 0")),
+                                        cr.Atom("Fe2", "Fe", fs("p  0.1 0 0"))
+                                    }
+                          ),
+                           cr.Subset("S_2", fs("p 0 1/2 0"), {
+                                        cr.Atom("Fe1", "Fe", fs("p -0.1 1/2 0")),
+                                        cr.Atom("Fe2", "Fe", fs("p  0.1 1/2 0"))
+                                    }
+                          )
 
+    })
+    
+    assert sg ** atomset == atomset1
+    
+    atomset_unpacked = cr.Atomset({
+        cr.Atom("S_1:Fe1", "Fe", fs("p -0.1  0  0")),
+        cr.Atom("S_1:Fe2", "Fe", fs("p  0.1  0  0")),
+        cr.Atom("S_2:Fe1", "Fe", fs("p -0.1 1/2 0")),
+        cr.Atom("S_2:Fe2", "Fe", fs("p  0.1 1/2 0"))
+    })
+    for subset in (sg ** atomset).menge:
+        print(subset.name)
+    assert (sg ** atomset).unpack_subsets() == atomset_unpacked
+    assert (sg ** atomset).names \
+        == atomset1.names
+    assert ((sg ** atomset).unpack_subsets()).names \
+        == atomset_unpacked.names
    
 def test_Subset():
     a1 = cr.Atom("Fe1", "Fe", fs("p 0 0 0"))
