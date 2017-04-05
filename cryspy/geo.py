@@ -613,6 +613,15 @@ class Metric(Operator):
         gamma = nb.rad2deg(self.angle(e0, e1))
         return Cellparameters(a, b, c, alpha, beta, gamma)
 
+    def cellvolume(self):
+        T = self.schmidttransformation
+        e0 = T ** canonical_e0
+        e1 = T ** canonical_e1
+        e2 = T ** canonical_e2
+        return (e0.y()*e1.z() - e0.z()*e1.y())*e2.x() \
+             + (e0.z()*e1.x() - e0.x()*e1.z())*e2.y() \
+             + (e0.x()*e1.y() - e0.y()*e1.x())*e2.z()
+
     def __str__(self):
         return bp.block([["Metric", self.value.__str__()]])
 
