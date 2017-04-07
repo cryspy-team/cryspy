@@ -19,6 +19,7 @@ def test_Atom():
     assert (atom1 + "hallo").name == atom1.name + "hallo"
     atom2 = cr.Atom("Cs2", "Cs", fs("p 0 0 0"))
     assert atom2 == atom1
+    assert hash(atom2) == hash(atom1)
     assert {atom2} == {atom1}
     atom3 = cr.Atom("Cs3", "Cs", fs("p0.1 0 0"))
     assert atom3 != atom1
@@ -271,6 +272,11 @@ def test_Subset():
                          cr.Atom("Fe2", "Fe", fs("p 7/8 0 1/4"))})
     assert fs("x+7/8, y, z") ** subset == subset4
     assert fs("{x-1/8, y, z}") ** subset == subset4
+    subset5 = cr.Subset("Sub", fs("p 1/2 0 1/8"),
+                        {cr.Atom("Fe1", "Fe", fs("p 1/2 0 0")), 
+                         cr.Atom("Fe2", "Fe", fs("p 1/2 0 1/4"))})
+    assert subset + fs("d 1/2 0 0") == subset5
+    
 
 
 def test_structurefactor():
