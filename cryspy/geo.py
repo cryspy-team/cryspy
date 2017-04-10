@@ -37,6 +37,7 @@
 #
 #
 
+import hashlib
 from cryspy import numbers as nb
 from cryspy import blockprint as bp
 
@@ -73,6 +74,10 @@ class Pos:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "pos" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -128,6 +133,10 @@ class Dif:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "dif" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -204,6 +213,10 @@ class Rec:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "rec" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Rec):

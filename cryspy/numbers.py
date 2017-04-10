@@ -32,7 +32,7 @@ import quicktions as fr
 import uncertainties as uc
 from uncertainties import unumpy
 import numpy as np
-
+import cryspy.hash
 
 class Mixed(object):
     def __init__(self, value):
@@ -85,13 +85,18 @@ class Mixed(object):
     def __hash__(self):
         if isinstance(self.value, fr.Fraction):
             string = 'fr'
+            string += str(hash(self.value))
         elif isinstance(self.value, uc.UFloat):
             string = 'uf'
+            string += str(cryspy.hash.floathash(self.value.n)) + '+-' \
+                    + str(cryspy.hash.floathash(self.value.s))
         elif isinstance(self.value, int):
             string = 'in'
+            string += str(hash(self.value))
         elif isinstance(self.value, float):
             string = 'fl'
-        string += str(hash(self.value))
+            string += str(cryspy.hash.floathash(self.value))
+
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __eq__(self, right):
@@ -552,6 +557,12 @@ class Row(object):
         else:
             return False
 
+    def __hash__(self):
+        string = "row"
+        for item in self.liste:
+            string += "," + str(hash(item))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
+
     def __str__(self):
         str = "(  "
         for item in self.liste:
@@ -644,6 +655,12 @@ class Matrix(object):
                 return False
         else:
             return False
+
+    def __hash__(self):
+        string = "matrix"
+        for item in self.liste:
+            string += "," + str(hash(item))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __str__(self):
         str = ''

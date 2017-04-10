@@ -16,6 +16,9 @@ def test_Pos():
     assert x.z() == 3
     x = geo.origin
     assert x == geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
+    x = geo.Pos(nb.Matrix([[0], [0], [1.00000000], [1]]))
+    y = geo.Pos(nb.Matrix([[0], [0], [0.99999999], [1]]))
+    assert hash(x) == hash(y)
 
 
 def test_Dif():
@@ -28,7 +31,9 @@ def test_Dif():
                                                       [0, 1, 0, 2],
                                                       [0, 0, 1, 3],
                                                       [0, 0, 0, 1]]))
-
+    x = geo.Dif(nb.Matrix([[0], [0], [1.00000000], [0]]))
+    y = geo.Dif(nb.Matrix([[0], [0], [0.99999999], [0]]))
+    assert hash(x) == hash(y)
 
 def test_Rec():
     q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
@@ -36,6 +41,9 @@ def test_Rec():
     assert q.h() == 1
     assert q.k() == 2
     assert q.l() == 3
+    x = geo.Rec(nb.Matrix([[0, 0, 1.00000000, 0]]))
+    y = geo.Rec(nb.Matrix([[0, 0, 0.99999999, 0]]))
+    assert hash(x) == hash(y)
 
 
 def test_eq():

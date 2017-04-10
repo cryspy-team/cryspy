@@ -21,24 +21,24 @@ sg = fs("a' = c\n"
         cryspy.tables.spacegroup(62)
 
 
-atomset_aux = sg ** atomset
-
-#atomset = sg ** atomset
-atomset_aux = cryspy.utils.fill(atomset_aux, [0.5, 0.05, 0.05])        
-
-face1 = cryspy.crystal.Face("Face1", [atomset_aux.get_atom("O2_6").pos, atomset_aux.get_atom("O2_3").pos, atomset_aux.get_atom("O1_2").pos])
-face2 = cryspy.crystal.Face("Face2", [atomset_aux.get_atom("O2_2r").pos, atomset_aux.get_atom("O2_3").pos, atomset_aux.get_atom("O1_2").pos])
-face3 = cryspy.crystal.Face("Face3", [atomset_aux.get_atom("O2_2r").pos, atomset_aux.get_atom("O2_7r").pos, atomset_aux.get_atom("O1_2").pos])
-face4 = cryspy.crystal.Face("Face4", [atomset_aux.get_atom("O2_6").pos, atomset_aux.get_atom("O2_7r").pos, atomset_aux.get_atom("O1_2").pos])
-face5 = cryspy.crystal.Face("Face5", [atomset_aux.get_atom("O2_6").pos, atomset_aux.get_atom("O2_3").pos, atomset_aux.get_atom("O1_6r").pos])
-face6 = cryspy.crystal.Face("Face6", [atomset_aux.get_atom("O2_2r").pos, atomset_aux.get_atom("O2_3").pos, atomset_aux.get_atom("O1_6r").pos])
-face7 = cryspy.crystal.Face("Face7", [atomset_aux.get_atom("O2_2r").pos, atomset_aux.get_atom("O2_7r").pos, atomset_aux.get_atom("O1_6r").pos])
-face8 = cryspy.crystal.Face("Face8", [atomset_aux.get_atom("O2_6").pos, atomset_aux.get_atom("O2_7r").pos, atomset_aux.get_atom("O1_6r").pos])
-
-subset = cryspy.crystal.Subset("Octahedron", atomset_aux.get_atom("Mn1_3r").pos, {face1, face2, face3, face4, face5, face6, face7, face8})
-
-#atomset.add(subset)
 atomset = sg ** atomset
-print(len(atomset.menge))
-#atomset = cryspy.utils.fill(atomset, [0.5, 0.05, 0.05])        
+
+atomset = cryspy.utils.fill(atomset, [0.5, 0.05, 0.05])        
+
+
+face1 = cryspy.crystal.Face("Face1", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1_2").pos])
+face2 = cryspy.crystal.Face("Face2", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1_2").pos])
+face3 = cryspy.crystal.Face("Face3", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1_2").pos])
+face4 = cryspy.crystal.Face("Face4", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1_2").pos])
+face5 = cryspy.crystal.Face("Face5", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1r").pos])
+face6 = cryspy.crystal.Face("Face6", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1r").pos])
+face7 = cryspy.crystal.Face("Face7", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1r").pos])
+face8 = cryspy.crystal.Face("Face8", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1r").pos])
+
+subset = cryspy.crystal.Subset("Octahedron", atomset.get_atom("Mn1_3r").pos, {face1, face2, face3, face4, face5, face6, face7, face8})
+
+atomset.add(subset)
+atomset = sg ** atomset
+atomset = cryspy.utils.fill(atomset, [0.5, 0.05, 0.05])
+print(atomset)
 cryspy.blender.make_blender_script(atomset, metric, "structure", "blenderscript2.py")

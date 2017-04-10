@@ -51,10 +51,7 @@ class Atom(Drawable):
                           " " + self.typ, " " + self.pos.__str__()], ])
 
     def __eq__(self, right):
-        if (self.typ == right.typ) and (self.pos == right.pos):
-            return True
-        else:
-            return False
+        return hash(self) == hash(right)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -78,11 +75,9 @@ class Atom(Drawable):
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s" % (
+        string = "atom%s%i" % (
             self.typ,
-            str(hash(self.pos.x())),
-            str(hash(self.pos.y())),
-            str(hash(self.pos.z())))
+            hash(self.pos))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -145,13 +140,8 @@ class Momentum(Drawable):
             return NotImplemented
 
     def __hash__(self):
-        string = "x%sy%sz%sdx%sdy%sdz%s" \
-            % (str(hash(self.pos.x())),
-               str(hash(self.pos.y())),
-               str(hash(self.pos.z())),
-               str(hash(self.direction.x())),
-               str(hash(self.direction.y())),
-               str(hash(self.direction.z())))
+        string = "momentum%i,%i" \
+            % (hash(self.pos), hash(self.direction))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -228,13 +218,11 @@ class Bond(Drawable):
             return NotImplemented
 
     def __hash__(self):
-        string = "x%sy%sz%sdx%sdy%sdz%s" \
-            % (str(hash(self.start.x())),
-               str(hash(self.start.y())),
-               str(hash(self.start.z())),
-               str(hash(self.target.x())),
-               str(hash(self.target.y())),
-               str(hash(self.target.z())))
+        # The order of start and target does not matter.
+        # This is why I hash the sum and the product of the hashes.
+        string = "bond%i,%i" \
+            % (hash(self.start)+hash(self.target),
+               hash(self.start) * hash(self.target))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -278,17 +266,7 @@ class Face(Drawable):
         return "Face"
 
     def __eq__(self, right):
-        if isinstance(right, Face):
-            if len(self.corners) == len(right.corners):
-                result = True
-                for i in range(len(self.corners)):
-                    if self.corners[i] != right.corners[i]:
-                        result = False
-                return result
-            else:
-                return False
-        else:
-            return False
+        return hash(self) == hash(right)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -315,12 +293,16 @@ class Face(Drawable):
             return NotImplemented
 
     def __hash__(self):
-        string = ""
-        for corner in self.corners:
-            string += "x%sy%sz%s" \
-               %(str(hash(corner.x())),
-               str(hash(corner.y())),
-               str(hash(corner.z())))
+        summe = 0
+        sum_of_products = 0
+        for i in range(len(self.corners) - 1):
+            summe += hash(self.corners[i])
+            sum_of_products += hash(self.corners[i]) * hash(self.corners[i+1])
+        summe += hash(self.corners[-1])
+        sum_of_products += hash(self.corners[-1]) * hash(self.corners[0])
+
+        string = "face%i,%i" % \
+                 (summe, sum_of_products)
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
