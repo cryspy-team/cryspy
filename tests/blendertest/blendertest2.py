@@ -1,7 +1,6 @@
 import cryspy
 from cryspy.fromstr import fromstr as fs
 
-cryspy.const.blender__std_face_opacity = 0.4
 
 # Nach [Alonso2000a table 2]
 metric = cryspy.geo.Cellparameters(fs("5.29314(5)"), fs("5.8384(1)"), fs("7.4025(1)"), 90, 90, 90).to_Metric()
@@ -25,7 +24,7 @@ atomset = sg ** atomset
 
 atomset = cryspy.utils.fill(atomset, [0.5, 0.05, 0.05])        
 
-
+"""
 face1 = cryspy.crystal.Face("Face1", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1_2").pos])
 face2 = cryspy.crystal.Face("Face2", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_3").pos, atomset.get_atom("O1_2").pos])
 face3 = cryspy.crystal.Face("Face3", [atomset.get_atom("O2_2r").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1_2").pos])
@@ -36,6 +35,18 @@ face7 = cryspy.crystal.Face("Face7", [atomset.get_atom("O2_2r").pos, atomset.get
 face8 = cryspy.crystal.Face("Face8", [atomset.get_atom("O2_6").pos, atomset.get_atom("O2_7r").pos, atomset.get_atom("O1r").pos])
 
 subset = cryspy.crystal.Subset("Octahedron", atomset.get_atom("Mn1_3r").pos, {face1, face2, face3, face4, face5, face6, face7, face8})
+"""
+
+subset = cryspy.utils.octahedron("Octahedron",
+    atomset.get_atom("O1_2").pos,
+    atomset.get_atom("O2_6").pos,
+    atomset.get_atom("O2_3").pos,
+    atomset.get_atom("O2_2r").pos,
+    atomset.get_atom("O2_7r").pos,
+    atomset.get_atom("O1r").pos,
+    (0.8, 0.1, 0.4), 0.5, True, (0, 0, 0), 0.1
+)
+
 
 atomset.add(subset)
 atomset = sg ** atomset
