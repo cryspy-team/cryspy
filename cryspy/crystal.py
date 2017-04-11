@@ -179,6 +179,8 @@ class Bond(Drawable):
             or isinstance(thickness, nb.Mixed), \
             "Argument of crystal.Bond.set_thickness(...) must be of type " \
             "float, int or Mixed."
+        self.thickness = thickness
+        self.has_thickness = True
 
     def __str__(self):
         return "Bond"
@@ -464,13 +466,11 @@ class Subset(Drawable):
                 "objects of type Atom, Momentum, Bond or Face."
         Drawable.__init__(self, name, pos)
         self.atomset = Atomset(menge)
+        self.has_hash = False
+        self.hash = 0
 
     def __eq__(self, right):
-        if isinstance(right, Subset):
-            return (self.pos == right.pos) \
-               and (self.atomset == right.atomset)
-        else:
-            return False
+        return hash(self) == hash(right)
 
     def __str__(self):
         return "Subset"
@@ -496,17 +496,24 @@ class Subset(Drawable):
         return right.to_Symmetry() ** self
 
     def __hash__(self):
-        h = 0
-        for item in self.atomset.menge:
-            h += hash(item)
-        string = "%s%i%i%i%i" % (
-            "Subset",
-            hash(self.pos.x()),
-            hash(self.pos.y()),
-            hash(self.pos.z()),
-            h)
-        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
-
+        print("hash")
+        if self.has_hash:
+            return self.hash
+        else:
+            print("neues hash")
+            h = 0
+            for item in self.atomset.menge:
+                h += hash(item)
+            string = "%s%i%i%i%i" % (
+                "Subset",
+                hash(self.pos.x()),
+                hash(self.pos.y()),
+                hash(self.pos.z()),
+                h)
+            ha = int(hashlib.sha1(string.encode()).hexdigest(), 16)
+            self.hash = ha
+            self.has_hash = True
+            return ha
 
 def structurefactor(atomset, metric, q, wavelength):
     assert isinstance(atomset, Atomset), \

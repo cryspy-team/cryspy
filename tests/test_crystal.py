@@ -94,8 +94,11 @@ def test_Bond():
     b.set_color((0, 0, 1))
     b.set_color((fs("0.3"), 0.1, 1))
     b.set_thickness(1)
+    assert b.thickness == 1
     b.set_thickness(0.5)
+    assert b.thickness == 0.5
     b.set_thickness(fs("1/2"))
+    assert b.thickness == fs("1/2")
     d = fs("d 0 0 1/2")
     b1 = cr.Bond("Bblabla", fs("p 0 0 0"), fs("p 0 0 1/2"))
     b2 = cr.Bond("B", fs("p 1 2 3"), fs("p 0 0 1/2"))
@@ -299,7 +302,7 @@ def test_Subset():
                         {cr.Atom("Fe1", "Fe", fs("p 1/2 0 0")), 
                          cr.Atom("Fe2", "Fe", fs("p 1/2 0 1/4"))})
     assert subset + fs("d 1/2 0 0") == subset5
-    
+    assert False
 
 
 def test_structurefactor():
