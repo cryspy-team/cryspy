@@ -278,6 +278,8 @@ class Face(Drawable):
             result = Face(self.name, liste)
             if self.has_color:
                 result.set_color(self.color)
+            if self.has_opacity:
+                result.set_opacity(self.opacity)
             return result
         elif isinstance(right, str):
             return Face(self.name + right, self.corners)
@@ -290,6 +292,8 @@ class Face(Drawable):
             result = Face(self.name, [left ** corner for corner in self.corners])
             if self.has_color:
                 result.set_color(self.color)
+            if self.has_opacity:
+                result.set_opacity(self.opacity)
             return result
         else:
             return NotImplemented
