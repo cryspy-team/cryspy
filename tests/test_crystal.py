@@ -118,6 +118,13 @@ def test_Bond():
 
 
 def test_Face():
+    f = cr.Face("F", [fs("p 0 0 0"), fs("p 1.0 0 0"), fs("p 0 1.0 0")])
+    f_ = cr.Face("F", [fs("p 0 1.0 0"), fs("p 0 0 0"), fs("p 1.0 0 0")])
+    f__ = cr.Face("F", [fs("p 0 1.0 0"), fs("p 1.0 0 0"), fs("p 0 0 0")])
+    assert f == f_
+    assert hash(f) == hash(f_)
+    assert f == f__
+    assert hash(f) == hash(f__)
     f = cr.Face("F", [fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
     f_ = cr.Face("F", [fs("p 0 1 0"), fs("p 0 0 0"), fs("p 1 0 0")])
     assert isinstance(f, cr.Face)
@@ -302,7 +309,6 @@ def test_Subset():
                         {cr.Atom("Fe1", "Fe", fs("p 1/2 0 0")), 
                          cr.Atom("Fe2", "Fe", fs("p 1/2 0 1/4"))})
     assert subset + fs("d 1/2 0 0") == subset5
-    assert False
 
 
 def test_structurefactor():
