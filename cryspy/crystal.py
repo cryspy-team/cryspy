@@ -51,10 +51,7 @@ class Atom(Drawable):
                           " " + self.typ, " " + self.pos.__str__()], ])
 
     def __eq__(self, right):
-        if (self.typ == right.typ) and (self.pos == right.pos):
-            return True
-        else:
-            return False
+        return hash(self) == hash(right)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -78,11 +75,9 @@ class Atom(Drawable):
         return Atom(self.name, self.typ, self.pos % right)
 
     def __hash__(self):
-        string = "%s%s%s%s" % (
+        string = "atom%s%i" % (
             self.typ,
-            str(hash(self.pos.x())),
-            str(hash(self.pos.y())),
-            str(hash(self.pos.z())))
+            hash(self.pos))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -145,13 +140,8 @@ class Momentum(Drawable):
             return NotImplemented
 
     def __hash__(self):
-        string = "x%sy%sz%sdx%sdy%sdz%s" \
-            % (str(hash(self.pos.x())),
-               str(hash(self.pos.y())),
-               str(hash(self.pos.z())),
-               str(hash(self.direction.x())),
-               str(hash(self.direction.y())),
-               str(hash(self.direction.z())))
+        string = "momentum%i,%i" \
+            % (hash(self.pos), hash(self.direction))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -189,6 +179,8 @@ class Bond(Drawable):
             or isinstance(thickness, nb.Mixed), \
             "Argument of crystal.Bond.set_thickness(...) must be of type " \
             "float, int or Mixed."
+        self.thickness = thickness
+        self.has_thickness = True
 
     def __str__(self):
         return "Bond"
@@ -228,13 +220,11 @@ class Bond(Drawable):
             return NotImplemented
 
     def __hash__(self):
-        string = "x%sy%sz%sdx%sdy%sdz%s" \
-            % (str(hash(self.start.x())),
-               str(hash(self.start.y())),
-               str(hash(self.start.z())),
-               str(hash(self.target.x())),
-               str(hash(self.target.y())),
-               str(hash(self.target.z())))
+        # The order of start and target does not matter.
+        # This is why I hash the sum and the product of the hashes.
+        string = "bond%i,%i" \
+            % (hash(self.start)+hash(self.target),
+               hash(self.start) * hash(self.target))
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -266,7 +256,7 @@ class Face(Drawable):
         self.color = (float(color[0]), float(color[1]), float(color[2]))
 
     def set_opacity(self, opacity):
-        assert isinstance(opacity, Mixe) or isinstance(opacity, float) \
+        assert isinstance(opacity, nb.Mixed) or isinstance(opacity, float) \
             or isinstance(opacity, int), \
             "Opacity must be a number."
         assert 0 <= float(opacity) <= 1, \
@@ -278,17 +268,7 @@ class Face(Drawable):
         return "Face"
 
     def __eq__(self, right):
-        if isinstance(right, Face):
-            if len(self.corners) == len(right.corners):
-                result = True
-                for i in range(len(self.corners)):
-                    if self.corners[i] != right.corners[i]:
-                        result = False
-                return result
-            else:
-                return False
-        else:
-            return False
+        return hash(self) == hash(right)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -298,6 +278,8 @@ class Face(Drawable):
             result = Face(self.name, liste)
             if self.has_color:
                 result.set_color(self.color)
+            if self.has_opacity:
+                result.set_opacity(self.opacity)
             return result
         elif isinstance(right, str):
             return Face(self.name + right, self.corners)
@@ -310,17 +292,23 @@ class Face(Drawable):
             result = Face(self.name, [left ** corner for corner in self.corners])
             if self.has_color:
                 result.set_color(self.color)
+            if self.has_opacity:
+                result.set_opacity(self.opacity)
             return result
         else:
             return NotImplemented
 
     def __hash__(self):
-        string = ""
-        for corner in self.corners:
-            string += "x%sy%sz%s" \
-               %(str(hash(corner.x())),
-               str(hash(corner.y())),
-               str(hash(corner.z())))
+        summe = 0
+        sum_of_products = 0
+        for i in range(len(self.corners) - 1):
+            summe += hash(self.corners[i])
+            sum_of_products += hash(self.corners[i]) * hash(self.corners[i+1])
+        summe += hash(self.corners[-1])
+        sum_of_products += hash(self.corners[-1]) * hash(self.corners[0])
+
+        string = "face%i,%i" % \
+                 (summe, sum_of_products)
         return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
 
@@ -330,14 +318,14 @@ class Atomset():
             "Argument must be of type set."
         for item in menge:
             assert isinstance(item, Atom) or isinstance(item, Momentum) \
-                or isinstance(item, Bond) or isinstance(item, Face), \
+                or isinstance(item, Bond) or isinstance(item, Face) \
+                or isinstance(item, Subset), \
                 "Argument must be a set of "\
-                "objects of type Atom or of type Momentum."
+                "objects of type Atom, Momentum, Bond or Face."
         self.menge = menge
-        self.atomnames = set([])
+        self.names = set([])
         for item in menge:
-            if isinstance(item, Atom):
-                self.atomnames.add(item.name)
+            self.names.add(item.name)
 
     def __eq__(self, right):
         if isinstance(right, Atomset):
@@ -355,6 +343,7 @@ class Atomset():
         momentumliste = []
         bondliste = []
         faceliste = []
+        subsetliste = []
         for item in self.menge:
             if isinstance(item, Atom):
                 atomliste.append(item)
@@ -364,6 +353,8 @@ class Atomset():
                 bondliste.append(item)
             elif isinstance(item, Face):
                 faceliste.append(item)
+            elif isinstance(item, Subset):
+                subsetliste.append(item)
         types = [atom.typ for atom in atomliste]
         indexes = [i for (j, i) in sorted(zip(types, range(len(atomliste))))]
         names = [atomliste[i].name for i in indexes]
@@ -378,13 +369,14 @@ class Atomset():
             strings.append(["", str(bond)])
         for face in faceliste:
             strings.append(["", str(face)])
+        for subset in subsetliste:
+            strings.append(["", str(subset)])
         return bp.block(strings)
 
     def add(self, item):
         if not (item in self.menge):
             self.menge.add(item)
-            if isinstance(item, Atom):
-                self.atomnames.add(item.name)
+            self.names.add(item.name)
 
     def __add__(self, right):
         if isinstance(right, geo.Dif):
@@ -419,17 +411,14 @@ class Atomset():
         if isinstance(left, geo.Spacegroup):
             atomset = Atomset(set([]))
             for item in self.menge:
-                i = 0
                 for coset in left.liste_cosets:
-                    i += 1
                     new_item = coset ** item
-                    if isinstance(item, Atom):
-                        new_item.name = atomset.nextname(new_item.name)
+                    new_item.name = atomset.nextname(new_item.name)
                     atomset.add(new_item)
             return atomset
 
     def nextname(self, name):
-        if name in self.atomnames:
+        if name in self.names:
             words = name.split('_')
             if words[-1].isdigit():
                 return self.nextname('_'.join(words[:-1] + [str(int(words[-1])+1)]))
@@ -453,6 +442,83 @@ class Atomset():
                 return atom
         return None
 
+    def unpack_subsets(self):
+        menge_new = set([])
+        for item in self.menge:
+            if not isinstance(item, Subset):
+                menge_new.add(item)
+            else:
+                for subitem in item.atomset.menge:
+                    subitem.name = item.name + ':' + subitem.name
+                    menge_new.add(subitem)
+                    
+        return Atomset(menge_new)
+
+
+class Subset(Drawable):
+    def __init__(self, name, pos, menge):
+        assert isinstance(name, str), \
+            "First argument must be of type str."
+        assert isinstance(pos, geo.Pos), \
+            "Second argument must be of type cryspy.geo.Pos."
+        assert isinstance(menge, set), \
+            "Third argument must be of type set."
+        for item in menge:
+            assert isinstance(item, Atom) or isinstance(item, Momentum) \
+                or isinstance(item, Bond) or isinstance(item, Face), \
+                "Third argument must be a set of "\
+                "objects of type Atom, Momentum, Bond or Face."
+        Drawable.__init__(self, name, pos)
+        self.atomset = Atomset(menge)
+        self.has_hash = False
+        self.hash = 0
+
+    def __eq__(self, right):
+        return hash(self) == hash(right)
+
+    def __str__(self):
+        return "Subset"
+
+    def __rpow__(self, left):
+        assert isinstance(left, geo.Symmetry) or isinstance(left, geo.Coset), \
+            "Cannot apply object of type %s to object of type " \
+            "cryspy.crystalSubset."%(str(type(left)))
+        if isinstance(left, geo.Symmetry):
+            return Subset(self.name, left**self.pos,
+                          {left ** item for item in self.atomset.menge})
+        elif isinstance(left, geo.Coset):
+            pos = left ** self.pos
+            correct = (pos - left.symmetry ** self.pos).to_Symmetry()
+            return Subset(self.name, pos,
+                          {correct ** (left.symmetry ** item)
+                           for item in self.atomset.menge})
+
+    def __add__(self, right):
+        assert isinstance(right, geo.Dif), \
+            "Cannot add object of type %s to object of type Subset." \
+            %(str(type(right)))
+        return right.to_Symmetry() ** self
+
+    def __hash__(self):
+        print("hash")
+        if self.has_hash:
+            return self.hash
+        else:
+            print("neues hash")
+            h = 0
+            for item in self.atomset.menge:
+                h += hash(item)
+            string = "%s%i%i%i%i" % (
+                "Subset",
+                hash(self.pos.x()),
+                hash(self.pos.y()),
+                hash(self.pos.z()),
+                h)
+            ha = int(hashlib.sha1(string.encode()).hexdigest(), 16)
+            self.hash = ha
+            self.has_hash = True
+            return ha
+
 def structurefactor(atomset, metric, q, wavelength):
     assert isinstance(atomset, Atomset), \
         "atomset must be of type Atomset."
@@ -473,3 +539,5 @@ def structurefactor(atomset, metric, q, wavelength):
            * np.exp(i2pi * float(q * (atom.pos - geo.origin)))
 
     return F
+
+

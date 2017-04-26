@@ -18,6 +18,8 @@ def make_blender_script(atomset, metric, structurename, outfilename):
              "import bmesh\n" \
              "\n"
 
+    atomset = atomset.unpack_subsets()
+
     # Delete the old structure, if exists:
     outstr += "for ob in bpy.data.objects:\n"
     outstr += "    if ob.name.startswith('%s'):\n" % (structurename)

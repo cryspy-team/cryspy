@@ -37,6 +37,7 @@
 #
 #
 
+import hashlib
 from cryspy import numbers as nb
 from cryspy import blockprint as bp
 
@@ -73,6 +74,10 @@ class Pos:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "pos" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -128,6 +133,10 @@ class Dif:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "dif" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -204,6 +213,10 @@ class Rec:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "rec" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Rec):
@@ -612,6 +625,15 @@ class Metric(Operator):
         beta  = nb.rad2deg(self.angle(e2, e0))
         gamma = nb.rad2deg(self.angle(e0, e1))
         return Cellparameters(a, b, c, alpha, beta, gamma)
+
+    def cellvolume(self):
+        T = self.schmidttransformation
+        e0 = T ** canonical_e0
+        e1 = T ** canonical_e1
+        e2 = T ** canonical_e2
+        return (e0.y()*e1.z() - e0.z()*e1.y())*e2.x() \
+             + (e0.z()*e1.x() - e0.x()*e1.z())*e2.y() \
+             + (e0.x()*e1.y() - e0.y()*e1.x())*e2.z()
 
     def __str__(self):
         return bp.block([["Metric", self.value.__str__()]])

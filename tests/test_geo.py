@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import sys
 sys.path.append("../src/")
@@ -5,7 +6,7 @@ import quicktions as fr
 import uncertainties as uc
 from cryspy import numbers as nb
 from cryspy import geo as geo
-
+from cryspy.fromstr import fromstr as fs
 
 def test_Pos():
     x = geo.Pos(nb.Matrix([[1], [2], [3], [1]]))
@@ -15,6 +16,9 @@ def test_Pos():
     assert x.z() == 3
     x = geo.origin
     assert x == geo.Pos(nb.Matrix([[0], [0], [0], [1]]))
+    x = geo.Pos(nb.Matrix([[0], [0], [1.00000000], [1]]))
+    y = geo.Pos(nb.Matrix([[0], [0], [0.99999999], [1]]))
+    assert hash(x) == hash(y)
 
 
 def test_Dif():
@@ -27,7 +31,9 @@ def test_Dif():
                                                       [0, 1, 0, 2],
                                                       [0, 0, 1, 3],
                                                       [0, 0, 0, 1]]))
-
+    x = geo.Dif(nb.Matrix([[0], [0], [1.00000000], [0]]))
+    y = geo.Dif(nb.Matrix([[0], [0], [0.99999999], [0]]))
+    assert hash(x) == hash(y)
 
 def test_Rec():
     q = geo.Rec(nb.Matrix([[1, 2, 3, 0]]))
@@ -35,6 +41,9 @@ def test_Rec():
     assert q.h() == 1
     assert q.k() == 2
     assert q.l() == 3
+    x = geo.Rec(nb.Matrix([[0, 0, 1.00000000, 0]]))
+    y = geo.Rec(nb.Matrix([[0, 0, 0.99999999, 0]]))
+    assert hash(x) == hash(y)
 
 
 def test_eq():
@@ -428,6 +437,16 @@ def test_Metric():
                                                 [0, 9, 0, 0],
                                                 [0, 0, 1, 0],
                                                 [0, 0, 0, 1]]))
+
+    metric = geo.Cellparameters(fs("8.534(5)"), fs("8.556(5)"), fs("7.015(5)"),
+                                fs("101.53(8)"), fs("114.97(8)"), 
+                                fs("103.38(8)")).to_Metric()
+    assert np.abs(metric.cellvolume().value.n - 425.24239) < 0.0001
+
+    metric = geo.Cellparameters(fs("1.0(1)"), 1, 1, 90, 90, 90).to_Metric()
+    print(metric.cellvolume())
+    assert np.abs(metric.cellvolume().value.n - 1) < 0.00000001
+    assert np.abs(metric.cellvolume().value.s - 0.1) < 0.00000001
 
 
 def test_Transgen():
