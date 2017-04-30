@@ -57,7 +57,7 @@ class Mixed(object):
             else:
                 self.value = value
         elif isinstance(value, uc.UFloat):
-            self.value = uc.ufloat(value.n, value.s)
+            self.value = value
 
     def __float__(self):
         if isinstance(self.value, fr.Fraction):
@@ -106,8 +106,7 @@ class Mixed(object):
                 if isinstance(self.value, fr.Fraction):
                     return self.value == right.value
                 if isinstance(self.value, uc.UFloat):
-                    return (self.value.n == right.value.n) \
-                        and (self.value.s == right.value.s)
+                    return self.value == right.value
                 if isinstance(self.value, int):
                     return self.value == right.value
                 if isinstance(self.value, float):
@@ -146,18 +145,18 @@ class Mixed(object):
                 return Mixed(float(self.value) + right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                return Mixed(deepcopy(self.value) + float(right.value))
+                return Mixed(self.value + float(right.value))
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(deepcopy(self.value) + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
         elif isinstance(self.value, int):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(self.value + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
@@ -166,8 +165,7 @@ class Mixed(object):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, uc.UFloat):
-                return Mixed(
-                    uc.ufloat(self.value + right.value.n, right.value.s))
+                return Mixed(self.value + right.value)
             if isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, float):
