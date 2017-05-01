@@ -88,8 +88,7 @@ class Mixed(object):
             string += str(hash(self.value))
         elif isinstance(self.value, uc.UFloat):
             string = 'uf'
-            string += str(cryspy.hash.floathash(self.value.n)) + '+-' \
-                    + str(cryspy.hash.floathash(self.value.s))
+            string += str(hash(self.value))
         elif isinstance(self.value, int):
             string = 'in'
             string += str(hash(self.value))
@@ -527,7 +526,7 @@ class Row(object):
         length = len(liste)
         assert (length > 0), \
             "Object of type Row must be created by a non-empty list."
-        self.liste = deepcopy(liste)
+        self.liste = liste
         for i in range(len(liste)):
             if isinstance(self.liste[i], fr.Fraction):
                 self.liste[i] = Mixed(self.liste[i])
@@ -639,7 +638,7 @@ class Matrix(object):
             assert (len(row) == rowlength), \
               "Object of type Matrix must be created by a list of objects of type "\
               "Row of the same length each."
-        self.liste = deepcopy(liste)
+        self.liste = liste
 
     def shape(self):
         return (len(self.liste), len(self.liste[0]))
