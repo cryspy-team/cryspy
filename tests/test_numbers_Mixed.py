@@ -119,6 +119,8 @@ def test_Mixed():
     mi = nb.Mixed(i)
     mf = nb.Mixed(f)
 
+    mi0 = nb.Mixed(0)
+    
     assert isinstance(mq + mq, nb.Mixed)
     assert isinstance((mq + mq).value, fr.Fraction)
     assert mq + mq == nb.Mixed(fr.Fraction(4, 3))
@@ -188,6 +190,8 @@ def test_Mixed():
     assert isinstance(e + mi, nb.Mixed)
     assert isinstance((e + mi).value, uc.UFloat)
     assert me + i == nb.Mixed(e + i)
+    assert me + mi0 == nb.Mixed(e)
+
 
     assert isinstance(me + mf, nb.Mixed)
     assert isinstance((me + mf).value, uc.UFloat)

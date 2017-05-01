@@ -220,6 +220,14 @@ def test_Matrix():
     assert isinstance(M1 * M2, nb.Matrix)
     assert M1 * M2 == nb.Matrix([[19, 22], [43, 50]])
 
+    M1 = nb.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    M2 = nb.Matrix([[uc.ufloat(1.2, 0.1)], [1], [2]])
+    print(M2)
+    print(M1*M2)
+    assert (M1 * M2).liste[1].liste[0] == M2.liste[1].liste[0]
+    assert M1 * M2 == M2
+
+
     # Multiplication "Scalar * Matrix"
 
     assert M1 * nb.Mixed(fr.Fraction(1, 2)) == \

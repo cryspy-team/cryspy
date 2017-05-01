@@ -101,10 +101,11 @@ class Mixed(object):
     def __eq__(self, right):
         right = Mixed(right)
         if isinstance(right, Mixed):
-            if type(self.value) == type(right.value):
+            if (type(self.value) == type(right.value)) or (isinstance(self.value, uc.UFloat) and isinstance(right.value, uc.UFloat)):
                 if isinstance(self.value, fr.Fraction):
                     return self.value == right.value
                 if isinstance(self.value, uc.UFloat):
+                    print("fast richtig!")
                     return self.value == right.value
                 if isinstance(self.value, int):
                     return self.value == right.value

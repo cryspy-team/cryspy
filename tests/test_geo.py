@@ -124,11 +124,12 @@ def test_Symmetry():
     assert isinstance(g.inv(), geo.Symmetry)
     assert g * g.inv() == geo.Symmetry(nb.Matrix.onematrix(4))
 
-    g = geo.Symmetry(nb.Matrix([[1,  -1, 0, 0],
-                                [-1, 0,  0, 0],
+    g = geo.Symmetry(nb.Matrix([[0,-1, 0, 0],
+                                [1, -1,  0, 0],
                                 [0,  0,  1, 0],
                                 [0,  0,  0, 1]]))
-    assert g.__str__() == "x-y,-x,z"
+    print(g)
+    assert g.__str__() == "-y,x-y,z"
     x = uc.ufloat(0.4, 0.1)
     p = geo.Pos(nb.Matrix([[x], [x], [0], [1]]))
     print(p)
