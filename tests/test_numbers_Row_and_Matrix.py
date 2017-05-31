@@ -230,6 +230,7 @@ def test_Matrix():
 
     # Multiplication "Scalar * Matrix"
 
+    M1 = nb.Matrix([[1, 2], [3, 4]])
     assert M1 * nb.Mixed(fr.Fraction(1, 2)) == \
         nb.Matrix([[fr.Fraction(1, 2), 1], [fr.Fraction(3, 2), 2]])
     assert M1 * fr.Fraction(1, 2) == \

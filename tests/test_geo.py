@@ -460,6 +460,13 @@ def test_Metric():
     assert np.abs(metric.cellvolume().value.n - 1) < 0.00000001
     assert np.abs(metric.cellvolume().value.s - 0.1) < 0.00000001
 
+    a = fs("1.0(1)")
+    metric = geo.Cellparameters(a, a, a, 90, 90, 90).to_Metric()
+    m00 = metric.value.liste[0].liste[0]
+    m11 = metric.value.liste[1].liste[1]
+    assert (m00 - m11).value.n == 0.0
+    assert (m00 - m11).value.s == 0.0
+
 
 def test_Transgen():
     tg = geo.Transgen(geo.Dif(nb.Matrix([[1], [0], [0], [0]])),

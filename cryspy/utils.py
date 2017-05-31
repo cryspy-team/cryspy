@@ -2,7 +2,29 @@ import cryspy
 from cryspy.fromstr import fromstr as fs
 import cryspy.numbers as nb
 import cryspy.geo as geo
+import numpy as np
 
+def calculate_twotheta(metric, wavelength, q):
+    assert isinstance(metric, cryspy.geo.Metric), \
+         "First argument of calculate_twotheta(...) must be of type cryspy.geo.Metric!"
+    assert isinstance(wavelength, cryspy.numbers.Mixed) \
+        or isinstance(wavelength, int) \
+        or isinstance(wavelength, float), \
+        "Second argument of calculate_twotheta(...) must be of type " \
+        "cryspy.numbers.Mixed or int or float."
+    assert isinstance(q, cryspy.geo.Rec), \
+        "Third argument of calculate_twotheta(...) must be of type cryspy.geo.Rec!"
+
+
+    # Lattice plane distance  =  1/(length of reciprocal vector)
+    # can be found here:
+    # Carmelo Giacovazzo et al.: Fundamentals of Crystallography
+    # Oxford University Press (1992)
+
+    d = float(1 / metric.length(q))
+    theta = np.arcsin(float(wavelength)/2/d)
+    twotheta = 2 * theta
+    return twotheta
 
 class Karussell:
     def __init__(self, metric, zerodirection, positivedirection):
