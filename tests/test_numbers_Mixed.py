@@ -1147,3 +1147,55 @@ def test_Mixed():
     assert isinstance(a, nb.Mixed)
     assert isinstance(a.value, float)
     assert approx(a.value, 1.04719755119)
+
+    a = nb.dsin(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.00872653549)
+    a = nb.dsin(fr.Fraction(1, 2))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.00872653549)
+    a = nb.dsin(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.00872653549)
+    assert approx(a.value.s, 0.00174526279)
+    a = nb.dsin(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 0.00872653549)
+    assert approx(a.value.s, 0.00174526279)
+    a = nb.dsin(nb.Mixed(1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.017452406437)
+    a = nb.dsin(1)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.017452406437)
+    a = nb.dsin(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.00872653549)
+    a = nb.dsin(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 0.00872653549)
+    z = nb.Mixed(0)
+    o = nb.Mixed(1)
+    h = nb.Mixed(fr.Fraction(1,2))
+    xs = [0, 30, 90, 150, 180, 210, 270, 330]
+    ys = [z,  h,  o,   h,   z,  -h,  -o,  -h]
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        a = nb.dsin(x)
+        assert a == y
+        a = nb.dsin(fr.Fraction(x, 1))
+        assert a == y
+        a = nb.dsin(nb.Mixed(x))
+        assert a == y
+        a = nb.dsin(nb.Mixed(fr.Fraction(x, 1)))
+        assert a == y
+

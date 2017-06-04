@@ -542,6 +542,62 @@ def arccos(number):
         return Mixed(np.arccos(number.value))
 
 
+def dsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Connot calculate cos of an object of type %s." % (type(number))
+    if isinstance(number.value, fr.Fraction):
+        x = number.value % 360
+        if x == 0:
+            return Mixed(0)
+        elif x == 30:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 90:
+            return Mixed(1)
+        elif x == 150:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 180:
+            return Mixed(0)
+        elif x == 210:
+            return Mixed(-fr.Fraction(1, 2))
+        elif x == 270:
+            return Mixed(-1)
+        elif x == 330:
+            return Mixed(-fr.Fraction(1, 2))
+        else:
+            return Mixed(np.sin(float(deg2rad(number).value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.sin(deg2rad(number).value).item())
+    elif isinstance(number.value, float):
+        return Mixed(np.sin(deg2rad(number).value))
+    elif isinstance(number.value, int):
+        x = number.value % 360
+        if x == 0:
+            return Mixed(0)
+        elif x == 30:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 90:
+            return Mixed(1)
+        elif x == 150:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 180:
+            return Mixed(0)
+        elif x == 210:
+            return Mixed(-fr.Fraction(1, 2))
+        elif x == 270:
+            return Mixed(-1)
+        elif x == 330:
+            return Mixed(-fr.Fraction(1, 2))
+        else:
+            return Mixed(np.sin(deg2rad(number).value))
+
 
 class Row(object):
     def __init__(self, liste):
