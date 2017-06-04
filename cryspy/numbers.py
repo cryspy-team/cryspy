@@ -599,6 +599,10 @@ def dsin(number):
             return Mixed(np.sin(deg2rad(number).value))
 
 
+def dcos(number):
+    return dsin(number + 90)
+
+
 class Row(object):
     def __init__(self, liste):
         assert isinstance(liste, list), \
