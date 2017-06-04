@@ -57,7 +57,7 @@ class Mixed(object):
             else:
                 self.value = value
         elif isinstance(value, uc.UFloat):
-            self.value = uc.ufloat(value.n, value.s)
+            self.value = value
 
     def __float__(self):
         if isinstance(self.value, fr.Fraction):
@@ -88,8 +88,7 @@ class Mixed(object):
             string += str(hash(self.value))
         elif isinstance(self.value, uc.UFloat):
             string = 'uf'
-            string += str(cryspy.hash.floathash(self.value.n)) + '+-' \
-                    + str(cryspy.hash.floathash(self.value.s))
+            string += str(hash(self.value))
         elif isinstance(self.value, int):
             string = 'in'
             string += str(hash(self.value))
@@ -102,12 +101,12 @@ class Mixed(object):
     def __eq__(self, right):
         right = Mixed(right)
         if isinstance(right, Mixed):
-            if type(self.value) == type(right.value):
+            if (type(self.value) == type(right.value)) or (isinstance(self.value, uc.UFloat) and isinstance(right.value, uc.UFloat)):
                 if isinstance(self.value, fr.Fraction):
                     return self.value == right.value
                 if isinstance(self.value, uc.UFloat):
-                    return (self.value.n == right.value.n) \
-                        and (self.value.s == right.value.s)
+                    print("fast richtig!")
+                    return self.value == right.value
                 if isinstance(self.value, int):
                     return self.value == right.value
                 if isinstance(self.value, float):
@@ -146,18 +145,18 @@ class Mixed(object):
                 return Mixed(float(self.value) + right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                return Mixed(deepcopy(self.value) + float(right.value))
+                return Mixed(self.value + float(right.value))
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(deepcopy(self.value) + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
         elif isinstance(self.value, int):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(self.value + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
@@ -166,8 +165,7 @@ class Mixed(object):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, uc.UFloat):
-                return Mixed(
-                    uc.ufloat(self.value + right.value.n, right.value.s))
+                return Mixed(self.value + right.value)
             if isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, float):
@@ -652,7 +650,7 @@ class Row(object):
         length = len(liste)
         assert (length > 0), \
             "Object of type Row must be created by a non-empty list."
-        self.liste = deepcopy(liste)
+        self.liste = liste
         for i in range(len(liste)):
             if isinstance(self.liste[i], fr.Fraction):
                 self.liste[i] = Mixed(self.liste[i])
@@ -764,7 +762,7 @@ class Matrix(object):
             assert (len(row) == rowlength), \
               "Object of type Matrix must be created by a list of objects of type "\
               "Row of the same length each."
-        self.liste = deepcopy(liste)
+        self.liste = liste
 
     def shape(self):
         return (len(self.liste), len(self.liste[0]))

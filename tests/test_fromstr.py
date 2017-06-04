@@ -24,9 +24,11 @@ def test_fromstr():
     assert isinstance(fs(string), nb.Mixed)
     assert fs(string) == nb.Mixed(fr.Fraction(1, 2))
     string = "1.2+/-0.1"
-    assert fs(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert fs(string).value.n == nb.Mixed(uc.ufloat(1.2, 0.1)).value.n
+    assert fs(string).value.s == nb.Mixed(uc.ufloat(1.2, 0.1)).value.s
     string = "1.2(1)"
-    assert fs(string) == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert fs(string).value.n == nb.Mixed(uc.ufloat(1.2, 0.1)).value.n
+    assert fs(string).value.s == nb.Mixed(uc.ufloat(1.2, 0.1)).value.s
     string = "4"
     assert fs(string) == nb.Mixed(fr.Fraction(4, 1))
     string = "4.5"

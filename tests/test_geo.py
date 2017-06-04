@@ -124,6 +124,18 @@ def test_Symmetry():
     assert isinstance(g.inv(), geo.Symmetry)
     assert g * g.inv() == geo.Symmetry(nb.Matrix.onematrix(4))
 
+    g = geo.Symmetry(nb.Matrix([[0,-1, 0, 0],
+                                [1, -1,  0, 0],
+                                [0,  0,  1, 0],
+                                [0,  0,  0, 1]]))
+    print(g)
+    assert g.__str__() == "-y,x-y,z"
+    x = uc.ufloat(0.4, 0.1)
+    p = geo.Pos(nb.Matrix([[x], [x], [0], [1]]))
+    print(p)
+    print((g*g*g)**p)
+    assert (g*g*g)**p == p
+
 
 def test_Pointgroup():
     pg = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0],
@@ -447,6 +459,13 @@ def test_Metric():
     print(metric.cellvolume())
     assert np.abs(metric.cellvolume().value.n - 1) < 0.00000001
     assert np.abs(metric.cellvolume().value.s - 0.1) < 0.00000001
+
+    a = fs("1.0(1)")
+    metric = geo.Cellparameters(a, a, a, 90, 90, 90).to_Metric()
+    m00 = metric.value.liste[0].liste[0]
+    m11 = metric.value.liste[1].liste[1]
+    assert (m00 - m11).value.n == 0.0
+    assert (m00 - m11).value.s == 0.0
 
 
 def test_Transgen():
