@@ -1,5 +1,6 @@
 import cryspy.const
 import cryspy.blockprint
+import cryspy.hash
 import cryspy.numbers
 import cryspy.geo
 import cryspy.crystal

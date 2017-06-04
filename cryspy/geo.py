@@ -37,6 +37,7 @@
 #
 #
 
+import hashlib
 from cryspy import numbers as nb
 from cryspy import blockprint as bp
 
@@ -73,6 +74,10 @@ class Pos:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "pos" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -128,6 +133,10 @@ class Dif:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "dif" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Dif):
@@ -204,6 +213,10 @@ class Rec:
             return (self.value == right.value)
         else:
             return False
+
+    def __hash__(self):
+        string = "rec" + str(hash(self.value))
+        return int(hashlib.sha1(string.encode()).hexdigest(), 16)
 
     def __add__(self, right):
         if isinstance(right, Rec):
@@ -571,7 +584,7 @@ class Metric(Operator):
             "Both arguments must be of type Dif."
         len1 = self.length(vector1)
         len2 = self.length(vector2)
-        return nb.arccos(self.dot(vector1, vector2)/ (len1 * len2))
+        return nb.darccos(self.dot(vector1, vector2)/ (len1 * len2))
 
     def calculate_schmidttransformation(self):
         a1 = canonical_e0
@@ -608,10 +621,19 @@ class Metric(Operator):
         a = self.length(e0)
         b = self.length(e1)
         c = self.length(e2)
-        alpha = nb.rad2deg(self.angle(e1, e2))
-        beta  = nb.rad2deg(self.angle(e2, e0))
-        gamma = nb.rad2deg(self.angle(e0, e1))
+        alpha = self.angle(e1, e2)
+        beta  = self.angle(e2, e0)
+        gamma = self.angle(e0, e1)
         return Cellparameters(a, b, c, alpha, beta, gamma)
+
+    def cellvolume(self):
+        T = self.schmidttransformation
+        e0 = T ** canonical_e0
+        e1 = T ** canonical_e1
+        e2 = T ** canonical_e2
+        return (e0.y()*e1.z() - e0.z()*e1.y())*e2.x() \
+             + (e0.z()*e1.x() - e0.x()*e1.z())*e2.y() \
+             + (e0.x()*e1.y() - e0.y()*e1.x())*e2.z()
 
     def __str__(self):
         return bp.block([["Metric", self.value.__str__()]])
@@ -641,9 +663,9 @@ class Cellparameters():
         aa = a * a
         bb = b * b
         cc = c * c
-        ab = a * b * nb.cos(nb.deg2rad(gamma))
-        ac = a * c * nb.cos(nb.deg2rad(beta))
-        bc = b * c * nb.cos(nb.deg2rad(alpha))
+        ab = a * b * nb.dcos(gamma)
+        ac = a * c * nb.dcos(beta)
+        bc = b * c * nb.dcos(alpha)
         return Metric(nb.Matrix([nb.Row([aa, ab, ac, 0]),
                                  nb.Row([ab, bb, bc, 0]),
                                  nb.Row([ac, bc, cc, 0]),

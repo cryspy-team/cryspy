@@ -18,9 +18,9 @@ def approx(a, b):
 def test_Row():
 
     # Create
-
+    e = uc.ufloat(1.2, 0.1)
     R = nb.Row([nb.Mixed(fr.Fraction(1, 2)),
-                nb.Mixed(uc.ufloat(1.2, 0.1)),
+                nb.Mixed(e),
                 nb.Mixed(1),
                 nb.Mixed(0.5)])
     assert isinstance(R.liste, list)
@@ -29,7 +29,7 @@ def test_Row():
     assert R.liste[0] == nb.Mixed(fr.Fraction(1, 2))
     assert isinstance(R.liste[1], nb.Mixed)
     assert isinstance(R.liste[1].value, uc.UFloat)
-    assert R.liste[1] == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert R.liste[1] == nb.Mixed(e)
     assert isinstance(R.liste[2], nb.Mixed)
     assert isinstance(R.liste[2].value, int)
     assert R.liste[2] == nb.Mixed(1)
@@ -38,7 +38,7 @@ def test_Row():
     assert approx(R.liste[3].value, 0.5)
 
     R = nb.Row([fr.Fraction(1, 2),
-                uc.ufloat(1.2, 0.1),
+                e,
                 1,
                 0.5])
     assert isinstance(R.liste, list)
@@ -47,7 +47,7 @@ def test_Row():
     assert R.liste[0] == nb.Mixed(fr.Fraction(1, 2))
     assert isinstance(R.liste[1], nb.Mixed)
     assert isinstance(R.liste[1].value, uc.UFloat)
-    assert R.liste[1] == nb.Mixed(uc.ufloat(1.2, 0.1))
+    assert R.liste[1] == nb.Mixed(e)
     assert isinstance(R.liste[2], nb.Mixed)
     assert isinstance(R.liste[2].value, int)
     assert R.liste[2] == nb.Mixed(1)
@@ -67,26 +67,44 @@ def test_Row():
 
     # Equal
 
+    e = uc.ufloat(1.2, 0.1)
     R1 = nb.Row([fr.Fraction(1, 2),
-                uc.ufloat(1.2, 0.1),
+                e,
                 1,
                 0.5])
     R2 = nb.Row([fr.Fraction(1, 2),
-                uc.ufloat(1.2, 0.1),
+                e,
                 1,
                 0.5])
+    R2wrong = nb.Row([fr.Fraction(1, 2),
+                      uc.ufloat(1.2, 0.1),
+                      1,
+                      0.5])
     R3 = nb.Row([fr.Fraction(1, 2),
-                uc.ufloat(1.2, 0.1),
+                e,
                 1,
                 fr.Fraction(1, 2)])
     R4 = nb.Row([fr.Fraction(1, 2),
-                uc.ufloat(1.2, 0.1),
+                e,
                 1])
 
     assert R1 == R2
+    assert (R1 == R2wrong) == False
     assert (R1 == R3) == False
     assert (R1 == R4) == False
     assert (R1 == 5) == False
+
+    # Hash
+    R1 = nb.Row([0, 0, 1.00000000])
+    R2 = nb.Row([0, 0, 0.99999999])
+    assert hash(R1) == hash(R2)
+    e1 = uc.ufloat(1.2, 0.1)
+    R1 = nb.Row([0, 0, e1])
+    R2 = nb.Row([0, 0, e1])
+    R3 = nb.Row([0, 0, uc.ufloat(1.2, 0.1)])
+    assert hash(R1) == hash(R2)
+    assert (hash(R1) == hash(R3)) == False
+
 
     # canonical
 
@@ -147,6 +165,21 @@ def test_Matrix():
     assert (M1 == M6) == False
     assert M1 == M7
 
+    M1 = nb.Matrix([nb.Row([1, 2, 3.0]), nb.Row([4, 5, 6])])
+    M2 = nb.Matrix([nb.Row([1, 2, 2.999999999999]), nb.Row([4, 5, 6])])
+    print(hash(M1))
+    print(hash(M2))
+    assert hash(M1) == hash(M2)
+
+    e = uc.ufloat(1.2, 0.1)
+    M1 = nb.Matrix([nb.Row([1, 2, e]), nb.Row([4, 5, 6])])
+    M2 = nb.Matrix([nb.Row([1, 2, e]), nb.Row([4, 5, 6])])
+    M3 = nb.Matrix([nb.Row([1, 2, uc.ufloat(1.2, 0.1)]), nb.Row([4, 5, 6])])
+    assert M1 == M2
+    assert (M1 == M3) == False
+    assert hash(M1) == hash(M2)
+    assert (hash(M1) == hash(M3)) == False
+
     # print
 
     assert nb.Matrix([[1, 2]]).__str__() == " <  1  2  > "
@@ -187,8 +220,17 @@ def test_Matrix():
     assert isinstance(M1 * M2, nb.Matrix)
     assert M1 * M2 == nb.Matrix([[19, 22], [43, 50]])
 
+    M1 = nb.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    M2 = nb.Matrix([[uc.ufloat(1.2, 0.1)], [1], [2]])
+    print(M2)
+    print(M1*M2)
+    assert (M1 * M2).liste[1].liste[0] == M2.liste[1].liste[0]
+    assert M1 * M2 == M2
+
+
     # Multiplication "Scalar * Matrix"
 
+    M1 = nb.Matrix([[1, 2], [3, 4]])
     assert M1 * nb.Mixed(fr.Fraction(1, 2)) == \
         nb.Matrix([[fr.Fraction(1, 2), 1], [fr.Fraction(3, 2), 2]])
     assert M1 * fr.Fraction(1, 2) == \

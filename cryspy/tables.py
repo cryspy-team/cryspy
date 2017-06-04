@@ -5,6 +5,10 @@ import numpy as np
 
 
 def spacegroup(number):
+    if number == 10:
+        return geo.Spacegroup(geo.canonical,
+                              [fs("{x,y,z}"), fs("{-x,y,-z}"), fs("{-x,-y,-z}"), fs("{x,-y,z}")])
+
 
     if number == 13:
         return geo.Spacegroup(geo.canonical,
@@ -93,6 +97,17 @@ def spacegroup(number):
         return geo.Spacegroup(geo.canonical,
                               [fs("{x,y,z}"), fs("{-y,x-y,z}"), fs("{-x+y,-x,z}"),
                                fs("{-x,-y,z+1/2}"), fs("{y,-x+y,z+1/2}"), fs("{x-y,x,z+1/2}"),
+                               fs("{-y,-x,z}"), fs("{-x+y,y,z}"), fs("{x,x-y,z}"),
+                               fs("{y,x,z+1/2}"), fs("{x-y,-y,z+1/2}"), fs("{-x,-x+y,z+1/2}")])
+
+    if number == 194:
+        return geo.Spacegroup(geo.canonical,
+                              [fs("{x,y,z}"), fs("{-y,x-y,z}"), fs("{-x+y,-x,z}"),
+                               fs("{-x,-y,z+1/2}"), fs("{y,-x+y,z+1/2}"), fs("{x-y,x,z+1/2}"),
+                               fs("{y,x,-z}"), fs("{x-y,-y,-z}"), fs("{-x,-x+y,-z}"),
+                               fs("{-y,-x,-z+1/2}"), fs("{-x+y,y,-z+1/2}"), fs("{x,x-y,-z+1/2}"),
+                               fs("{-x,-y,-z}"), fs("{y,-x+y,-z}"), fs("{x-y,x,-z}"),
+                               fs("{x,y,-z+1/2}"), fs("{-y,x-y,-z+1/2}"), fs("{-x+y,-x,-z+1/2}"),
                                fs("{-y,-x,z}"), fs("{-x+y,y,z}"), fs("{x,x-y,z}"),
                                fs("{y,x,z+1/2}"), fs("{x-y,-y,z+1/2}"), fs("{-x,-x+y,z+1/2}")])
 

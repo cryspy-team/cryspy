@@ -7,6 +7,8 @@ from cryspy import tables as tb
 
 
 def test_cryspy_tables():
+    sg = tb.spacegroup(10)
+#    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(15)
 #    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(33)
@@ -28,6 +30,8 @@ def test_cryspy_tables():
     sg = tb.spacegroup(198)
 #    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(186)
+#    assert sg.is_really_a_spacegroup() == True
+    sg = tb.spacegroup(194)
 #    assert sg.is_really_a_spacegroup() == True
     sg = tb.spacegroup(212)
 #    assert sg.is_really_a_spacegroup() == True
