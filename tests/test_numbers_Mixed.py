@@ -1250,3 +1250,105 @@ def test_Mixed():
         a = nb.dcos(nb.Mixed(fr.Fraction(x, 1)))
         assert a == y
 
+    a = nb.darcsin(nb.Mixed(fr.Fraction(1, 3)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 19.47122063449)
+    a = nb.darcsin(fr.Fraction(1, 3))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 19.47122063449)
+    a = nb.darcsin(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 30.0)
+    assert approx(a.value.s, 6.615946745061)
+    a = nb.darcsin(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 30.0)
+    assert approx(a.value.s, 6.615946745061)
+    a = nb.darcsin(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 30.0)
+    a = nb.darcsin(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 30.0)
+    xs = [-fr.Fraction(1, 1), -fr.Fraction(1, 2),
+        fr.Fraction(0, 1), fr.Fraction(1, 2),
+        fr.Fraction(1, 1)]
+    ys = [-90, -30, 0, 30, 90]
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        assert isinstance(nb.darcsin(x), nb.Mixed)
+        assert isinstance(nb.darcsin(x).value, int)
+        assert nb.darcsin(x) == y
+        assert isinstance(nb.darcsin(nb.Mixed(x)), nb.Mixed)
+        assert isinstance(nb.darcsin(nb.Mixed(x)).value, int)
+        assert nb.darcsin(nb.Mixed(x)) == y
+    xs = [-1, 0, 1]
+    ys = [-90, 0, 90]
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        assert isinstance(nb.darcsin(x), nb.Mixed)
+        assert isinstance(nb.darcsin(x).value, int)
+        assert nb.darcsin(x) == y
+        assert isinstance(nb.darcsin(nb.Mixed(x)), nb.Mixed)
+        assert isinstance(nb.darcsin(nb.Mixed(x)).value, int)
+        assert nb.darcsin(nb.Mixed(x)) == y
+
+    a = nb.darccos(nb.Mixed(fr.Fraction(1, 3)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 70.5287793655)
+    a = nb.darccos(fr.Fraction(1, 3))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 70.5287793655)
+    a = nb.darccos(nb.Mixed(uc.ufloat(0.5, 0.1)))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 60.0)
+    assert approx(a.value.s, 6.615946745061)
+    a = nb.darccos(uc.ufloat(0.5, 0.1))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, uc.UFloat)
+    assert approx(a.value.n, 60.0)
+    assert approx(a.value.s, 6.615946745061)
+    a = nb.darccos(nb.Mixed(0.5))
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 60.0)
+    a = nb.darccos(0.5)
+    assert isinstance(a, nb.Mixed)
+    assert isinstance(a.value, float)
+    assert approx(a.value, 60.0)
+    xs = [-fr.Fraction(1, 1), -fr.Fraction(1, 2),
+        fr.Fraction(0, 1), fr.Fraction(1, 2),
+        fr.Fraction(1, 1)]
+    ys = [180, 120, 90, 60, 0]
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        assert isinstance(nb.darccos(x), nb.Mixed)
+        assert isinstance(nb.darccos(x).value, int)
+        assert nb.darccos(x) == y
+        assert isinstance(nb.darccos(nb.Mixed(x)), nb.Mixed)
+        assert isinstance(nb.darccos(nb.Mixed(x)).value, int)
+        assert nb.darccos(nb.Mixed(x)) == y
+    xs = [-1, 0, 1]
+    ys = [180, 90, 0]
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        assert isinstance(nb.darccos(x), nb.Mixed)
+        assert isinstance(nb.darccos(x).value, int)
+        assert nb.darccos(x) == y
+        assert isinstance(nb.darccos(nb.Mixed(x)), nb.Mixed)
+        assert isinstance(nb.darccos(nb.Mixed(x)).value, int)
+        assert nb.darccos(nb.Mixed(x)) == y
+

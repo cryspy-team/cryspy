@@ -510,7 +510,7 @@ def arcsin(number):
     elif isinstance(number, float):
         number = Mixed(number)
     assert isinstance(number, Mixed), \
-        "Cannot calculate arccos of object of type %s." % (type(number))
+        "Cannot calculate arcsin of object of type %s." % (type(number))
     if isinstance(number.value, uc.UFloat):
         return Mixed(unumpy.arcsin(number.value).item())
     elif isinstance(number.value, fr.Fraction):
@@ -601,6 +601,48 @@ def dsin(number):
 
 def dcos(number):
     return dsin(number + 90)
+
+def darcsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Cannot calculate darcsin of object of type %s." % (type(number))
+    if isinstance(number.value, uc.UFloat):
+        return rad2deg(Mixed(unumpy.arcsin((number.value)).item()))
+    elif isinstance(number.value, fr.Fraction):
+        if number == -1:
+            return Mixed(-90)
+        elif number == -fr.Fraction(1, 2):
+            return Mixed(-30)
+        elif number == 0:
+            return Mixed(0)
+        elif number == fr.Fraction(1, 2):
+            return Mixed(30)
+        elif number == 1:
+            return Mixed(90)
+        else:
+            return rad2deg(Mixed(np.arcsin(float(number.value))))
+    elif isinstance(number.value, int):
+        if number  == -1:
+            return Mixed(-90)
+        elif number == 0:
+            return Mixed(0)
+        elif number == 1:
+            return Mixed(90)
+        else:
+            return rad2deg(Mixed(np.arcsin(number.value)))
+    elif isinstance(number.value, float):
+        return rad2deg(Mixed(np.arcsin(number.value)))
+
+
+def darccos(number):
+    return 90 - darcsin(number)
 
 
 class Row(object):
