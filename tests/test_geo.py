@@ -124,6 +124,18 @@ def test_Symmetry():
     assert isinstance(g.inv(), geo.Symmetry)
     assert g * g.inv() == geo.Symmetry(nb.Matrix.onematrix(4))
 
+    g = geo.Symmetry(nb.Matrix([[0,-1, 0, 0],
+                                [1, -1,  0, 0],
+                                [0,  0,  1, 0],
+                                [0,  0,  0, 1]]))
+    print(g)
+    assert g.__str__() == "-y,x-y,z"
+    x = uc.ufloat(0.4, 0.1)
+    p = geo.Pos(nb.Matrix([[x], [x], [0], [1]]))
+    print(p)
+    print((g*g*g)**p)
+    assert (g*g*g)**p == p
+
 
 def test_Pointgroup():
     pg = geo.Pointgroup([geo.Symmetry(nb.Matrix([[1, 0, 0, 0],
@@ -410,11 +422,11 @@ def test_Metric():
     assert metric.dot(q2, q2).__str__() == "1/4"
     assert metric.dot(q3, q3).__str__() == "13/36"
     assert metric.length(p1 - o) == 3
-    assert abs(float((metric.angle(p1 - o, p2 - o) - nb.deg2rad(90)))) < 0.00001
+    assert metric.angle(p1 - o, p2 - o) == 90
     assert metric.length(q1).__str__() == "1/3"
-    assert abs(float((metric.angle(q1, q2) - nb.deg2rad(90)))) < 0.00001
-    assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
-    assert metric.angle(q1, q1).__str__() == "0.0"
+    assert metric.angle(q1, q2) == 90
+    assert metric.angle(p1 - o, p1 - o).__str__() == "0"
+    assert metric.angle(q1, q1).__str__() == "0"
 
     metric = geo.Cellparameters(4.15, 4.15, 28.64, 90, 90, 120).to_Metric()
 
@@ -426,7 +438,7 @@ def test_Metric():
 
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
-        geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
+        geo.Cellparameters(3, 2, 1, 90, 90, 90).__str__()
 
     t = geo.Transformation(nb.Matrix([[0, 1, 0, 0],
                                       [1, 0, 0, 0],
@@ -447,6 +459,13 @@ def test_Metric():
     print(metric.cellvolume())
     assert np.abs(metric.cellvolume().value.n - 1) < 0.00000001
     assert np.abs(metric.cellvolume().value.s - 0.1) < 0.00000001
+
+    a = fs("1.0(1)")
+    metric = geo.Cellparameters(a, a, a, 90, 90, 90).to_Metric()
+    m00 = metric.value.liste[0].liste[0]
+    m11 = metric.value.liste[1].liste[1]
+    assert (m00 - m11).value.n == 0.0
+    assert (m00 - m11).value.s == 0.0
 
 
 def test_Transgen():

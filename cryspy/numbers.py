@@ -57,7 +57,7 @@ class Mixed(object):
             else:
                 self.value = value
         elif isinstance(value, uc.UFloat):
-            self.value = uc.ufloat(value.n, value.s)
+            self.value = value
 
     def __float__(self):
         if isinstance(self.value, fr.Fraction):
@@ -88,8 +88,7 @@ class Mixed(object):
             string += str(hash(self.value))
         elif isinstance(self.value, uc.UFloat):
             string = 'uf'
-            string += str(cryspy.hash.floathash(self.value.n)) + '+-' \
-                    + str(cryspy.hash.floathash(self.value.s))
+            string += str(hash(self.value))
         elif isinstance(self.value, int):
             string = 'in'
             string += str(hash(self.value))
@@ -102,12 +101,12 @@ class Mixed(object):
     def __eq__(self, right):
         right = Mixed(right)
         if isinstance(right, Mixed):
-            if type(self.value) == type(right.value):
+            if (type(self.value) == type(right.value)) or (isinstance(self.value, uc.UFloat) and isinstance(right.value, uc.UFloat)):
                 if isinstance(self.value, fr.Fraction):
                     return self.value == right.value
                 if isinstance(self.value, uc.UFloat):
-                    return (self.value.n == right.value.n) \
-                        and (self.value.s == right.value.s)
+                    print("fast richtig!")
+                    return self.value == right.value
                 if isinstance(self.value, int):
                     return self.value == right.value
                 if isinstance(self.value, float):
@@ -146,18 +145,18 @@ class Mixed(object):
                 return Mixed(float(self.value) + right.value)
         elif isinstance(self.value, uc.UFloat):
             if isinstance(right.value, fr.Fraction):
-                return Mixed(deepcopy(self.value) + float(right.value))
+                return Mixed(self.value + float(right.value))
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(deepcopy(self.value) + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
-                return Mixed(uc.ufloat(self.value.n + right.value, self.value.s))
+                return Mixed(self.value + right.value)
         elif isinstance(self.value, int):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, uc.UFloat):
-                return Mixed(self.value + deepcopy(right.value))
+                return Mixed(self.value + right.value)
             elif isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             elif isinstance(right.value, float):
@@ -166,8 +165,7 @@ class Mixed(object):
             if isinstance(right.value, fr.Fraction):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, uc.UFloat):
-                return Mixed(
-                    uc.ufloat(self.value + right.value.n, right.value.s))
+                return Mixed(self.value + right.value)
             if isinstance(right.value, int):
                 return Mixed(self.value + right.value)
             if isinstance(right.value, float):
@@ -500,6 +498,26 @@ def cos(number):
     elif isinstance(number.value, int):
         return Mixed(np.cos(number.value))
 
+def arcsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Cannot calculate arcsin of object of type %s." % (type(number))
+    if isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.arcsin(number.value).item())
+    elif isinstance(number.value, fr.Fraction):
+        return Mixed(np.arcsin(float(number.value)))
+    elif isinstance(number.value, int):
+        return Mixed(np.arcsin(number.value))
+    elif isinstance(number.value, float):
+        return Mixed(np.arcsin(number.value))
+
 
 def arccos(number):
     if isinstance(number, fr.Fraction):
@@ -522,6 +540,109 @@ def arccos(number):
         return Mixed(np.arccos(number.value))
 
 
+def dsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Connot calculate cos of an object of type %s." % (type(number))
+    if isinstance(number.value, fr.Fraction):
+        x = number.value % 360
+        if x == 0:
+            return Mixed(0)
+        elif x == 30:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 90:
+            return Mixed(1)
+        elif x == 150:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 180:
+            return Mixed(0)
+        elif x == 210:
+            return Mixed(-fr.Fraction(1, 2))
+        elif x == 270:
+            return Mixed(-1)
+        elif x == 330:
+            return Mixed(-fr.Fraction(1, 2))
+        else:
+            return Mixed(np.sin(float(deg2rad(number).value)))
+    elif isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.sin(deg2rad(number).value).item())
+    elif isinstance(number.value, float):
+        return Mixed(np.sin(deg2rad(number).value))
+    elif isinstance(number.value, int):
+        x = number.value % 360
+        if x == 0:
+            return Mixed(0)
+        elif x == 30:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 90:
+            return Mixed(1)
+        elif x == 150:
+            return Mixed(fr.Fraction(1,2))
+        elif x == 180:
+            return Mixed(0)
+        elif x == 210:
+            return Mixed(-fr.Fraction(1, 2))
+        elif x == 270:
+            return Mixed(-1)
+        elif x == 330:
+            return Mixed(-fr.Fraction(1, 2))
+        else:
+            return Mixed(np.sin(deg2rad(number).value))
+
+
+def dcos(number):
+    return dsin(number + 90)
+
+def darcsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Cannot calculate darcsin of object of type %s." % (type(number))
+    if isinstance(number.value, uc.UFloat):
+        return rad2deg(Mixed(unumpy.arcsin((number.value)).item()))
+    elif isinstance(number.value, fr.Fraction):
+        if number == -1:
+            return Mixed(-90)
+        elif number == -fr.Fraction(1, 2):
+            return Mixed(-30)
+        elif number == 0:
+            return Mixed(0)
+        elif number == fr.Fraction(1, 2):
+            return Mixed(30)
+        elif number == 1:
+            return Mixed(90)
+        else:
+            return rad2deg(Mixed(np.arcsin(float(number.value))))
+    elif isinstance(number.value, int):
+        if number  == -1:
+            return Mixed(-90)
+        elif number == 0:
+            return Mixed(0)
+        elif number == 1:
+            return Mixed(90)
+        else:
+            return rad2deg(Mixed(np.arcsin(number.value)))
+    elif isinstance(number.value, float):
+        return rad2deg(Mixed(np.arcsin(number.value)))
+
+
+def darccos(number):
+    return 90 - darcsin(number)
+
+
 class Row(object):
     def __init__(self, liste):
         assert isinstance(liste, list), \
@@ -529,7 +650,7 @@ class Row(object):
         length = len(liste)
         assert (length > 0), \
             "Object of type Row must be created by a non-empty list."
-        self.liste = deepcopy(liste)
+        self.liste = liste
         for i in range(len(liste)):
             if isinstance(self.liste[i], fr.Fraction):
                 self.liste[i] = Mixed(self.liste[i])
@@ -641,7 +762,7 @@ class Matrix(object):
             assert (len(row) == rowlength), \
               "Object of type Matrix must be created by a list of objects of type "\
               "Row of the same length each."
-        self.liste = deepcopy(liste)
+        self.liste = liste
 
     def shape(self):
         return (len(self.liste), len(self.liste[0]))

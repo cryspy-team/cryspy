@@ -3,6 +3,7 @@ import sys
 sys.path.append("../src/")
 import numpy as np
 import test_numbers_Mixed
+import cryspy
 from cryspy import geo as geo
 from cryspy.fromstr import fromstr as fs
 from cryspy import crystal as cr
@@ -145,6 +146,28 @@ def test_Face():
     assert fs("{x+3/2,y,z}") ** f == cr.Face("F", [fs("p 1/2 0 0"), fs("p 1/2 0 0"), fs("p 1/2 0 0")])
     f = cr.Face("F", [fs("p 0 0 0"), fs("p 1 0 0"), fs("p 0 1 0")])
     assert (f + "test").name == "Ftest"
+
+    three = fs("{-y,x-y,z}")
+    sg = geo.Spacegroup(
+        geo.canonical,
+        [fs("{x,y,z}"), three, three*three]
+    )
+    p1 = fs("p 0.1740 0.8260 0.5871")
+    p2 = fs("-y,x-y,z")**p1
+    p3 = fs("-y,x-y,z")**p2
+    a1 = cr.Atom("Fe1", "Fe", p1)
+    a2 = cr.Atom("Fe2", "Fe", p2)
+    a3 = cr.Atom("Fe3", "Fe", p3)
+    atomset = cr.Atomset({a1, a2, a3})
+    atomset = sg**atomset
+    print(atomset)
+    assert len(atomset.menge) == 3
+    f = cr.Face("F", [p1, p2, p3])
+    atomset = cr.Atomset({f})
+    assert len(atomset.menge) == 1
+    atomset = sg ** atomset
+    assert len(atomset.menge) == 1
+    
 
 def test_Atomset():
     atom1 = cr.Atom("Cs1", "Cs", fs("p 0.0000 0 0"))
