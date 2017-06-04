@@ -410,11 +410,11 @@ def test_Metric():
     assert metric.dot(q2, q2).__str__() == "1/4"
     assert metric.dot(q3, q3).__str__() == "13/36"
     assert metric.length(p1 - o) == 3
-    assert abs(float((metric.angle(p1 - o, p2 - o) - nb.deg2rad(90)))) < 0.00001
+    assert metric.angle(p1 - o, p2 - o) == 90
     assert metric.length(q1).__str__() == "1/3"
-    assert abs(float((metric.angle(q1, q2) - nb.deg2rad(90)))) < 0.00001
-    assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
-    assert metric.angle(q1, q1).__str__() == "0.0"
+    assert metric.angle(q1, q2) == 90
+    assert metric.angle(p1 - o, p1 - o).__str__() == "0"
+    assert metric.angle(q1, q1).__str__() == "0"
 
     metric = geo.Cellparameters(4.15, 4.15, 28.64, 90, 90, 120).to_Metric()
 
@@ -426,7 +426,7 @@ def test_Metric():
 
     cell = metric.to_Cellparameters()
     assert cell.__str__() == \
-        geo.Cellparameters(3, 2, 1, 90.0, 90.0, 90.0).__str__()
+        geo.Cellparameters(3, 2, 1, 90, 90, 90).__str__()
 
     t = geo.Transformation(nb.Matrix([[0, 1, 0, 0],
                                       [1, 0, 0, 0],
