@@ -500,6 +500,26 @@ def cos(number):
     elif isinstance(number.value, int):
         return Mixed(np.cos(number.value))
 
+def arcsin(number):
+    if isinstance(number, fr.Fraction):
+        number = Mixed(number)
+    elif isinstance(number, uc.UFloat):
+        number = Mixed(number)
+    elif isinstance(number, int):
+        number = Mixed(number)
+    elif isinstance(number, float):
+        number = Mixed(number)
+    assert isinstance(number, Mixed), \
+        "Cannot calculate arccos of object of type %s." % (type(number))
+    if isinstance(number.value, uc.UFloat):
+        return Mixed(unumpy.arcsin(number.value).item())
+    elif isinstance(number.value, fr.Fraction):
+        return Mixed(np.arcsin(float(number.value)))
+    elif isinstance(number.value, int):
+        return Mixed(np.arcsin(number.value))
+    elif isinstance(number.value, float):
+        return Mixed(np.arcsin(number.value))
+
 
 def arccos(number):
     if isinstance(number, fr.Fraction):
@@ -520,6 +540,7 @@ def arccos(number):
         return Mixed(np.arccos(number.value))
     elif isinstance(number.value, float):
         return Mixed(np.arccos(number.value))
+
 
 
 class Row(object):
