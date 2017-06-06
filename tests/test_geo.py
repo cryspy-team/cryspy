@@ -422,11 +422,15 @@ def test_Metric():
     assert metric.dot(q2, q2).__str__() == "1/4"
     assert metric.dot(q3, q3).__str__() == "13/36"
     assert metric.length(p1 - o) == 3
-    assert metric.angle(p1 - o, p2 - o) == 90
+    assert np.abs(float(metric.angle(p1 - o, p2 - o)) - 1.5707963) < 0.0001
+    assert metric.dangle(p1 - o, p2 - o) == 90
     assert metric.length(q1).__str__() == "1/3"
-    assert metric.angle(q1, q2) == 90
-    assert metric.angle(p1 - o, p1 - o).__str__() == "0"
-    assert metric.angle(q1, q1).__str__() == "0"
+    assert np.abs(float(metric.angle(q1, q2)) - 1.5707963) < 0.0001
+    assert metric.dangle(q1, q2) == 90
+    assert metric.angle(p1 - o, p1 - o).__str__() == "0.0"
+    assert metric.dangle(p1 - o, p1 - o).__str__() == "0"
+    assert metric.angle(q1, q1).__str__() == "0.0"
+    assert metric.dangle(q1, q1).__str__() == "0"
 
     metric = geo.Cellparameters(4.15, 4.15, 28.64, 90, 90, 120).to_Metric()
 

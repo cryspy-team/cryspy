@@ -88,7 +88,7 @@ class Mixed(object):
             string += str(hash(self.value))
         elif isinstance(self.value, uc.UFloat):
             string = 'uf'
-            string += str(hash(self.value))
+            string += str(cryspy.hash.ufloathash(self.value))
         elif isinstance(self.value, int):
             string = 'in'
             string += str(hash(self.value))
