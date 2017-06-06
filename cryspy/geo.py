@@ -579,6 +579,16 @@ class Metric(Operator):
         return nb.sqrt(self.dot(vector, vector))
 
     def angle(self, vector1, vector2):
+        # Angle in radians.
+        assert (isinstance(vector1, Dif) and isinstance(vector2, Dif)) \
+            or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
+            "Both arguments must be of type Dif."
+        len1 = self.length(vector1)
+        len2 = self.length(vector2)
+        return nb.arccos(self.dot(vector1, vector2)/ (len1 * len2))
+
+    def dangle(self, vector1, vector2):
+        # Angle in degrees.
         assert (isinstance(vector1, Dif) and isinstance(vector2, Dif)) \
             or (isinstance(vector1, Rec) and isinstance(vector2, Rec)), \
             "Both arguments must be of type Dif."
@@ -621,9 +631,9 @@ class Metric(Operator):
         a = self.length(e0)
         b = self.length(e1)
         c = self.length(e2)
-        alpha = self.angle(e1, e2)
-        beta  = self.angle(e2, e0)
-        gamma = self.angle(e0, e1)
+        alpha = self.dangle(e1, e2)
+        beta  = self.dangle(e2, e0)
+        gamma = self.dangle(e0, e1)
         return Cellparameters(a, b, c, alpha, beta, gamma)
 
     def cellvolume(self):
